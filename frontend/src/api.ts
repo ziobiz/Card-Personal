@@ -84,6 +84,18 @@ export interface TokenBalance {
   decimals: number;
 }
 
+export interface Transaction {
+  id: string;
+  type: string;
+  amount: number;
+  fee: number;
+  currency: string;
+  status: string;
+  cardId?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}
+
 export interface WalletBalance {
   primary: TokenBalance[];
   cardSummaries: { cardId: string; panLast4: string; balance: number; currency: string }[];
@@ -125,8 +137,90 @@ export const api = {
     close: (cardId: string) =>
       request<Card>(`/cards/${cardId}/close`, { method: 'PUT' }),
   },
+  admin: {
+    login: (email: string, password: string) =>
+      request<{ token: string; user: { email: string; isAdmin: boolean } }>('/admin/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      }),
+    getUsers: () =>
+      request<{ items: { id: string; email: string; wirexUserId?: string; createdAt: string }[]; total: number }>('/admin/users'),
+    getCards: () =>
+      request<{
+        items: Array<{ userId: string; email: string; card: Card }>;
+        total: number;
+      }>('/admin/cards'),
+    getStats: () =>
+      request<{ totalUsers: number; totalCards: number; activeCards: number; totalBalance: number }>('/admin/stats'),
+    getSettings: () =>
+      request<{
+        wirex: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string };
+        useMockWirex: boolean;
+        updatedAt?: string;
+        _masked?: { clientSecret: string };
+      }>('/admin/settings'),
+    getPartners: () =>
+      request<{ items: { id: string; name: string; companyName?: string; apiKeyPrefix: string; status: string; createdAt: string }[]; total: number }>('/admin/partners'),
+    createPartner: (data: { name: string; companyName?: string }) =>
+      request<{ partner: { id: string; name: string; companyName?: string; status: string; createdAt: string }; apiKey: string; warning: string }>('/admin/partners', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    updatePartner: (id: string, data: { name?: string; companyName?: string; status?: string; billingWalletAddress?: string }) =>
+      request<{ id: string; name: string; companyName?: string; status: string; updatedAt?: string }>(`/admin/partners/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    setPartnerBillingWallet: (id: string, billingWalletAddress: string) =>
+      request<{ id: string; billingWalletAddress?: string }>(`/admin/partners/${id}/billing-wallet`, {
+        method: 'PUT',
+        body: JSON.stringify({ billingWalletAddress }),
+      }),
+    addPartnerBillingBalance: (id: string, amount: number) =>
+      request<{ success: boolean; newBalance: number }>(`/admin/partners/${id}/add-billing-balance`, {
+        method: 'POST',
+        body: JSON.stringify({ amount }),
+      }),
+    runPartnerBilling: () =>
+      request<{ month: string; results: Array<{ partnerId: string; name: string; status: string; warning?: number }> }>('/admin/partners/run-billing', { method: 'POST' }),
+    regeneratePartnerKey: (id: string) =>
+      request<{ partner: { id: string; name: string; status: string }; apiKey: string; warning: string }>(`/admin/partners/${id}/regenerate-key`, {
+        method: 'POST',
+      }),
+    updateSettings: (data: {
+      wirex?: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string };
+      feePolicy?: { treasuryWalletAddress?: string; cardIssuanceFee?: number; cardTopUpFeePercent?: number; cardUsageFeePerTransaction?: number; cardMonthlyFee?: number; partnerMonthlyFee?: number };
+      useMockWirex?: boolean;
+    }) =>
+      request<{
+        wirex: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string };
+        useMockWirex: boolean;
+        updatedAt?: string;
+      }>('/admin/settings', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+  },
+  kyc: {
+    getVerificationLink: () =>
+      request<{ url: string | null; message?: string }>('/kyc/verification-link'),
+  },
   wallet: {
     getBalance: () => request<WalletBalance>('/wallet/balance'),
+    p2p: (toUserId: string, amount: number) =>
+      request<{ success: boolean; amount: number }>('/wallet/p2p', {
+        method: 'POST',
+        body: JSON.stringify({ toUserId, amount }),
+      }),
+    refund: (amount: number) =>
+      request<{ success: boolean; amount: number; fee: number }>('/wallet/refund', {
+        method: 'POST',
+        body: JSON.stringify({ amount }),
+      }),
+    getTransactions: (page?: number, size?: number) =>
+      request<{ items: Transaction[]; total: number }>(`/wallet/transactions?page=${page ?? 1}&size=${size ?? 20}`),
+    getCardUsage: (cardId: string, page?: number, size?: number) =>
+      request<{ items: Transaction[]; total: number }>(`/wallet/card/${cardId}/usage?page=${page ?? 1}&size=${size ?? 20}`),
     getTokens: () => request<{ tokens: { symbol: string; name: string; decimals: number }[] }>('/wallet/tokens'),
     getCardDepositInfo: (cardId: string) =>
       request<{

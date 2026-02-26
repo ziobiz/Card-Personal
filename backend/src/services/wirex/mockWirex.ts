@@ -17,7 +17,18 @@ import type {
 // 인메모리 저장소
 const users = new Map<string, WirexUser>();
 const cards = new Map<string, WirexCard>();
-const cardBalances = new Map<string, number>();  // cardId -> balance (USD)
+const cardBalances = new Map<string, number>();
+const primaryBalances = new Map<string, { WUSD: number; WEUR: number }>();
+
+function getOrInitPrimaryBalance(userId: string): { WUSD: number; WEUR: number } {
+  let b = primaryBalances.get(userId);
+  if (!b) {
+    const seed = userId.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    b = { WUSD: 1000 + (seed % 5000), WEUR: 200 + (seed % 500) };
+    primaryBalances.set(userId, b);
+  }
+  return b;
+}
 
 function genAddr(): string {
   return '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
@@ -155,11 +166,32 @@ export const mockWirex = {
   async getPrimaryWalletBalance(userId: string): Promise<TokenBalance[]> {
     const user = users.get(userId);
     if (!user) return [];
-    const seed = userId.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    const b = getOrInitPrimaryBalance(userId);
     return [
-      { symbol: 'WUSD', name: 'Unified USD', balance: 1000 + (seed % 5000), decimals: 18 },
-      { symbol: 'WEUR', name: 'Unified EUR', balance: 200 + (seed % 500), decimals: 18 },
+      { symbol: 'WUSD', name: 'Unified USD', balance: b.WUSD, decimals: 18 },
+      { symbol: 'WEUR', name: 'Unified EUR', balance: b.WEUR, decimals: 18 },
     ];
+  },
+
+  async deductFromPrimary(userId: string, amountUsd: number, tokenSymbol?: string): Promise<boolean> {
+    const b = getOrInitPrimaryBalance(userId);
+    const key = (tokenSymbol === 'WEUR' ? 'WEUR' : 'WUSD') as keyof typeof b;
+    if (b[key] < amountUsd) return false;
+    b[key] -= amountUsd;
+    return true;
+  },
+
+  async addToPrimary(userId: string, amountUsd: number, tokenSymbol?: string): Promise<void> {
+    const b = getOrInitPrimaryBalance(userId);
+    const key = (tokenSymbol === 'WEUR' ? 'WEUR' : 'WUSD') as keyof typeof b;
+    b[key] += amountUsd;
+  },
+
+  async transferP2P(fromUserId: string, toUserId: string, amountUsd: number, tokenSymbol?: string): Promise<boolean> {
+    const ok = await this.deductFromPrimary(fromUserId, amountUsd, tokenSymbol);
+    if (!ok) return false;
+    await this.addToPrimary(toUserId, amountUsd, tokenSymbol);
+    return true;
   },
 
   async getCardWallet(cardId: string): Promise<{ address: string; balance: number; currency: string } | null> {

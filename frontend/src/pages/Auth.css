@@ -64,3 +64,17 @@
 .auth-link:hover {
   text-decoration: underline;
 }
+
+.auth-admin-link {
+  margin-top: 0.5rem;
+}
+
+.auth-admin-link a {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+
+.auth-admin-link a:hover {
+  color: var(--color-primary);
+}

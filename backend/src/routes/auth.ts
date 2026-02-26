@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createHash } from 'crypto';
 import { config } from '../config.js';
 import { store } from '../data/store.js';
-import { mockWirex } from '../services/wirex/mockWirex.js';
+import { wirexService } from '../services/wirex/wirexService.js';
 
 const router = Router();
 
@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
       return res.status(409).json({ error: 'Email already registered' });
     }
 
-    const wirexUser = await mockWirex.createUser({ email });
+    const wirexUser = await wirexService.createUser({ email });
     const id = uuidv4();
     const appUser = {
       id,

@@ -6,6 +6,7 @@ import { store } from '../data/store.js';
 export interface AuthPayload {
   userId: string;
   email: string;
+  isAdmin?: boolean;
 }
 
 declare global {
@@ -24,14 +25,29 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
   }
   try {
     const decoded = jwt.verify(auth.slice(7), config.jwtSecret) as AuthPayload;
+    if (decoded.isAdmin) {
+      req.auth = { userId: decoded.userId, email: decoded.email, isAdmin: true };
+      next();
+      return;
+    }
     const user = store.getUserById(decoded.userId);
     if (!user) {
       res.status(401).json({ error: 'User not found' });
       return;
     }
-    req.auth = { userId: decoded.userId, email: decoded.email };
+    req.auth = { userId: decoded.userId, email: decoded.email, isAdmin: false };
     next();
   } catch {
     res.status(401).json({ error: 'Invalid token' });
   }
+}
+
+export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
+  requireAuth(req, res, () => {
+    if (!req.auth?.isAdmin) {
+      res.status(403).json({ error: 'Admin access required' });
+      return;
+    }
+    next();
+  });
 }

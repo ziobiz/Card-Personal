@@ -85,6 +85,9 @@ export default function Login() {
             {t('auth.goRegister')}
           </Link>
         </p>
+        <p className="auth-footer auth-admin-link">
+          <a href="/admin/login">관리자</a>
+        </p>
       </div>
     </div>
   );

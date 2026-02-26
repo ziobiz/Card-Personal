@@ -2,6 +2,10 @@ node_modules/
 .env
 .env.local
 backend/src/data/users.json
+backend/src/data/settings.json
+backend/src/data/partners.json
+backend/src/data/partner_user_mappings.json
+backend/src/data/transactions.json
 *.log
 .DS_Store
 dist/

@@ -4,6 +4,19 @@ import { useTranslation } from 'react-i18next';
 import { api, type Card, type TokenBalance } from '../api';
 
 export default function Dashboard() {
+  const [kycUrl, setKycUrl] = useState<string | null>(null);
+  const [kycLoading, setKycLoading] = useState(false);
+
+  const handleKycClick = async () => {
+    setKycLoading(true);
+    try {
+      const { url } = await api.kyc.getVerificationLink();
+      if (url) window.location.href = url;
+    } finally {
+      setKycLoading(false);
+    }
+  };
+
   const { t } = useTranslation();
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,12 +37,24 @@ export default function Dashboard() {
     api.wallet.getBalance().then(setWalletBalance).catch(() => setWalletBalance(null));
   }, [cards]);
 
+  useEffect(() => {
+    api.kyc.getVerificationLink().then((r) => setKycUrl(r.url || null)).catch(() => {});
+  }, []);
+
   const totalUsd =
     (walletBalance?.primary?.reduce((s, t) => s + t.balance, 0) ?? 0) +
     (walletBalance?.cardSummaries?.reduce((s, c) => s + c.balance, 0) ?? 0);
 
   return (
     <div className="app-container wirex-dashboard">
+      {kycUrl && (
+        <div className="card-surface kyc-banner">
+          <span>신원 확인이 필요합니다. </span>
+          <button onClick={handleKycClick} disabled={kycLoading} className="btn-primary btn-compact">
+            {kycLoading ? '로딩...' : 'KYC 검증하기'}
+          </button>
+        </div>
+      )}
       <div className="dashboard-top">
         <div className="dashboard-balance">
           <h1 className="page-title">{t('dashboard.title')}</h1>

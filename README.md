@@ -1,9 +1,9 @@
 # Wirex Card Personal - 개인용 카드 발급
 
 **개인용** 카드 발급 웹 서비스입니다.  
-1인 1계정, 가상 카드 발급, 지갑 충전, 일일 한도 관리.
+[Wirex BaaS API](https://docs.wirexapp.com) 연동, 관리자 페이지, KYC 플로우 지원.
 
-> 배포 시 **별도 도메인** 사용 (예: card-personal.example.com)
+> [id.wirexapp.com](https://id.wirexapp.com/login) 스타일 참조
 
 ## 실행 방법
 
@@ -29,34 +29,72 @@ npm run dev
 
 → http://localhost:3000
 
-### 3. 사용
+### 3. 사용자 웹 (카드 사용자)
 
 1. 회원가입 → 로그인
-2. 가상 카드 발급 (1인당 복수 카드 가능)
+2. 가상 카드 발급 (Wirex API 연동)
 3. 카드 충전, 일일 한도 설정, 차단/해제
+4. KYC 검증 (실제 API 모드에서)
+
+### 4. 관리자 웹
+
+- **URL**: http://localhost:3000/admin/login
+- **기본 계정**: admin@wirexcard.local / admin123
+- 사용자·카드 목록, 통계 대시보드
+- **파트너 API 관리**: 타 업체 연동용 API Key 발급·관리
+
+### 5. 파트너 API (타 업체 연동)
+
+계약된 업체가 자체 사이트에서 우리 API로 카드 발급·지갑 연동을 제공할 수 있습니다.
+
+- **1. 카드 발급 API**: 목록, 발급, 차단, 한도 설정
+- **2. 지갑 연동 API**: 잔액, 충전, 토큰 목록
+
+→ [파트너 API 문서](docs/PARTNER_API.md)
 
 ## 프로젝트 구조
 
 ```
 Card-Personal/
-├── backend/     # Express + Mock Wirex (가상 카드, 일일 한도)
-├── frontend/    # React + Vite
+├── backend/           # Express + Wirex BaaS 연동
+│   └── src/
+│       ├── services/wirex/
+│       │   ├── wirexBaaSClient.ts   # 실제 Wirex API 클라이언트
+│       │   ├── wirexService.ts     # Real + Mock 통합
+│       │   └── mockWirex.ts        # Mock (개발용)
+│       └── routes/
+│           ├── admin.ts            # 관리자 API
+│           └── kyc.ts              # KYC 검증 링크
+├── frontend/          # React + Vite (사용자 + 관리자)
+│   └── src/
+│       ├── pages/admin/            # 관리자 페이지
+│       └── pages/                  # 카드 사용자 페이지
 ├── docs/
-└── samples/
+└── env.example
 ```
 
-## 개인용 전용 기능
+## 주요 기능
 
-- 가상 카드만 발급 (물리 카드 없음)
-- 일일 한도 (매일 00:00 리셋)
-- 지갑 충전 → 카드 결제
-- 본인 계좌 송금 (Wirex 정책 준수)
+| 기능 | 설명 |
+|------|------|
+| 카드 발급 | Wirex BaaS API를 통한 실제 카드 발급 (자격증명 설정 시) |
+| 카드-월렛 연동 | Unified Balance (WUSD, WEUR) ↔ 카드 충전 |
+| 관리자 페이지 | 사용자/카드 목록, 통계 대시보드 |
+| KYC | Wirex Hosted KYC 검증 링크 (SumSub 리다이렉트) |
 
-## 다국어
+## 환경 변수 (env.example 참고)
 
-12개 언어 지원 (ko, en, ja, th, id, vi, ms, fil, hi, my, km, lo)
+| 변수 | 설명 |
+|------|------|
+| `USE_MOCK_WIREX` | true=Mock(기본), false=실제 Wirex API |
+| `WIREX_CLIENT_ID` | Wirex BaaS 자격증명 (미설정 시 Sandbox 공개 키 사용) |
+| `ADMIN_EMAIL` | 관리자 이메일 (기본: admin@wirexcard.local) |
+| `ADMIN_PASSWORD` | 관리자 비밀번호 (기본: admin123) |
 
-## 참고
+## 참고 문서
 
+- [Wirex KYC Hosted](https://docs.wirexapp.com/docs/kyc-hosted)
+- [Wirex Authentication](https://docs.wirexapp.com/docs/authentication)
+- [Wirex Onboarding](https://docs.wirexapp.com/docs/onboarding)
 - [API 참조](docs/API_REFERENCE.md)
 - [아키텍처](docs/ARCHITECTURE.md)

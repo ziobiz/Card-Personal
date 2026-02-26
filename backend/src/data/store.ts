@@ -85,4 +85,16 @@ export const store = {
       saveToFile(Array.from(users.values()));
     }
   },
+
+  /** 파트너 API용 사용자 생성 (비밀번호 없음, 웹 로그인 불가) */
+  addPartnerUser(user: Omit<AppUser, 'passwordHash'> & { passwordHash?: string }): AppUser {
+    const full: AppUser = {
+      ...user,
+      passwordHash: user.passwordHash ?? '[partner]',
+    };
+    users.set(full.id, full);
+    emailIndex.set(full.email.toLowerCase(), full.id);
+    saveToFile(Array.from(users.values()));
+    return full;
+  },
 };
