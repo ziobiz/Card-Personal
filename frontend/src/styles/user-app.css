@@ -1,0 +1,555 @@
+/* Wirex One 톤 — 사용자 앱 전용. 관리자(.is-admin / .hq-shell)에는 적용하지 않음 */
+
+.user-app {
+  --color-bg: #000000;
+  --color-surface: rgba(18, 18, 20, 0.78);
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-text: #f4f4f5;
+  --color-muted: #9a9a9a;
+  --color-primary: #f4f4f5;
+  --color-accent: #c4a484;
+  --color-success: #7dcc8a;
+  --color-danger: #ef6b6b;
+  --wx-radius: 20px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #000;
+  color: var(--color-text);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.user-app .card-surface {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--wx-radius);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.user-app .input {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  border-radius: 14px;
+}
+
+.user-app .input:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.user-app .btn-primary {
+  background: #fff;
+  color: #111;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.user-app .btn-primary:hover:not(:disabled) {
+  background: #e8e8e8;
+}
+
+.user-app .btn-secondary,
+.user-app .btn-outline,
+.user-app .btn-danger {
+  border-radius: 999px;
+}
+
+.user-app .lang-switcher {
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #cfcfcf;
+  background: transparent;
+  min-height: 36px;
+}
+
+/* —— Auth (login / register) —— */
+.wx-auth {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #000 url('/user-hero-bg.png') center top / cover no-repeat;
+}
+
+.wx-auth-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wx-mark {
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  font-size: 0.82rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.wx-mark-img {
+  height: 28px;
+  max-width: 160px;
+  object-fit: contain;
+}
+
+.wx-auth-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+.wx-auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem 1.5rem 1.5rem;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(28, 28, 30, 0.82) 0%, rgba(10, 10, 12, 0.88) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  text-align: center;
+}
+
+.wx-mail-badge {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1.1rem;
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  display: grid;
+  place-items: center;
+}
+
+.wx-auth-card h1 {
+  margin: 0 0 0.45rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.wx-auth-card .auth-subtitle {
+  color: #d4d4d4;
+  margin: 0 0 1.4rem;
+  font-size: 0.92rem;
+}
+
+.wx-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1c1d22;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 4px 8px 4px 14px;
+  margin: 0 auto 0.75rem;
+  min-height: 52px;
+  width: 100%;
+  max-width: 100%;
+  color-scheme: dark;
+  box-sizing: border-box;
+}
+
+.wx-field svg {
+  flex-shrink: 0;
+  opacity: 0.5;
+  color: #c8c8c8;
+}
+
+.wx-field .input {
+  flex: 1;
+  min-width: 0;
+  border: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #f4f4f5 !important;
+  min-height: 44px;
+  padding: 0.7rem 0.5rem 0.7rem 0.15rem !important;
+  border-radius: 0;
+  box-shadow: none !important;
+  caret-color: #fff;
+}
+
+.wx-field .input::placeholder {
+  color: #8a8a8a;
+}
+
+.wx-field .input:focus {
+  outline: none;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.wx-field .input:-webkit-autofill,
+.wx-field .input:-webkit-autofill:hover,
+.wx-field .input:-webkit-autofill:focus,
+.wx-field .input:-webkit-autofill:active {
+  -webkit-text-fill-color: #f4f4f5 !important;
+  caret-color: #fff;
+  border: none !important;
+  transition: background-color 99999s ease-out;
+  box-shadow: 0 0 0 1000px #1c1d22 inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #1c1d22 inset !important;
+}
+
+.wx-field-submit .wx-submit {
+  flex-shrink: 0;
+  width: auto;
+  min-height: 36px;
+  padding: 0.4rem 0.85rem;
+  background: transparent;
+  color: #8d8d8d;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.wx-field-submit .wx-submit:not(:disabled) {
+  color: #fff;
+}
+
+.wx-field-submit .wx-submit:disabled {
+  cursor: not-allowed;
+}
+
+.wx-auth-alt {
+  display: block;
+  margin: 1rem 0 1.5rem;
+  color: #fff;
+  text-underline-offset: 3px;
+}
+
+.wx-legal {
+  font-size: 0.75rem;
+  color: #8a8a8a;
+  margin: 0;
+}
+
+.wx-legal a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.wx-admin-link {
+  display: inline-block;
+  margin-top: 1.1rem;
+  font-size: 0.75rem;
+  color: #6e6e6e;
+  text-decoration: none;
+}
+
+.wx-copy {
+  margin: 0;
+  padding: 0 1rem 1.25rem;
+  padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+  font-size: 0.72rem;
+  color: #7a7a7a;
+  letter-spacing: 0.01em;
+}
+
+/* —— Shell —— */
+.wx-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #000 url('/user-hero-bg.png') center top / 140% auto no-repeat;
+}
+
+.wx-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(16px);
+}
+
+.wx-frame {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.wx-side {
+  display: none;
+  width: 220px;
+  padding: 1.5rem 1rem;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.wx-side a,
+.wx-side button {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: #bdbdbd;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  padding: 0.7rem 0.85rem;
+  min-height: 44px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.wx-side a.on,
+.wx-side a:hover,
+.wx-side button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.wx-main {
+  flex: 1;
+  padding: 1.1rem 1rem 5.5rem;
+  width: 100%;
+}
+
+.wx-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 0.4rem 0.4rem calc(0.4rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(8, 8, 8, 0.92);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 30;
+}
+
+.wx-bottom a,
+.wx-bottom button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  color: #8a8a8a;
+  text-decoration: none;
+  background: none;
+  border: none;
+  font-size: 0.68rem;
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.wx-bottom a.on,
+.wx-bottom a:hover {
+  color: #fff;
+}
+
+@media (min-width: 900px) {
+  .wx-side {
+    display: flex;
+  }
+
+  .wx-bottom {
+    display: none;
+  }
+
+  .wx-main {
+    padding: 2rem 1.5rem 2.5rem;
+  }
+
+  .wx-shell {
+    background-size: cover;
+  }
+}
+
+/* —— Home —— */
+.wx-home-hero {
+  margin-bottom: 1.5rem;
+}
+
+.wx-kicker {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  margin: 0 0 0.35rem;
+}
+
+.wx-balance {
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  margin: 0 0 1rem;
+}
+
+.wx-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.wx-actions .btn-primary,
+.wx-actions a.btn-primary {
+  width: auto;
+  padding: 0.65rem 1.15rem;
+  min-height: 42px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.wx-ghost {
+  width: auto;
+  padding: 0.65rem 1.15rem;
+  min-height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: #fff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.wx-kyc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.15rem;
+}
+
+.wx-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+@media (min-width: 700px) {
+  .wx-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.wx-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  text-decoration: none;
+  color: inherit;
+}
+
+.wx-list-row:last-child {
+  border-bottom: none;
+}
+
+/* —— Earn —— */
+.wx-earn-title {
+  font-size: clamp(2rem, 7vw, 3.2rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  margin: 0 0 0.4rem;
+}
+
+.wx-earn-lead {
+  color: #cfcfcf;
+  max-width: 34rem;
+  margin: 0 0 1.5rem;
+  line-height: 1.45;
+}
+
+.wx-rate-card {
+  padding: 1.25rem 1.2rem 1.15rem;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.wx-rate-label {
+  font-size: 0.9rem;
+  color: #d0d0d0;
+}
+
+.wx-rate-num {
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--color-accent);
+}
+
+.wx-rate-desc {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  margin: 0.35rem 0 0;
+}
+
+.wx-product {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.05rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.wx-product h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.wx-product p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+/* —— Cards —— */
+.user-app .card-visual {
+  border-radius: 16px;
+  border: 1px solid rgba(196, 164, 132, 0.28);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.user-app .card-tile-add {
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  min-height: 170px;
+  display: flex;
+}
+
+.user-app .card-add-button {
+  width: 100%;
+  background: transparent;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.user-app .modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.user-app .page-title {
+  letter-spacing: -0.03em;
+}
+
+@media (max-width: 480px) {
+  .wx-auth-card {
+    padding: 1.6rem 1.1rem 1.25rem;
+  }
+}

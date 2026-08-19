@@ -7,30 +7,41 @@ import type { WirexCard, WirexUser, TokenBalance } from '../../types.js';
 import { wirexBaaSClient } from './wirexBaaSClient.js';
 import { mockWirex } from './mockWirex.js';
 import { config } from '../../config.js';
+import { store } from '../../data/store.js';
 
 type UserContext = { userId?: string; email?: string; walletAddress?: string };
 
-function userCtx(userId?: string, email?: string): UserContext {
-  if (userId) return { userId };
-  if (email) return { email };
-  return {};
+/** Wirex user id 로 로컬 매핑을 찾아 X-User-Wallet 헤더를 채운다 */
+function userCtx(wirexUserId?: string, email?: string, walletAddress?: string): UserContext {
+  const mapped = wirexUserId ? store.getUserByWirexUserId(wirexUserId) : undefined;
+  const ctx: UserContext = {};
+  const wallet = walletAddress ?? mapped?.walletAddress;
+  const mail = email ?? mapped?.email;
+  if (wallet) ctx.walletAddress = wallet;
+  if (wirexUserId) ctx.userId = wirexUserId;
+  if (mail) ctx.email = mail;
+  return ctx;
 }
 
 export const wirexService = {
-  async createUser(data: { email: string; phone?: string }): Promise<WirexUser> {
+  async createUser(data: { email: string; phone?: string; wallet_address?: string; country?: string }): Promise<WirexUser> {
     if (config.useMockWirex) {
       return mockWirex.createUser(data);
     }
+    if (!data.wallet_address) {
+      return mockWirex.createUser(data);
+    }
     const token = await wirexBaaSClient.registerUser({
-      wallet_address: '0x' + '0'.repeat(40),
+      wallet_address: data.wallet_address,
       email: data.email,
-      country: 'KR',
+      country: data.country ?? 'GB',
     });
     if (token) {
       return {
         id: token.id,
         email: data.email,
         status: 'pending',
+        primaryWalletAddress: data.wallet_address,
         createdAt: new Date().toISOString(),
       };
     }
@@ -49,6 +60,15 @@ export const wirexService = {
       }
     }
     return mockWirex.getCards(userId, page, size);
+  },
+
+  async getCard(cardId: string, userId?: string): Promise<WirexCard | null> {
+    const ctx = userCtx(userId);
+    if (!config.useMockWirex && userId) {
+      const card = await wirexBaaSClient.getCard(ctx, cardId);
+      if (card) return { ...card, userId } as WirexCard;
+    }
+    return mockWirex.getCard(cardId);
   },
 
   async createVirtualCard(userId: string, data?: { limit?: number; currency?: string }): Promise<WirexCard> {
@@ -73,6 +93,31 @@ export const wirexService = {
       }
     }
     return mockWirex.createVirtualCard(userId, data);
+  },
+
+  async createPlasticCard(
+    userId: string,
+    data: { card_name?: string; name_on_card?: string; delivery_address?: Record<string, unknown> }
+  ): Promise<WirexCard> {
+    const ctx = userCtx(userId);
+    if (!config.useMockWirex) {
+      const card = await wirexBaaSClient.createPlasticCard(ctx, data);
+      if (card) {
+        return {
+          id: card.id,
+          userId,
+          type: 'plastic',
+          status: (card.status as WirexCard['status']) ?? 'inactive',
+          panLast4: card.panLast4 ?? '****',
+          expiryMonth: card.expiryMonth ?? '**',
+          expiryYear: card.expiryYear ?? '**',
+          currency: card.currency ?? 'USD',
+          createdAt: card.createdAt ?? new Date().toISOString(),
+        };
+      }
+    }
+    const virtual = await mockWirex.createVirtualCard(userId, {});
+    return { ...virtual, type: 'plastic', status: 'inactive' };
   },
 
   async blockCard(cardId: string, userId?: string): Promise<WirexCard> {
@@ -108,7 +153,23 @@ export const wirexService = {
     return mockWirex.setCardLimit(cardId, data);
   },
 
-  async closeCard(cardId: string): Promise<WirexCard> {
+  async activateCard(cardId: string, data?: { last4?: string }, userId?: string): Promise<WirexCard> {
+    const ctx = userCtx(userId);
+    if (!config.useMockWirex && userId) {
+      const card = await wirexBaaSClient.activateCard(cardId, ctx, data);
+      if (card) {
+        return { ...card, userId } as WirexCard;
+      }
+    }
+    return mockWirex.activateCard(cardId, data);
+  },
+
+  async closeCard(cardId: string, userId?: string): Promise<WirexCard> {
+    const ctx = userCtx(userId);
+    if (!config.useMockWirex && userId) {
+      const card = await wirexBaaSClient.closeCard(cardId, ctx);
+      if (card) return { ...card, userId } as WirexCard;
+    }
     return mockWirex.closeCard(cardId);
   },
 

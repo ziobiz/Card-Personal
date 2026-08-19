@@ -8,10 +8,11 @@
     "error": "Đã xảy ra lỗi"
   },
   "nav": {
-    "brand": "Wirex Card",
+    "brand": "ICOCARD",
     "dashboard": "Bảng điều khiển",
     "cards": "Thẻ",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "earn": "Earn"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -22,12 +23,18 @@
     "registering": "Đang đăng ký...",
     "email": "Email",
     "password": "Mật khẩu",
-    "loginSubtitle": "Dịch vụ phát hành thẻ Wirex",
-    "registerSubtitle": "Tài khoản người dùng Wirex sẽ được tạo tự động",
+    "loginSubtitle": "Dịch vụ phát hành thẻ ICOCARD",
+    "registerSubtitle": "Tài khoản người dùng ICOCARD sẽ được tạo tự động",
     "noAccount": "Chưa có tài khoản?",
     "hasAccount": "Đã có tài khoản?",
     "goRegister": "Đăng ký",
-    "goLogin": "Đăng nhập"
+    "goLogin": "Đăng nhập",
+    "loginHint": "Enter your email and password to continue.",
+    "registerHint": "Create an ICOCARD account with email and password.",
+    "submit": "Submit",
+    "agreePrefix": "By logging in I agree to the",
+    "terms": "Terms",
+    "privacy": "Privacy Policy"
   },
   "dashboard": {
     "title": "Bảng điều khiển",
@@ -36,7 +43,9 @@
     "recentCards": "Thẻ gần đây",
     "viewAll": "Xem tất cả",
     "noCards": "Chưa có thẻ nào được phát hành",
-    "issueCard": "Phát hành thẻ ảo"
+    "issueCard": "Phát hành thẻ ảo",
+    "kycNeeded": "Identity verification is required.",
+    "kycCta": "Verify KYC"
   },
   "cards": {
     "title": "Quản lý thẻ",
@@ -58,5 +67,59 @@
     "changeLimitModal": "Thay đổi hạn mức",
     "limitPlaceholder": "Hạn mức",
     "confirmBlock": "Khóa thẻ này?"
+  },
+  "earn": {
+    "title": "Earn",
+    "subtitle": "Get rewarded at every turn — cashback on card spend and returns on balances, with no FX markup on ICOCARD payments.",
+    "cashbackTitle": "Card cashback",
+    "cashbackRate": "Up to 8%",
+    "cashbackDesc": "Rewards on everyday Visa spending.",
+    "saveTitle": "On balances",
+    "saveRate": "Up to 9.75%",
+    "saveDesc": "Hold stablecoin in your primary wallet.",
+    "products": "Ways to earn",
+    "cardSpend": "Spend with ICOCARD",
+    "cardSpendDesc": "Virtual or physical Visa, Apple Pay and Google Pay.",
+    "walletHold": "Wallet balances",
+    "walletHoldDesc": "Stablecoin in your primary wallet, ready to top up the card.",
+    "physical": "Physical card",
+    "physicalDesc": "Metal-look plastic card when your merchant enables issuance."
+  },
+  "activity": {
+    "title": "Activity",
+    "empty": "No transactions yet. Card spend and webhook events will appear here."
+  },
+  "admin": {
+    "navBrand": "Brand / Platform",
+    "brandLead": "White-label brand. Change name, logos and colors without touching issuer integration.",
+    "brandIdentity": "Identity",
+    "brandProduct": "Product name",
+    "brandOperator": "Operator",
+    "brandCardName": "Name on card",
+    "brandSupport": "Support email",
+    "brandCopyright": "Copyright",
+    "brandLogos": "Logos",
+    "brandLogoAdmin": "Admin header logo",
+    "brandLogoLogin": "Login logo",
+    "brandFavicon": "Favicon",
+    "brandClear": "Remove",
+    "brandColors": "Colors",
+    "brandHeader": "Header",
+    "brandSidebar": "Sidebar",
+    "brandAccent": "Active accent",
+    "brandLogoBg": "Logo background",
+    "brandSave": "Save brand",
+    "brandSaved": "Brand saved.",
+    "brandFileTooBig": "Image must be under 350KB.",
+    "feeTemplates": "Fee policies",
+    "feeTemplatesDesc": "Create HQ default and extra policies. Partners without a selection follow HQ. Partner-level edits take priority.",
+    "feeHqDefault": "HQ default",
+    "feeTemplateAdd": "Add policy",
+    "feeTemplateName": "Policy name",
+    "feePolicySelect": "Fee policy",
+    "feeFollowHq": "Follow HQ policy",
+    "tablet": "Tablet",
+    "collapse": "Collapse",
+    "roleAdmin": "Admin"
   }
 }

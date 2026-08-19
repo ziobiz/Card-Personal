@@ -1,0 +1,188 @@
+.partner-portal {
+  min-height: 100vh;
+  background: #f4f6f8;
+  color: #212529;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+}
+
+.pp-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pp-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #2c3138;
+  color: #fff;
+  padding: 0 20px;
+  height: 52px;
+}
+
+.pp-logo {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pp-logo img {
+  max-height: 28px;
+}
+
+.pp-nav {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
+.pp-nav a {
+  color: #c8cdd4;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.pp-nav a.active,
+.pp-nav a:hover {
+  color: #fff;
+  background: #3a4149;
+}
+
+.pp-main {
+  padding: 24px;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.pp-card {
+  background: #fff;
+  border: 1px solid #d5dae2;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.pp-card h1,
+.pp-card h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.pp-card h2 {
+  font-size: 15px;
+}
+
+.pp-card pre,
+.pp-card code {
+  background: #f6f8fa;
+  padding: 8px 10px;
+  display: block;
+  overflow: auto;
+  font-size: 12px;
+  border-radius: 4px;
+}
+
+.pp-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2c3138;
+}
+
+.tp-login {
+  min-height: 100vh;
+  background: #eef1f5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 48px;
+}
+
+.tp-lang {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.tp-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border: 1px solid #d8dee6;
+  padding: 28px 24px 32px;
+  box-shadow: 0 8px 24px rgba(20, 28, 40, 0.06);
+}
+
+.tp-card h1 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tp-alert {
+  background: #fff6e8;
+  border: 1px solid #f0c36d;
+  color: #5c3b00;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.tp-alert strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #b42318;
+}
+
+.tp-alert p {
+  margin: 0;
+}
+
+.tp-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.tp-submit {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.tp-logo {
+  display: block;
+  max-height: 36px;
+  margin: 0 auto 16px;
+}
+
+.tp-brand {
+  text-align: center;
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+
+.is-admin .org-id-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.partner-portal a,
+.partner-portal button {
+  min-height: 0;
+}

@@ -12,6 +12,18 @@ export interface AppUser {
   email: string;
   passwordHash: string;
   wirexUserId?: string;
+  /** 사용자 EOA — Wirex 표준 헤더 X-User-Address */
+  walletAddress?: string;
+  country?: string;
+  kycStatus?: 'pending' | 'verified' | 'rejected';
+  kycLevel?: string;
+  capabilities?: string[];
+  /** direct = ICOCARD 자체 회원, partner = 파트너 API 회원 */
+  source?: 'direct' | 'partner';
+  partnerId?: string;
+  status?: 'active' | 'suspended';
+  otpSecret?: string;
+  otpEnabled?: boolean;
   createdAt: string;
 }
 
@@ -78,10 +90,32 @@ export const store = {
     return id ? users.get(id) : undefined;
   },
 
-  updateWirexUserId(userId: string, wirexUserId: string): void {
+  getUserByWirexUserId(wirexUserId: string): AppUser | undefined {
+    for (const u of users.values()) {
+      if (u.wirexUserId === wirexUserId) return u;
+    }
+    return undefined;
+  },
+
+  updateKyc(
+    userId: string,
+    data: { kycStatus?: AppUser['kycStatus']; kycLevel?: string; capabilities?: string[] }
+  ): void {
+    const user = users.get(userId);
+    if (user) {
+      if (data.kycStatus) user.kycStatus = data.kycStatus;
+      if (data.kycLevel) user.kycLevel = data.kycLevel;
+      if (data.capabilities) user.capabilities = data.capabilities;
+      saveToFile(Array.from(users.values()));
+    }
+  },
+
+  updateWirexUserId(userId: string, wirexUserId: string, extra?: { walletAddress?: string; country?: string }): void {
     const user = users.get(userId);
     if (user) {
       user.wirexUserId = wirexUserId;
+      if (extra?.walletAddress) user.walletAddress = extra.walletAddress;
+      if (extra?.country) user.country = extra.country;
       saveToFile(Array.from(users.values()));
     }
   },
@@ -96,5 +130,13 @@ export const store = {
     emailIndex.set(full.email.toLowerCase(), full.id);
     saveToFile(Array.from(users.values()));
     return full;
+  },
+
+  updateMember(id: string, data: { status?: AppUser['status'] }): AppUser | undefined {
+    const user = users.get(id);
+    if (!user) return undefined;
+    if (data.status) user.status = data.status;
+    saveToFile(Array.from(users.values()));
+    return user;
   },
 };

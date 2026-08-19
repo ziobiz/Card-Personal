@@ -37,12 +37,13 @@
 
 ### 2.3 환경 및 인증
 
-**Sandbox (공개 테스트용)**:
+**Sandbox (공개 테스트용, Environments 2026-04)**:
 - Base URL: `https://api-baas.wirexapp.tech`
+- Helper: `https://ramc.wirexapp.tech`
 - Chain ID: **84532** (Base Sepolia)
-- client_id: `9qgK7xzQirmJgZi9zOamLXQ6dQ7KpUu9`
-- client_secret: (Environments 문서 참조)
-- partner_id: `0x00000000000000000000000000000007`
+- client_id: `3fCeoWq6FOtKJBZiyorXnxE41Dqp2zKB`
+- partner_id: `0x00000000000000000000000000000044`
+- WUSD: `0x0774164DC20524Bb239b39D1DC42573C3E4C6976`
 
 **필수 헤더**:
 ```

@@ -13,7 +13,8 @@ export type TransactionType =
   | 'p2p'
   | 'refund'
   | 'fee'
-  | 'partner_billing';
+  | 'partner_billing'
+  | 'commission';
 
 export type TransactionStatus = 'pending' | 'completed' | 'failed';
 

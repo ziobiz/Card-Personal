@@ -379,10 +379,11 @@
 }
 
 .card-visual-brand {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: #fff;
-  text-transform: lowercase;
+  letter-spacing: 0.08em;
+  text-transform: none;
 }
 
 .card-visual-status {
@@ -740,6 +741,22 @@
   margin: 0 0 0.5rem;
 }
 
+.admin-login-brand {
+  margin-bottom: 0.75rem;
+  min-height: 40px;
+}
+
+.admin-login-brand img {
+  max-height: 40px;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+.admin-login-brand strong {
+  letter-spacing: 0.12em;
+  font-size: 1.2rem;
+}
+
 .admin-login-footer {
   margin-top: 1.5rem;
   text-align: center;
@@ -789,7 +806,8 @@
 .admin-table th,
 .admin-table td {
   padding: 0.75rem 1rem;
-  text-align: left;
+  text-align: center;
+  vertical-align: middle;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -869,13 +887,25 @@
   align-items: center;
 }
 
+.admin-org-levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.admin-org-levels button {
+  width: auto;
+  min-height: 40px;
+  padding: 0.4rem 0.8rem;
+}
+
 .admin-partners-desc {
   margin-bottom: 1.5rem;
   font-size: 0.9rem;
 }
 
 .admin-partners-create {
-  max-width: 400px;
+  max-width: 520px;
   margin-bottom: 1.5rem;
   padding: 1.5rem;
 }
@@ -908,14 +938,14 @@
 
 .admin-api-sections {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
   margin: 1rem 0;
 }
 
-@media (max-width: 640px) {
+@media (min-width: 960px) {
   .admin-api-sections {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -924,13 +954,25 @@
   font-size: 0.95rem;
 }
 
-.admin-api-sections ul {
+.admin-api-sections ul,
+.admin-api-list {
   margin: 0;
   padding-left: 1.25rem;
 }
 
 .admin-api-sections li {
-  margin: 0.25rem 0;
+  margin: 0.45rem 0;
+  line-height: 1.55;
+  overflow: visible;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.admin-api-ep-desc {
+  display: inline;
+  margin-left: 0.15rem;
+  color: var(--color-text);
+  font-size: 0.95rem;
 }
 
 .admin-api-auth {

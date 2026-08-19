@@ -7,10 +7,79 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { randomBytes, createHash } from 'crypto';
 
+export interface PartnerFeePolicy {
+  cardIssuanceFee?: number;
+  cardTopUpFeePercent?: number;
+  cardUsageFeePerTransaction?: number;
+  cardMonthlyFee?: number;
+  partnerMonthlyFee?: number;
+  plasticIssuanceFee?: number;
+}
+
+export type CardIssuePolicy = 'ALL' | 'VIRTUAL' | 'PLASTIC' | 'STOPPED';
+
+export function flagsFromIssuePolicy(policy: CardIssuePolicy): { allowVirtual: boolean; allowPlastic: boolean } {
+  switch (policy) {
+    case 'ALL':
+      return { allowVirtual: true, allowPlastic: true };
+    case 'VIRTUAL':
+      return { allowVirtual: true, allowPlastic: false };
+    case 'PLASTIC':
+      return { allowVirtual: false, allowPlastic: true };
+    case 'STOPPED':
+      return { allowVirtual: false, allowPlastic: false };
+    default:
+      return { allowVirtual: true, allowPlastic: true };
+  }
+}
+
+export function issuePolicyFromPartner(p: { cardIssuePolicy?: string; allowVirtual?: boolean; allowPlastic?: boolean }): CardIssuePolicy {
+  if (p.cardIssuePolicy === 'ALL' || p.cardIssuePolicy === 'VIRTUAL' || p.cardIssuePolicy === 'PLASTIC' || p.cardIssuePolicy === 'STOPPED') {
+    return p.cardIssuePolicy;
+  }
+  const v = p.allowVirtual !== false;
+  const pl = p.allowPlastic === true;
+  if (v && pl) return 'ALL';
+  if (v) return 'VIRTUAL';
+  if (pl) return 'PLASTIC';
+  return 'STOPPED';
+}
+
+export function parseCardIssuePolicy(raw: unknown): CardIssuePolicy | undefined {
+  if (raw === 'ALL' || raw === 'VIRTUAL' || raw === 'PLASTIC' || raw === 'STOPPED') return raw;
+  return undefined;
+}
+
+export function canIssueCard(
+  partner: { cardIssuePolicy?: string; allowVirtual?: boolean; allowPlastic?: boolean } | undefined,
+  type: 'virtual' | 'plastic',
+): { ok: true } | { ok: false; error: string } {
+  if (!partner) return { ok: true };
+  const policy = issuePolicyFromPartner(partner);
+  if (policy === 'STOPPED') {
+    return { ok: false, error: 'Card issuance is stopped for this merchant' };
+  }
+  if (type === 'virtual' && !flagsFromIssuePolicy(policy).allowVirtual) {
+    return { ok: false, error: 'Virtual card issuance is not enabled for this merchant' };
+  }
+  if (type === 'plastic' && !flagsFromIssuePolicy(policy).allowPlastic) {
+    return { ok: false, error: 'Physical card issuance is not enabled for this merchant' };
+  }
+  return { ok: true };
+}
+
 export interface Partner {
   id: string;
   name: string;
   companyName?: string;
+  businessNo?: string;
+  ceoName?: string;
+  phone?: string;
+  orgUnitId?: string;
+  orgParentId?: string;
+  cardIssuePolicy: CardIssuePolicy;
+  allowVirtual: boolean;
+  allowPlastic: boolean;
   apiKeyHash: string;
   apiKeyPrefix: string;
   status: 'active' | 'suspended';
@@ -18,6 +87,11 @@ export interface Partner {
   billingWarnings: number;
   lastBillingMonth?: string;
   suspendedAt?: string;
+  fees?: PartnerFeePolicy;
+  feePolicyId?: string;
+  feeOverride?: boolean;
+  distribution?: Partial<import('./salesFeePolicyStore.js').DistributionRates>;
+  distributionApplyStart?: string;
   createdAt: string;
   updatedAt?: string;
 }
@@ -115,18 +189,45 @@ export const partnerStore = {
     return hash === p.apiKeyHash ? p : undefined;
   },
 
-  create(data: { name: string; companyName?: string }): { partner: Partner; apiKey: string } {
+  create(data: {
+    name: string;
+    companyName?: string;
+    businessNo?: string;
+    ceoName?: string;
+    phone?: string;
+    orgParentId?: string;
+    cardIssuePolicy?: CardIssuePolicy;
+    allowVirtual?: boolean;
+    allowPlastic?: boolean;
+    fees?: PartnerFeePolicy;
+    feePolicyId?: string;
+    distribution?: Partner['distribution'];
+  }): { partner: Partner; apiKey: string } {
     const id = 'ptr_' + randomBytes(8).toString('hex');
     const apiKey = 'pk_' + randomBytes(24).toString('hex');
     const prefix = apiKey.slice(0, 12);
+    const cardIssuePolicy = data.cardIssuePolicy
+      ?? issuePolicyFromPartner({ allowVirtual: data.allowVirtual, allowPlastic: data.allowPlastic });
+    const flags = flagsFromIssuePolicy(cardIssuePolicy);
     const partner: Partner = {
       id,
       name: data.name,
       companyName: data.companyName,
+      businessNo: data.businessNo,
+      ceoName: data.ceoName,
+      phone: data.phone,
+      orgParentId: data.orgParentId,
+      cardIssuePolicy,
+      allowVirtual: flags.allowVirtual,
+      allowPlastic: flags.allowPlastic,
       apiKeyHash: hashApiKey(apiKey),
       apiKeyPrefix: prefix,
       status: 'active',
       billingWarnings: 0,
+      fees: data.fees,
+      feePolicyId: data.feePolicyId,
+      feeOverride: Boolean(data.fees && Object.keys(data.fees).length),
+      distribution: data.distribution,
       createdAt: new Date().toISOString(),
     };
     partners.set(id, partner);
@@ -135,7 +236,7 @@ export const partnerStore = {
     return { partner, apiKey };
   },
 
-  update(id: string, data: Partial<Pick<Partner, 'name' | 'companyName' | 'status' | 'billingWalletAddress' | 'billingWarnings' | 'lastBillingMonth' | 'suspendedAt'>>): Partner | undefined {
+  update(id: string, data: Partial<Pick<Partner, 'name' | 'companyName' | 'status' | 'billingWalletAddress' | 'billingWarnings' | 'lastBillingMonth' | 'suspendedAt' | 'fees' | 'feePolicyId' | 'feeOverride' | 'businessNo' | 'ceoName' | 'phone' | 'orgUnitId' | 'orgParentId' | 'cardIssuePolicy' | 'allowVirtual' | 'allowPlastic' | 'distribution' | 'distributionApplyStart'>>): Partner | undefined {
     const p = partners.get(id);
     if (!p) return undefined;
     if (data.name != null) p.name = data.name;
@@ -145,6 +246,28 @@ export const partnerStore = {
     if (data.billingWarnings != null) p.billingWarnings = data.billingWarnings;
     if (data.lastBillingMonth != null) p.lastBillingMonth = data.lastBillingMonth;
     if (data.suspendedAt != null) p.suspendedAt = data.suspendedAt;
+    if (data.fees !== undefined) p.fees = data.fees;
+    if (data.feePolicyId !== undefined) p.feePolicyId = data.feePolicyId;
+    if (data.feeOverride !== undefined) p.feeOverride = data.feeOverride;
+    if (data.businessNo != null) p.businessNo = data.businessNo;
+    if (data.ceoName != null) p.ceoName = data.ceoName;
+    if (data.phone != null) p.phone = data.phone;
+    if (data.orgUnitId != null) p.orgUnitId = data.orgUnitId;
+    if (data.orgParentId != null) p.orgParentId = data.orgParentId;
+    if (data.cardIssuePolicy != null) {
+      p.cardIssuePolicy = data.cardIssuePolicy;
+      const flags = flagsFromIssuePolicy(data.cardIssuePolicy);
+      p.allowVirtual = flags.allowVirtual;
+      p.allowPlastic = flags.allowPlastic;
+    } else {
+      if (data.allowVirtual != null) p.allowVirtual = data.allowVirtual;
+      if (data.allowPlastic != null) p.allowPlastic = data.allowPlastic;
+      p.cardIssuePolicy = issuePolicyFromPartner(p);
+    }
+    if (data.distribution !== undefined) p.distribution = data.distribution;
+    if (data.distributionApplyStart !== undefined) p.distributionApplyStart = data.distributionApplyStart;
+    if (p.allowVirtual === undefined) p.allowVirtual = true;
+    if (p.allowPlastic === undefined) p.allowPlastic = false;
     p.updatedAt = new Date().toISOString();
     savePartners(Array.from(partners.values()));
     return p;

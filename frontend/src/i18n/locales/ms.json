@@ -8,10 +8,11 @@
     "error": "Ralat telah berlaku"
   },
   "nav": {
-    "brand": "Wirex Card",
+    "brand": "ICOCARD",
     "dashboard": "Papan pemuka",
     "cards": "Kad",
-    "logout": "Log keluar"
+    "logout": "Log keluar",
+    "earn": "Earn"
   },
   "auth": {
     "login": "Log masuk",
@@ -22,12 +23,18 @@
     "registering": "Sedang mendaftar...",
     "email": "E-mel",
     "password": "Kata laluan",
-    "loginSubtitle": "Perkhidmatan Pengeluaran Kad Wirex",
-    "registerSubtitle": "Akaun pengguna Wirex akan dicipta secara automatik",
+    "loginSubtitle": "Perkhidmatan Pengeluaran Kad ICOCARD",
+    "registerSubtitle": "Akaun pengguna ICOCARD akan dicipta secara automatik",
     "noAccount": "Belum mempunyai akaun?",
     "hasAccount": "Sudah mempunyai akaun?",
     "goRegister": "Daftar",
-    "goLogin": "Log masuk"
+    "goLogin": "Log masuk",
+    "loginHint": "Enter your email and password to continue.",
+    "registerHint": "Create an ICOCARD account with email and password.",
+    "submit": "Submit",
+    "agreePrefix": "By logging in I agree to the",
+    "terms": "Terms",
+    "privacy": "Privacy Policy"
   },
   "dashboard": {
     "title": "Papan pemuka",
@@ -36,7 +43,9 @@
     "recentCards": "Kad Terkini",
     "viewAll": "Lihat semua",
     "noCards": "Belum ada kad yang dikeluarkan",
-    "issueCard": "Keluarkan kad maya"
+    "issueCard": "Keluarkan kad maya",
+    "kycNeeded": "Identity verification is required.",
+    "kycCta": "Verify KYC"
   },
   "cards": {
     "title": "Pengurusan Kad",
@@ -58,5 +67,59 @@
     "changeLimitModal": "Tukar had",
     "limitPlaceholder": "Had",
     "confirmBlock": "Sekat kad ini?"
+  },
+  "earn": {
+    "title": "Earn",
+    "subtitle": "Get rewarded at every turn — cashback on card spend and returns on balances, with no FX markup on ICOCARD payments.",
+    "cashbackTitle": "Card cashback",
+    "cashbackRate": "Up to 8%",
+    "cashbackDesc": "Rewards on everyday Visa spending.",
+    "saveTitle": "On balances",
+    "saveRate": "Up to 9.75%",
+    "saveDesc": "Hold stablecoin in your primary wallet.",
+    "products": "Ways to earn",
+    "cardSpend": "Spend with ICOCARD",
+    "cardSpendDesc": "Virtual or physical Visa, Apple Pay and Google Pay.",
+    "walletHold": "Wallet balances",
+    "walletHoldDesc": "Stablecoin in your primary wallet, ready to top up the card.",
+    "physical": "Physical card",
+    "physicalDesc": "Metal-look plastic card when your merchant enables issuance."
+  },
+  "activity": {
+    "title": "Activity",
+    "empty": "No transactions yet. Card spend and webhook events will appear here."
+  },
+  "admin": {
+    "navBrand": "Brand / Platform",
+    "brandLead": "White-label brand. Change name, logos and colors without touching issuer integration.",
+    "brandIdentity": "Identity",
+    "brandProduct": "Product name",
+    "brandOperator": "Operator",
+    "brandCardName": "Name on card",
+    "brandSupport": "Support email",
+    "brandCopyright": "Copyright",
+    "brandLogos": "Logos",
+    "brandLogoAdmin": "Admin header logo",
+    "brandLogoLogin": "Login logo",
+    "brandFavicon": "Favicon",
+    "brandClear": "Remove",
+    "brandColors": "Colors",
+    "brandHeader": "Header",
+    "brandSidebar": "Sidebar",
+    "brandAccent": "Active accent",
+    "brandLogoBg": "Logo background",
+    "brandSave": "Save brand",
+    "brandSaved": "Brand saved.",
+    "brandFileTooBig": "Image must be under 350KB.",
+    "feeTemplates": "Fee policies",
+    "feeTemplatesDesc": "Create HQ default and extra policies. Partners without a selection follow HQ. Partner-level edits take priority.",
+    "feeHqDefault": "HQ default",
+    "feeTemplateAdd": "Add policy",
+    "feeTemplateName": "Policy name",
+    "feePolicySelect": "Fee policy",
+    "feeFollowHq": "Follow HQ policy",
+    "tablet": "Tablet",
+    "collapse": "Collapse",
+    "roleAdmin": "Admin"
   }
 }

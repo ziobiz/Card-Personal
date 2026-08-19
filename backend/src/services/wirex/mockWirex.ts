@@ -95,6 +95,13 @@ export const mockWirex = {
     return { items, total };
   },
 
+  async getCard(cardId: string): Promise<WirexCard | null> {
+    const c = cards.get(cardId);
+    if (!c) return null;
+    maybeResetDailyUsed(c);
+    return { ...c, balance: cardBalances.get(c.id) ?? c.balance ?? 0 };
+  },
+
   async createVirtualCard(userId: string, data?: CreateVirtualCardRequest): Promise<WirexCard> {
     const id = randomUUID();
     const { month, year } = generateExpiry();

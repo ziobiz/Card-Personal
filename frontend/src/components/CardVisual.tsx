@@ -4,6 +4,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
+import { useBrand } from '../brand/BrandContext';
 
 export interface CardVisualProps {
   panLast4: string;
@@ -14,9 +15,9 @@ export interface CardVisualProps {
 }
 
 const VARIANTS = {
-  dark: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-  blue: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #1e40af 100%)',
-  purple: 'linear-gradient(135deg, #2e1b4e 0%, #6b21a8 50%, #4c1d95 100%)',
+  dark: 'linear-gradient(145deg, #161311 0%, #3a2f26 42%, #1a1612 100%)',
+  blue: 'linear-gradient(145deg, #1a1714 0%, #5c4a38 50%, #241c16 100%)',
+  purple: 'linear-gradient(145deg, #1c1612 0%, #8a6a4a 48%, #2a211a 100%)',
 };
 
 export default function CardVisual({
@@ -27,6 +28,7 @@ export default function CardVisual({
   variant = 'dark',
 }: CardVisualProps) {
   const { t } = useTranslation();
+  const { brand } = useBrand();
   const bg = VARIANTS[variant];
 
   return (
@@ -35,7 +37,7 @@ export default function CardVisual({
       style={{ background: bg }}
     >
       <div className="card-visual-header">
-        <span className="card-visual-brand">wirex</span>
+        <span className="card-visual-brand">{brand.cardBrandName}</span>
         <span className={`card-visual-status badge badge-${status}`}>
           {t(`cards.status.${status}`)}
         </span>

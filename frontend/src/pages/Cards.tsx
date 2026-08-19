@@ -26,10 +26,14 @@ export default function Cards() {
     fetchCards();
   }, []);
 
-  const handleIssue = async () => {
+  const handleIssue = async (type: 'virtual' | 'plastic' = 'virtual') => {
     setIssuing(true);
     try {
-      await api.cards.createVirtual({ limit: 5000, currency: 'USD' });
+      if (type === 'plastic') {
+        await api.cards.createPlastic({ card_name: 'Co-Brand Physical' });
+      } else {
+        await api.cards.createVirtual({ limit: 5000, currency: 'USD' });
+      }
       fetchCards();
     } catch (e) {
       alert((e as Error).message);
@@ -52,6 +56,15 @@ export default function Cards() {
     try {
       await api.cards.unblock(c.id);
       fetchCards();
+    } catch (e) {
+      alert((e as Error).message);
+    }
+  };
+
+  const handleWallet = async (c: Card, wallet: 'apple_pay' | 'google_pay') => {
+    try {
+      await api.cards.provisionWallet(c.id, wallet);
+      alert(wallet === 'apple_pay' ? 'Apple Pay 토큰이 발급되었습니다.' : 'Google Pay 토큰이 발급되었습니다.');
     } catch (e) {
       alert((e as Error).message);
     }
@@ -102,12 +115,22 @@ export default function Cards() {
           <div className="cards-row">
             <div className="card-tile card-tile-add">
               <button
-                onClick={handleIssue}
+                onClick={() => handleIssue('virtual')}
                 disabled={issuing}
                 className="card-add-button"
               >
                 <span className="card-add-icon">+</span>
                 <span className="card-add-text">{t('cards.issueVirtualShort')}</span>
+              </button>
+            </div>
+            <div className="card-tile card-tile-add">
+              <button
+                onClick={() => handleIssue('plastic')}
+                disabled={issuing}
+                className="card-add-button"
+              >
+                <span className="card-add-icon">+</span>
+                <span className="card-add-text">{t('cards.issuePlasticShort')}</span>
               </button>
             </div>
           </div>
@@ -158,17 +181,37 @@ export default function Cards() {
                       {t('dashboard.manage')}
                     </button>
                   )}
+                  {card.status === 'active' && (
+                    <>
+                      <button onClick={() => handleWallet(card, 'apple_pay')} className="btn-outline">
+                        Apple Pay
+                      </button>
+                      <button onClick={() => handleWallet(card, 'google_pay')} className="btn-outline">
+                        Google Pay
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
             <div className="card-tile card-tile-add">
               <button
-                onClick={handleIssue}
+                onClick={() => handleIssue('virtual')}
                 disabled={issuing}
                 className="card-add-button"
               >
                 <span className="card-add-icon">+</span>
                 <span className="card-add-text">{t('cards.issueVirtualShort')}</span>
+              </button>
+            </div>
+            <div className="card-tile card-tile-add">
+              <button
+                onClick={() => handleIssue('plastic')}
+                disabled={issuing}
+                className="card-add-button"
+              >
+                <span className="card-add-icon">+</span>
+                <span className="card-add-text">{t('cards.issuePlasticShort')}</span>
               </button>
             </div>
           </div>

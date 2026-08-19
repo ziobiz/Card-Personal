@@ -6,7 +6,13 @@ backend/src/data/settings.json
 backend/src/data/partners.json
 backend/src/data/partner_user_mappings.json
 backend/src/data/transactions.json
-*.log
+backend/src/data/webhooks.json
+backend/src/data/iso_ledger.json
+backend/src/data/wallet_tokens.json
+backend/src/data/threeds.json
+backend/src/data/operators.json
+backend/src/data/org_units.json
+*.tsbuildinfo
 .DS_Store
 dist/
 build/

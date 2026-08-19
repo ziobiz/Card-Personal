@@ -4,6 +4,7 @@ import ko from './locales/ko.json';
 import en from './locales/en.json';
 import ja from './locales/ja.json';
 import th from './locales/th.json';
+import zh from './locales/zh.json';
 import id from './locales/id.json';
 import vi from './locales/vi.json';
 import ms from './locales/ms.json';
@@ -13,10 +14,20 @@ import my from './locales/my.json';
 import km from './locales/km.json';
 import lo from './locales/lo.json';
 
+/** 관리자 화면: 영어 · 한국어 · 일본어 · 중국어 · 태국어 */
+export const ADMIN_LANGUAGES = [
+  { code: 'en', name: 'English' },
+  { code: 'ko', name: '한국어' },
+  { code: 'ja', name: '日本語' },
+  { code: 'zh', name: '中文' },
+  { code: 'th', name: 'ไทย' },
+] as const;
+
 export const SUPPORTED_LANGUAGES = [
   { code: 'ko', name: '한국어' },
   { code: 'en', name: 'English' },
   { code: 'ja', name: '日本語' },
+  { code: 'zh', name: '中文' },
   { code: 'th', name: 'ไทย' },
   { code: 'id', name: 'Bahasa Indonesia' },
   { code: 'vi', name: 'Tiếng Việt' },
@@ -44,6 +55,7 @@ const resources = {
   ko: { translation: ko },
   en: { translation: en },
   ja: { translation: ja },
+  zh: { translation: zh },
   th: { translation: th },
   id: { translation: id },
   vi: { translation: vi },
@@ -59,6 +71,7 @@ i18n.use(initReactI18next).init({
   resources,
   lng: getInitialLanguage(),
   fallbackLng: 'en',
+  returnNull: false,
   interpolation: { escapeValue: false },
 });
 

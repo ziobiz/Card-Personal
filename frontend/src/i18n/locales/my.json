@@ -8,10 +8,11 @@
     "error": "အမှားတစ်ခုဖြစ်ပေါ်ခဲ့သည်"
   },
   "nav": {
-    "brand": "Wirex Card",
+    "brand": "ICOCARD",
     "dashboard": "ဒက်ရှ်ဘို့",
     "cards": "ကတ်ပြား",
-    "logout": "ထွက်မည်"
+    "logout": "ထွက်မည်",
+    "earn": "Earn"
   },
   "auth": {
     "login": "ဝင်မည်",
@@ -22,12 +23,18 @@
     "registering": "စာရင်းသွင်းနေသည်...",
     "email": "အီးမေးလ်",
     "password": "စကားဝှက်",
-    "loginSubtitle": "Wirex Card ထုတ်ဝေရေးဝန်ဆောင်မှု",
-    "registerSubtitle": "Wirex အသုံးပြုသူအကောင့်ကို အလိုအလျောက်ဖန်တီးမည်",
+    "loginSubtitle": "ICOCARD ထုတ်ဝေရေးဝန်ဆောင်မှု",
+    "registerSubtitle": "ICOCARD အသုံးပြုသူအကောင့်ကို အလိုအလျောက်ဖန်တီးမည်",
     "noAccount": "အကောင့်မရှိသေးဘူးလား?",
     "hasAccount": "အကောင့်ရှိပြီးသားလား?",
     "goRegister": "စာရင်းသွင်းမည်",
-    "goLogin": "ဝင်မည်"
+    "goLogin": "ဝင်မည်",
+    "loginHint": "Enter your email and password to continue.",
+    "registerHint": "Create an ICOCARD account with email and password.",
+    "submit": "Submit",
+    "agreePrefix": "By logging in I agree to the",
+    "terms": "Terms",
+    "privacy": "Privacy Policy"
   },
   "dashboard": {
     "title": "ဒက်ရှ်ဘို့",
@@ -36,7 +43,9 @@
     "recentCards": "နောက်ဆုံးကတ်ပြား",
     "viewAll": "အားလုံးကြည့်မည်",
     "noCards": "အကြောင်းမရှိသေးပါ",
-    "issueCard": "Virtual ကတ်ပြားထုတ်မည်"
+    "issueCard": "Virtual ကတ်ပြားထုတ်မည်",
+    "kycNeeded": "Identity verification is required.",
+    "kycCta": "Verify KYC"
   },
   "cards": {
     "title": "ကတ်ပြားစီမံခန့်ခွဲမှု",
@@ -58,5 +67,59 @@
     "changeLimitModal": "ကန့်သတ်ချက်ပြောင်းမည်",
     "limitPlaceholder": "ကန့်သတ်ချက်",
     "confirmBlock": "ဤကတ်ပြားကိုပိတ်ဆို့မလား?"
+  },
+  "earn": {
+    "title": "Earn",
+    "subtitle": "Get rewarded at every turn — cashback on card spend and returns on balances, with no FX markup on ICOCARD payments.",
+    "cashbackTitle": "Card cashback",
+    "cashbackRate": "Up to 8%",
+    "cashbackDesc": "Rewards on everyday Visa spending.",
+    "saveTitle": "On balances",
+    "saveRate": "Up to 9.75%",
+    "saveDesc": "Hold stablecoin in your primary wallet.",
+    "products": "Ways to earn",
+    "cardSpend": "Spend with ICOCARD",
+    "cardSpendDesc": "Virtual or physical Visa, Apple Pay and Google Pay.",
+    "walletHold": "Wallet balances",
+    "walletHoldDesc": "Stablecoin in your primary wallet, ready to top up the card.",
+    "physical": "Physical card",
+    "physicalDesc": "Metal-look plastic card when your merchant enables issuance."
+  },
+  "activity": {
+    "title": "Activity",
+    "empty": "No transactions yet. Card spend and webhook events will appear here."
+  },
+  "admin": {
+    "navBrand": "Brand / Platform",
+    "brandLead": "White-label brand. Change name, logos and colors without touching issuer integration.",
+    "brandIdentity": "Identity",
+    "brandProduct": "Product name",
+    "brandOperator": "Operator",
+    "brandCardName": "Name on card",
+    "brandSupport": "Support email",
+    "brandCopyright": "Copyright",
+    "brandLogos": "Logos",
+    "brandLogoAdmin": "Admin header logo",
+    "brandLogoLogin": "Login logo",
+    "brandFavicon": "Favicon",
+    "brandClear": "Remove",
+    "brandColors": "Colors",
+    "brandHeader": "Header",
+    "brandSidebar": "Sidebar",
+    "brandAccent": "Active accent",
+    "brandLogoBg": "Logo background",
+    "brandSave": "Save brand",
+    "brandSaved": "Brand saved.",
+    "brandFileTooBig": "Image must be under 350KB.",
+    "feeTemplates": "Fee policies",
+    "feeTemplatesDesc": "Create HQ default and extra policies. Partners without a selection follow HQ. Partner-level edits take priority.",
+    "feeHqDefault": "HQ default",
+    "feeTemplateAdd": "Add policy",
+    "feeTemplateName": "Policy name",
+    "feePolicySelect": "Fee policy",
+    "feeFollowHq": "Follow HQ policy",
+    "tablet": "Tablet",
+    "collapse": "Collapse",
+    "roleAdmin": "Admin"
   }
 }

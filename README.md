@@ -1,4 +1,4 @@
-# Wirex Card Personal - 개인용 카드 발급
+# ICOCARD - 개인용 카드 발급
 
 **개인용** 카드 발급 웹 서비스입니다.  
 [Wirex BaaS API](https://docs.wirexapp.com) 연동, 관리자 페이지, KYC 플로우 지원.
@@ -39,7 +39,7 @@ npm run dev
 ### 4. 관리자 웹
 
 - **URL**: http://localhost:3000/admin/login
-- **기본 계정**: admin@wirexcard.local / admin123
+- **기본 계정**: admin@icocard.local / admin123
 - 사용자·카드 목록, 통계 대시보드
 - **파트너 API 관리**: 타 업체 연동용 API Key 발급·관리
 
@@ -58,6 +58,8 @@ npm run dev
 Card-Personal/
 ├── backend/           # Express + Wirex BaaS 연동
 │   └── src/
+│       ├── clients/wirex/         # 공식 BaaS REST + Sandbox Helper
+│       ├── scripts/test-flow.ts   # 유저→카드→민트 CLI
 │       ├── services/wirex/
 │       │   ├── wirexBaaSClient.ts   # 실제 Wirex API 클라이언트
 │       │   ├── wirexService.ts     # Real + Mock 통합
@@ -88,11 +90,16 @@ Card-Personal/
 |------|------|
 | `USE_MOCK_WIREX` | true=Mock(기본), false=실제 Wirex API |
 | `WIREX_CLIENT_ID` | Wirex BaaS 자격증명 (미설정 시 Sandbox 공개 키 사용) |
-| `ADMIN_EMAIL` | 관리자 이메일 (기본: admin@wirexcard.local) |
+| `WIREX_HELPER_URL` | Sandbox Helper (`https://ramc.wirexapp.tech`) |
+| `WIREX_WEBHOOK_SECRET` | 웹훅 HMAC (비우면 검증 생략) |
+| `ADMIN_EMAIL` | 관리자 이메일 (기본: admin@icocard.local) |
 | `ADMIN_PASSWORD` | 관리자 비밀번호 (기본: admin123) |
 
 ## 참고 문서
 
+- [Co-Branded Sandbox 연동](docs/COBRANDED_SANDBOX.md)
+- [BaaS 기능 커버리지](docs/BAAS_FEATURE_COVERAGE.md)
+- [카페24 가상서버 비즈니스 배포](docs/CAFE24_VPS.md)
 - [Wirex KYC Hosted](https://docs.wirexapp.com/docs/kyc-hosted)
 - [Wirex Authentication](https://docs.wirexapp.com/docs/authentication)
 - [Wirex Onboarding](https://docs.wirexapp.com/docs/onboarding)

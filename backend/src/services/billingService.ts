@@ -15,7 +15,7 @@ async function deductFee(wirexUserId: string, amountUsd: number): Promise<boolea
 
 export const billingService = {
   async applyCardIssueFee(userId: string, wirexUserId: string, partnerId?: string): Promise<{ ok: boolean; fee: number }> {
-    const policy = feeSettings.get();
+    const policy = feeSettings.getForPartner(partnerId);
     const fee = policy.cardIssuanceFee;
     if (fee <= 0 || !policy.treasuryWalletAddress) {
       return { ok: true, fee: 0 };
@@ -32,11 +32,15 @@ export const billingService = {
       status: 'completed',
       metadata: { feeType: 'card_issue', treasury: policy.treasuryWalletAddress },
     });
+    if (partnerId) {
+      const { commissionService } = await import('./commissionService.js');
+      commissionService.record(partnerId, fee, 'card_issue', userId);
+    }
     return { ok: true, fee };
   },
 
   async applyCardTopUpFee(userId: string, wirexUserId: string, amount: number, partnerId?: string): Promise<{ ok: boolean; fee: number }> {
-    const policy = feeSettings.get();
+    const policy = feeSettings.getForPartner(partnerId);
     const fee = policy.treasuryWalletAddress ? (amount * policy.cardTopUpFeePercent) / 100 : 0;
     const totalDeduct = amount + fee;
     const ok = await deductFee(wirexUserId, totalDeduct);
@@ -53,11 +57,15 @@ export const billingService = {
         metadata: { feeType: 'card_topup', treasury: policy.treasuryWalletAddress },
       });
     }
+    if (partnerId && fee > 0) {
+      const { commissionService } = await import('./commissionService.js');
+      commissionService.record(partnerId, fee, 'card_topup', userId);
+    }
     return { ok: true, fee };
   },
 
   async recordCardUsage(cardId: string, userId: string, wirexUserId: string, amount: number, status: 'success' | 'failed', partnerId?: string): Promise<void> {
-    const policy = feeSettings.get();
+    const policy = feeSettings.getForPartner(partnerId);
     const fee = status === 'success' ? policy.cardUsageFeePerTransaction : 0;
     if (fee > 0 && policy.treasuryWalletAddress) {
       await deductFee(wirexUserId, fee);

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
 
 type FeePolicy = {
@@ -19,16 +20,19 @@ type Settings = {
 };
 
 export default function AdminSettings() {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [saveOk, setSaveOk] = useState(false);
   const [form, setForm] = useState({
     apiBase: '',
     chainId: '',
     clientId: '',
     clientSecret: '',
     useMockWirex: true,
+    environment: 'sandbox' as 'sandbox' | 'production',
     treasuryWalletAddress: '',
     cardIssuanceFee: 5,
     cardTopUpFeePercent: 0.5,
@@ -49,6 +53,7 @@ export default function AdminSettings() {
           clientId: r.wirex?.clientId ?? '',
           clientSecret: '',
           useMockWirex: r.useMockWirex ?? true,
+          environment: (r.wirex as { environment?: 'sandbox' | 'production' })?.environment ?? 'sandbox',
           treasuryWalletAddress: fp.treasuryWalletAddress ?? '',
           cardIssuanceFee: fp.cardIssuanceFee ?? 5,
           cardTopUpFeePercent: fp.cardTopUpFeePercent ?? 0.5,
@@ -70,6 +75,7 @@ export default function AdminSettings() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
+    setSaveOk(false);
     setSaving(true);
     try {
       await api.admin.updateSettings({
@@ -78,6 +84,7 @@ export default function AdminSettings() {
           chainId: form.chainId ? parseInt(form.chainId, 10) : undefined,
           clientId: form.clientId || undefined,
           clientSecret: form.clientSecret || undefined,
+          environment: form.environment,
         },
         feePolicy: {
           treasuryWalletAddress: form.treasuryWalletAddress || undefined,
@@ -89,10 +96,12 @@ export default function AdminSettings() {
         },
         useMockWirex: form.useMockWirex,
       });
-      setMessage('저장되었습니다.');
+      setMessage(t('admin.saved'));
+      setSaveOk(true);
       setForm((f) => ({ ...f, clientSecret: '' }));
     } catch (err) {
       setMessage((err as Error).message);
+      setSaveOk(false);
     } finally {
       setSaving(false);
     }
@@ -101,7 +110,7 @@ export default function AdminSettings() {
   if (loading) {
     return (
       <div className="app-container">
-        <p className="muted-text">로딩 중...</p>
+        <p className="muted-text">{t('common.loading')}</p>
       </div>
     );
   }
@@ -109,17 +118,34 @@ export default function AdminSettings() {
   return (
     <div className="app-container">
       <div className="page-header">
-        <h1 className="page-title">환경설정</h1>
+        <h1 className="page-title">{t('admin.titleSettings')}</h1>
         <Link to="/admin/dashboard" className="btn-outline">
-          ← 대시보드
+          {t('admin.backDashboard')}
         </Link>
       </div>
 
       <form onSubmit={handleSubmit} className="card-surface admin-settings-form">
-        <h3 className="section-title">Wirex BaaS API</h3>
-        <p className="muted-text admin-settings-desc">
-          Wirex API 연동 정보를 입력하세요. 빈 값은 환경변수 또는 Sandbox 기본값을 사용합니다.
-        </p>
+        <h3 className="section-title">{t('admin.sectionWirex')}</h3>
+        <p className="muted-text admin-settings-desc">{t('admin.settingsDesc')}</p>
+        <label className="admin-settings-label">
+          {t('admin.environment')}
+          <select
+            className="input"
+            value={form.environment}
+            onChange={(e) => {
+              const environment = e.target.value as 'sandbox' | 'production';
+              setForm((f) => ({
+                ...f,
+                environment,
+                apiBase: environment === 'production' ? 'https://api-baas.wirexapp.com' : 'https://api-baas.wirexapp.tech',
+                chainId: environment === 'production' ? '8453' : '84532',
+              }));
+            }}
+          >
+            <option value="sandbox">{t('admin.optSandbox')}</option>
+            <option value="production">{t('admin.optProduction')}</option>
+          </select>
+        </label>
 
         <label className="admin-settings-label">
           API Base URL
@@ -150,7 +176,7 @@ export default function AdminSettings() {
             className="input"
             value={form.clientId}
             onChange={(e) => setForm((f) => ({ ...f, clientId: e.target.value }))}
-            placeholder="Wirex 파트너 승인 후 발급"
+            placeholder={t('admin.clientIdHint')}
           />
         </label>
 
@@ -161,16 +187,14 @@ export default function AdminSettings() {
             className="input"
             value={form.clientSecret}
             onChange={(e) => setForm((f) => ({ ...f, clientSecret: e.target.value }))}
-            placeholder="변경 시에만 입력 (기존 유지: 공란)"
+            placeholder={t('admin.clientSecretHint')}
           />
         </label>
 
-        <h3 className="section-title" style={{ marginTop: '2rem' }}>수수료 정책</h3>
-        <p className="muted-text admin-settings-desc">
-          수수료는 월렛에서 자동으로 재무 월렛 주소로 이체됩니다. 재무 월렛을 설정해야 수수료가 부과됩니다.
-        </p>
+        <h3 className="section-title" style={{ marginTop: '2rem' }}>{t('admin.sectionFees')}</h3>
+        <p className="muted-text admin-settings-desc">{t('admin.feesDesc')}</p>
         <label className="admin-settings-label">
-          재무 월렛 주소 (수수료 수령)
+          {t('admin.treasuryWallet')}
           <input
             type="text"
             className="input"
@@ -180,7 +204,7 @@ export default function AdminSettings() {
           />
         </label>
         <label className="admin-settings-label">
-          카드 발급 비용 (USD)
+          {t('admin.feeIssue')}
           <input
             type="number"
             className="input"
@@ -191,7 +215,7 @@ export default function AdminSettings() {
           />
         </label>
         <label className="admin-settings-label">
-          카드 충전 수수료 (%)
+          {t('admin.feeTopup')}
           <input
             type="number"
             className="input"
@@ -202,7 +226,7 @@ export default function AdminSettings() {
           />
         </label>
         <label className="admin-settings-label">
-          카드 사용 건당 수수료 (USD)
+          {t('admin.feeUsage')}
           <input
             type="number"
             className="input"
@@ -213,7 +237,7 @@ export default function AdminSettings() {
           />
         </label>
         <label className="admin-settings-label">
-          카드 월간 이용료 (USD)
+          {t('admin.feeMonthly')}
           <input
             type="number"
             className="input"
@@ -224,7 +248,7 @@ export default function AdminSettings() {
           />
         </label>
         <label className="admin-settings-label">
-          파트너 월간 API 이용료 (USD)
+          {t('admin.feePartner')}
           <input
             type="number"
             className="input"
@@ -241,24 +265,23 @@ export default function AdminSettings() {
             checked={form.useMockWirex}
             onChange={(e) => setForm((f) => ({ ...f, useMockWirex: e.target.checked }))}
           />
-          <span>Mock 모드 사용 (실제 API 대신 시뮬레이션)</span>
+          <span>{t('admin.useMock')}</span>
         </label>
 
         {settings?.updatedAt && (
           <p className="muted-text admin-settings-updated">
-            마지막 저장: {new Date(settings.updatedAt).toLocaleString()}
+            {t('admin.lastSaved')}
+            {new Date(settings.updatedAt).toLocaleString()}
           </p>
         )}
 
         {message && (
-          <div className={message.includes('저장') ? 'admin-settings-success' : 'auth-error'}>
-            {message}
-          </div>
+          <div className={saveOk ? 'admin-settings-success' : 'auth-error'}>{message}</div>
         )}
 
         <div className="admin-settings-actions">
           <button type="submit" disabled={saving} className="btn-primary">
-            {saving ? '저장 중...' : '저장'}
+            {saving ? t('admin.saving') : t('admin.save')}
           </button>
         </div>
       </form>

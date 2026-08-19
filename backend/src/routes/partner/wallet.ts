@@ -86,7 +86,7 @@ router.post('/refund', async (req, res) => {
     const amt = typeof amount === 'number' ? amount : parseFloat(String(amount || 0));
     if (isNaN(amt) || amt <= 0) return res.status(400).json({ error: 'amount required' });
     const { feeSettings } = await import('../../data/feeSettings.js');
-    const policy = feeSettings.get();
+    const policy = feeSettings.getForPartner(req.partner!.id);
     const fee = policy.treasuryWalletAddress ? Math.max(1, amt * 0.01) : 0;
     const total = amt + fee;
     const { mockWirex } = await import('../../services/wirex/mockWirex.js');

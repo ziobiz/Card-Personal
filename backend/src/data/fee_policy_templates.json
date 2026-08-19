@@ -1,0 +1,91 @@
+{
+  "templates": [
+    {
+      "id": "tpl_hq",
+      "name": "총본사 기본 정책",
+      "description": "미설정 파트너가 따르는 총본사 정책",
+      "isHqDefault": true,
+      "fees": {
+        "cardIssuanceFee": 5,
+        "cardTopUpFeePercent": 0.5,
+        "cardUsageFeePerTransaction": 0.1,
+        "cardMonthlyFee": 2,
+        "partnerMonthlyFee": 50,
+        "plasticIssuanceFee": 15
+      },
+      "distribution": {
+        "hqRate": 40,
+        "regionalRate": 20,
+        "masterRate": 15,
+        "branchRate": 10,
+        "agencyRate": 10,
+        "salesOfficeRate": 5,
+        "hqPerTxFee": 0,
+        "regionalPerTxFee": 0,
+        "masterPerTxFee": 0,
+        "branchPerTxFee": 0,
+        "agencyPerTxFee": 0,
+        "salesOfficePerTxFee": 0
+      },
+      "createdAt": "2026-08-19T12:08:35.326Z"
+    },
+    {
+      "id": "tpl_promo",
+      "name": "프로모션",
+      "description": "한시 할인 요금",
+      "isHqDefault": false,
+      "fees": {
+        "cardIssuanceFee": 2,
+        "cardTopUpFeePercent": 0.2,
+        "cardUsageFeePerTransaction": 0.05,
+        "cardMonthlyFee": 1,
+        "partnerMonthlyFee": 20,
+        "plasticIssuanceFee": 8
+      },
+      "distribution": {
+        "hqRate": 40,
+        "regionalRate": 20,
+        "masterRate": 15,
+        "branchRate": 10,
+        "agencyRate": 10,
+        "salesOfficeRate": 5,
+        "hqPerTxFee": 0,
+        "regionalPerTxFee": 0,
+        "masterPerTxFee": 0,
+        "branchPerTxFee": 0,
+        "agencyPerTxFee": 0,
+        "salesOfficePerTxFee": 0
+      },
+      "createdAt": "2026-08-19T12:08:35.326Z"
+    },
+    {
+      "id": "tpl_premium",
+      "name": "프리미엄",
+      "description": "실물·고한도 파트너용",
+      "isHqDefault": false,
+      "fees": {
+        "cardIssuanceFee": 8,
+        "cardTopUpFeePercent": 0.8,
+        "cardUsageFeePerTransaction": 0.2,
+        "cardMonthlyFee": 4,
+        "partnerMonthlyFee": 80,
+        "plasticIssuanceFee": 20
+      },
+      "distribution": {
+        "hqRate": 40,
+        "regionalRate": 20,
+        "masterRate": 15,
+        "branchRate": 10,
+        "agencyRate": 10,
+        "salesOfficeRate": 5,
+        "hqPerTxFee": 0,
+        "regionalPerTxFee": 0,
+        "masterPerTxFee": 0,
+        "branchPerTxFee": 0,
+        "agencyPerTxFee": 0,
+        "salesOfficePerTxFee": 0
+      },
+      "createdAt": "2026-08-19T12:08:35.326Z"
+    }
+  ]
+}

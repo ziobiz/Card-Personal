@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api, type Card } from '../../api';
 
 type CardRow = { userId: string; email: string; card: Card };
 
 export default function AdminCards() {
+  const { t } = useTranslation();
   const [cards, setCards] = useState<CardRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,21 +28,21 @@ export default function AdminCards() {
   return (
     <div className="app-container">
       <div className="page-header">
-        <h1 className="page-title">카드 관리</h1>
-        <Link to="/admin/dashboard" className="btn-outline">← 대시보드</Link>
+        <h1 className="page-title">{t('admin.titleCards')}</h1>
+        <Link to="/admin/dashboard" className="btn-outline">{t('admin.backDashboard')}</Link>
       </div>
       {loading ? (
-        <p className="muted-text">로딩 중...</p>
+        <p className="muted-text">{t('common.loading')}</p>
       ) : (
         <div className="card-surface admin-table-wrap">
           <table className="admin-table">
             <thead>
               <tr>
-                <th>사용자</th>
-                <th>카드</th>
-                <th>상태</th>
-                <th>잔액</th>
-                <th>한도</th>
+                <th>{t('admin.colUser')}</th>
+                <th>{t('admin.colCard')}</th>
+                <th>{t('admin.colStatus')}</th>
+                <th>{t('admin.colBalance')}</th>
+                <th>{t('admin.colLimit')}</th>
               </tr>
             </thead>
             <tbody>
@@ -48,14 +50,18 @@ export default function AdminCards() {
                 <tr key={card.id}>
                   <td>{email}</td>
                   <td className="mono">Visa •••• {card.panLast4}</td>
-                  <td><span className={`badge badge-${card.status}`}>{card.status}</span></td>
+                  <td>
+                    <span className={`badge badge-${card.status}`}>
+                      {t(`cards.status.${card.status}`, { defaultValue: card.status })}
+                    </span>
+                  </td>
                   <td>{(card.balance ?? 0).toLocaleString()} {card.currency}</td>
                   <td>{(card.dailyLimit ?? card.limit ?? 0).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {cards.length === 0 && <p className="muted-text empty-text">발급된 카드가 없습니다.</p>}
+          {cards.length === 0 && <p className="muted-text empty-text">{t('admin.noCards')}</p>}
         </div>
       )}
     </div>

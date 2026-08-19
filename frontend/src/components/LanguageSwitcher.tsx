@@ -1,17 +1,21 @@
 import { useTranslation } from 'react-i18next';
-import { SUPPORTED_LANGUAGES, type LanguageCode } from '../i18n';
+import { SUPPORTED_LANGUAGES, ADMIN_LANGUAGES, type LanguageCode } from '../i18n';
 
-export default function LanguageSwitcher() {
+type Props = { admin?: boolean };
+
+export default function LanguageSwitcher({ admin = false }: Props) {
   const { i18n } = useTranslation();
+  const list = admin ? ADMIN_LANGUAGES : SUPPORTED_LANGUAGES;
+  const current = list.some((l) => l.code === i18n.language) ? i18n.language : list[0].code;
 
   return (
     <select
-      value={i18n.language}
+      value={current}
       onChange={(e) => i18n.changeLanguage(e.target.value as LanguageCode)}
       className="lang-switcher"
       aria-label="Language"
     >
-      {SUPPORTED_LANGUAGES.map(({ code, name }) => (
+      {list.map(({ code, name }) => (
         <option key={code} value={code}>
           {name}
         </option>

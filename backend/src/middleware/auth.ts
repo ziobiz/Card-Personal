@@ -7,6 +7,8 @@ export interface AuthPayload {
   userId: string;
   email: string;
   isAdmin?: boolean;
+  isPartner?: boolean;
+  partnerId?: string;
 }
 
 declare global {
@@ -24,7 +26,11 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     return;
   }
   try {
-    const decoded = jwt.verify(auth.slice(7), config.jwtSecret) as AuthPayload;
+    const decoded = jwt.verify(auth.slice(7), config.jwtSecret) as AuthPayload & { otpPending?: boolean };
+    if (decoded.otpPending) {
+      res.status(401).json({ error: 'OTP required' });
+      return;
+    }
     if (decoded.isAdmin) {
       req.auth = { userId: decoded.userId, email: decoded.email, isAdmin: true };
       next();

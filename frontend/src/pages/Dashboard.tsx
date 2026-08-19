@@ -46,35 +46,33 @@ export default function Dashboard() {
     (walletBalance?.cardSummaries?.reduce((s, c) => s + c.balance, 0) ?? 0);
 
   return (
-    <div className="app-container wirex-dashboard">
+    <div className="app-container wx-home">
       {kycUrl && (
-        <div className="card-surface kyc-banner">
-          <span>신원 확인이 필요합니다. </span>
+        <div className="card-surface wx-kyc">
+          <span>{t('dashboard.kycNeeded')}</span>
           <button onClick={handleKycClick} disabled={kycLoading} className="btn-primary btn-compact">
-            {kycLoading ? '로딩...' : 'KYC 검증하기'}
+            {kycLoading ? t('common.loading') : t('dashboard.kycCta')}
           </button>
         </div>
       )}
-      <div className="dashboard-top">
-        <div className="dashboard-balance">
-          <h1 className="page-title">{t('dashboard.title')}</h1>
-          <div className="total-balance-row">
-            <span className="total-balance-label">{t('dashboard.totalBalance')}</span>
-            <span className="total-balance-value">
-              ${loading ? '...' : totalUsd.toLocaleString()}
-            </span>
-          </div>
+      <div className="wx-home-hero">
+        <p className="wx-kicker">{t('dashboard.totalBalance')}</p>
+        <h1 className="wx-balance">${loading ? '—' : totalUsd.toLocaleString()}</h1>
+        <div className="wx-actions">
+          <Link to="/cards" className="btn-primary">
+            {t('dashboard.addFunds')}
+          </Link>
+          <Link to="/earn" className="wx-ghost">
+            {t('nav.earn')}
+          </Link>
         </div>
-        <Link to="/cards" className="btn-primary btn-add-funds">
-          {t('dashboard.addFunds')}
-        </Link>
       </div>
 
-      <div className="card-surface accounts-section">
-        <h3 className="section-title">{t('dashboard.accounts')}</h3>
-        {walletBalance && (
-          <>
-            <div className="accounts-primary">
+      <div className="wx-grid wx-grid-2">
+        <div className="card-surface">
+          <h3 className="section-title">{t('dashboard.accounts')}</h3>
+          {walletBalance ? (
+            <>
               <div className="stat-label">{t('wallet.primaryWallet')}</div>
               <div className="wallet-tokens">
                 {walletBalance.primary.map((tok) => (
@@ -83,50 +81,33 @@ export default function Dashboard() {
                   </Link>
                 ))}
               </div>
-            </div>
-            {walletBalance.cardSummaries.length > 0 && (
-              <div className="accounts-linked">
-                <div className="stat-label">{t('dashboard.linkedCards')}</div>
-                <p className="muted-text linked-desc">{t('dashboard.linkedDesc')}</p>
-                <div className="linked-cards-list">
-                  {walletBalance.cardSummaries.map((c) => (
-                    <Link
-                      key={c.cardId}
-                      to="/cards"
-                      className="linked-card-item"
-                    >
-                      <span className="linked-card-pan">Visa •••• {c.panLast4}</span>
-                      <span className="linked-card-balance">
-                        {c.balance.toLocaleString()} {c.currency}
-                      </span>
-                      <span className="linked-card-manage">{t('dashboard.manage')}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-
-      <div className="dashboard-stats">
-        <div className="card-surface stat-card">
-          <div className="stat-label">{t('dashboard.totalCards')}</div>
-          <div className="stat-value">{loading ? '...' : cards.length}</div>
+            </>
+          ) : (
+            <p className="muted-text">{t('common.loading')}</p>
+          )}
         </div>
-        <div className="card-surface stat-card">
-          <div className="stat-label">{t('dashboard.activeCards')}</div>
-          <div className="stat-value stat-success">
-            {loading ? '...' : cards.filter((c) => c.status === 'active').length}
-          </div>
+        <div className="card-surface">
+          <h3 className="section-title">{t('dashboard.linkedCards')}</h3>
+          {walletBalance?.cardSummaries.length ? (
+            walletBalance.cardSummaries.map((c) => (
+              <Link key={c.cardId} to="/cards" className="wx-list-row">
+                <span>Visa ···· {c.panLast4}</span>
+                <span className="muted-text">
+                  {c.balance.toLocaleString()} {c.currency}
+                </span>
+              </Link>
+            ))
+          ) : (
+            <p className="muted-text">{t('dashboard.noCards')}</p>
+          )}
         </div>
       </div>
 
-      <div className="card-surface dashboard-section">
+      <div className="card-surface" style={{ marginTop: '0.85rem' }}>
         <div className="section-header">
           <h2 className="section-title">{t('dashboard.recentActivity')}</h2>
-          <Link to="/cards" className="section-link">
-            {t('dashboard.viewAll')} →
+          <Link to="/activity" className="section-link">
+            {t('dashboard.viewAll')}
           </Link>
         </div>
         {loading ? (
@@ -139,19 +120,12 @@ export default function Dashboard() {
             </Link>
           </p>
         ) : (
-          <div className="activity-list">
-            {cards.slice(0, 5).map((card) => (
-              <div key={card.id} className="activity-item">
-                <span className="activity-pan">•••• {card.panLast4}</span>
-                <span className={`badge badge-${card.status}`}>
-                  {t(`cards.status.${card.status}`)}
-                </span>
-                <span className="muted-text">
-                  {card.currency} {(card.balance ?? 0).toLocaleString()}
-                </span>
-              </div>
-            ))}
-          </div>
+          cards.slice(0, 5).map((card) => (
+            <div key={card.id} className="wx-list-row">
+              <span>···· {card.panLast4}</span>
+              <span className={`badge badge-${card.status}`}>{t(`cards.status.${card.status}`)}</span>
+            </div>
+          ))
         )}
       </div>
     </div>

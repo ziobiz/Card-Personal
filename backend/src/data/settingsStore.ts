@@ -12,6 +12,7 @@ export interface WirexSettings {
   chainId?: number;
   clientId?: string;
   clientSecret?: string;
+  environment?: 'sandbox' | 'production';
 }
 
 export interface FeePolicySettings {

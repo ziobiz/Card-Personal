@@ -2,7 +2,16 @@
 
 타 업체가 우리 시스템을 통해 개인 카드 발급·지갑 연동 서비스를 제공할 수 있도록 하는 API입니다.
 
-## 인증
+## 파트너 포털 로그인
+
+본사 **업체등록** / **조직등록** 시 대표 ID·비밀번호를 발급합니다.
+
+- 가맹점: `https://.../partner/login` ([TINPASS](https://www.tinpass.com/login) 와 같은 사칭 안내 + 이메일/비밀번호)
+- 최초 로그인 시 비밀번호 재설정
+- OTP: 구현되어 있으며 기본 비활성. 조직 OTP는 `OTP_REQUIRED_ORG=true`, 회원 OTP는 `OTP_REQUIRED_MEMBER=true`
+
+회원(`/login`) OTP는 코드가 있으나 기본 꺼져 있습니다.
+
 
 | Header | 설명 |
 |--------|------|
@@ -44,6 +53,19 @@ Content-Type: application/json
 {
   "limit": 5000,
   "currency": "USD"
+}
+```
+
+### 실물 Co-Branded 카드 발급
+```
+POST /api/partner/v1/cards/plastic
+X-API-Key: <api_key>
+X-Partner-User-Id: <파트너_사용자_ID>
+Content-Type: application/json
+
+{
+  "card_name": "Partner Visa",
+  "name_on_card": "HONG GILDONG"
 }
 ```
 
@@ -129,4 +151,4 @@ Content-Type: application/json
 3. 발급된 **API Key** 저장 (한 번만 표시됨)
 4. 파트너사에게 API Key 및 Base URL 전달
 
-Base URL 예: `https://your-domain.com/api/partner/v1`
+파트너는 **가맹점**입니다. 가상/실물 카드 허용 여부는 업체 등록 시 지정합니다. 실물: `POST /api/partner/v1/cards/plastic`.

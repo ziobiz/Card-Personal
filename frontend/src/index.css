@@ -1,4 +1,7 @@
 @import './styles/app.css';
+@import './styles/user-app.css';
+@import './components/AdminLayout.css';
+@import './components/PartnerPortal.css';
 
 /* Mobile-first responsive base */
 :root {
@@ -32,10 +35,16 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  background: #000;
   min-height: 100vh;
   min-height: 100dvh;
   color: var(--color-text);
+}
+
+.is-admin {
+  min-height: 100vh;
+  background: #e8eaed;
+  color: #222;
 }
 
 /* Touch target min 44px for mobile */
@@ -139,4 +148,40 @@ select,
   .card-surface {
     padding: 1.5rem 2rem;
   }
+}
+
+/* Admin must win over global dark theme / 44px tap targets */
+.is-admin {
+  color: #222;
+  background: #e8eaed;
+}
+
+.is-admin .card-surface {
+  background: #fff;
+  color: #222;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+}
+
+.is-admin .page-title,
+.is-admin .section-title,
+.is-admin .stat-label,
+.is-admin .stat-value {
+  color: #222;
+}
+
+.is-admin .stat-label {
+  color: #666;
+}
+
+.is-admin .hq-shell a,
+.is-admin .hq-shell button {
+  min-height: 0;
+}
+
+.is-admin,
+.is-admin .hq-shell {
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  letter-spacing: -0.02em;
 }
