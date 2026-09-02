@@ -18,8 +18,28 @@ import { brandStore } from '../data/brandStore.js';
 import { resolvePartnerPolicy } from '../data/feePolicyTemplateStore.js';
 import { operatorStore } from '../data/operatorStore.js';
 import adminSales from './adminSales.js';
+import { generateOtpSecret, otpAuthUrl, verifyTotp } from '../lib/totp.js';
+import { getSecuritySettings, maskEmail } from '../lib/otpPolicy.js';
 
 const router = Router();
+
+function signAdmin(userId: string, email: string, extra: Record<string, unknown> = {}) {
+  return jwt.sign({ userId, email, isAdmin: true, ...extra }, config.jwtSecret, { expiresIn: '24h' });
+}
+
+function signAdminEnroll(userId: string) {
+  return jwt.sign({ userId, purpose: 'admin_otp_enroll', isAdmin: true }, config.jwtSecret, { expiresIn: '15m' });
+}
+
+function verifyAdminEnroll(token: string): string | null {
+  try {
+    const decoded = jwt.verify(token, config.jwtSecret) as { userId?: string; purpose?: string };
+    if (decoded.purpose !== 'admin_otp_enroll' || !decoded.userId) return null;
+    return decoded.userId;
+  } catch {
+    return null;
+  }
+}
 
 router.post('/login', (req, res) => {
   const { email, password } = req.body || {};
@@ -32,7 +52,7 @@ router.post('/login', (req, res) => {
     'admin@icocard.local',
     'admin@wirexcard.local',
   ]);
-  const op = operatorStore.getByEmail(emailNorm);
+  let op = operatorStore.getByEmail(emailNorm);
   const passwordHash = operatorStore.hashPassword(String(password));
   const hqOk =
     (allowedEmails.has(emailNorm) && password === config.adminPassword) ||
@@ -40,17 +60,110 @@ router.post('/login', (req, res) => {
   if (!hqOk) {
     return res.status(401).json({ error: 'Invalid admin credentials' });
   }
-  const token = jwt.sign(
-    { userId: op?.id || 'admin', email: emailNorm, isAdmin: true },
-    config.jwtSecret,
-    { expiresIn: '24h' }
-  );
+  if (!op) {
+    op = operatorStore.getByEmail(emailNorm);
+  }
+  if (!op) {
+    return res.status(401).json({ error: 'Invalid admin credentials' });
+  }
+
+  if (op.mustChangePassword) {
+    const token = signAdmin(op.id, emailNorm);
+    return res.json({
+      token,
+      user: { email: emailNorm, isAdmin: true, name: op.name },
+      mustChangePassword: true,
+      otpRequired: false,
+    });
+  }
+
+  const sec = getSecuritySettings();
+  if (sec.otpRequiredAdmin) {
+    if (!op.otpEnabled || !op.otpSecret) {
+      return res.json({
+        mustSetupOtp: true,
+        enrollToken: signAdminEnroll(op.id),
+        maskedEmail: maskEmail(emailNorm),
+        user: { email: emailNorm, isAdmin: true, name: op.name },
+        mustChangePassword: false,
+        otpRequired: false,
+      });
+    }
+    const token = signAdmin(op.id, emailNorm, { otpPending: true });
+    return res.json({
+      token,
+      user: { email: emailNorm, isAdmin: true, name: op.name },
+      mustChangePassword: false,
+      otpRequired: true,
+      otpMethod: 'totp',
+      maskedEmail: maskEmail(emailNorm),
+    });
+  }
+
+  const token = signAdmin(op.id, emailNorm);
   res.json({
     token,
-    user: { email: emailNorm, isAdmin: true, name: op?.name },
-    mustChangePassword: Boolean(op?.mustChangePassword),
+    user: { email: emailNorm, isAdmin: true, name: op.name },
+    mustChangePassword: false,
     otpRequired: false,
   });
+});
+
+router.post('/otp/setup', (req, res) => {
+  const enrollToken = String(req.body?.enrollToken || '');
+  const userId = verifyAdminEnroll(enrollToken);
+  if (!userId) return res.status(401).json({ error: 'Invalid enroll session' });
+  const op = operatorStore.getById(userId);
+  if (!op || op.scope !== 'HQ') return res.status(404).json({ error: 'Operator not found' });
+  const secret = generateOtpSecret();
+  operatorStore.update(op.id, { otpSecret: secret, otpEnabled: false });
+  res.json({
+    secret,
+    otpauthUrl: otpAuthUrl(op.email, secret, 'ICOCARD Admin'),
+    enrollToken,
+    maskedEmail: maskEmail(op.email),
+  });
+});
+
+router.post('/otp/activate', (req, res) => {
+  const enrollToken = String(req.body?.enrollToken || '');
+  const code = String(req.body?.code || '');
+  const userId = verifyAdminEnroll(enrollToken);
+  if (!userId) return res.status(401).json({ error: 'Invalid enroll session' });
+  const op = operatorStore.getById(userId);
+  if (!op?.otpSecret) return res.status(400).json({ error: 'OTP not provisioned' });
+  if (!verifyTotp(op.otpSecret, code)) return res.status(401).json({ error: 'Invalid OTP' });
+  operatorStore.update(op.id, { otpEnabled: true });
+  const token = signAdmin(op.id, op.email);
+  res.json({ token, user: { email: op.email, isAdmin: true, name: op.name } });
+});
+
+router.post('/otp/verify', (req, res) => {
+  const auth = req.headers.authorization;
+  if (!auth?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const decoded = jwt.verify(auth.slice(7), config.jwtSecret) as {
+      userId?: string;
+      email?: string;
+      isAdmin?: boolean;
+      otpPending?: boolean;
+    };
+    if (!decoded.isAdmin || !decoded.userId) return res.status(401).json({ error: 'Unauthorized' });
+    const op = operatorStore.getById(decoded.userId);
+    if (!op?.otpSecret) return res.status(400).json({ error: 'OTP not provisioned' });
+    const sec = getSecuritySettings();
+    if (!sec.otpRequiredAdmin) {
+      const token = signAdmin(op.id, op.email);
+      return res.json({ token, otpRequired: false });
+    }
+    if (!verifyTotp(op.otpSecret, String(req.body?.code || ''))) {
+      return res.status(401).json({ error: 'Invalid OTP' });
+    }
+    const token = signAdmin(op.id, op.email);
+    res.json({ token, user: { email: op.email, isAdmin: true, name: op.name } });
+  } catch {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
 });
 
 router.use(requireAdmin);
@@ -140,6 +253,20 @@ router.put('/me/password', (req, res) => {
   const op = operatorStore.getById(req.auth!.userId);
   if (!op) return res.status(400).json({ error: 'Operator account not found' });
   operatorStore.update(op.id, { password });
+  const refreshed = operatorStore.getById(op.id)!;
+  const sec = getSecuritySettings();
+  if (sec.otpRequiredAdmin) {
+    if (!refreshed.otpEnabled || !refreshed.otpSecret) {
+      return res.json({
+        ok: true,
+        mustSetupOtp: true,
+        enrollToken: signAdminEnroll(refreshed.id),
+        maskedEmail: maskEmail(refreshed.email),
+      });
+    }
+    const token = signAdmin(refreshed.id, refreshed.email, { otpPending: true });
+    return res.json({ ok: true, otpRequired: true, token, maskedEmail: maskEmail(refreshed.email) });
+  }
   res.json({ ok: true });
 });
 
@@ -227,6 +354,18 @@ router.put('/operators/:id', (req, res) => {
   res.json(operatorStore.publicView(op));
 });
 
+router.post('/operators/:id/reset-otp', (req, res) => {
+  const op = operatorStore.update(req.params.id, { clearOtp: true });
+  if (!op) return res.status(404).json({ error: 'Not found' });
+  res.json({ ok: true, otpEnabled: false });
+});
+
+router.post('/members/:id/reset-otp', (req, res) => {
+  const user = store.updateOtp(req.params.id, { otpSecret: null, otpEnabled: false });
+  if (!user) return res.status(404).json({ error: 'Not found' });
+  res.json({ ok: true, otpEnabled: false });
+});
+
 router.get('/members', (req, res) => {
   const source = String(req.query.source || '').toLowerCase();
   let list = Array.from(store.users.values());
@@ -307,9 +446,11 @@ router.put('/brand', (req, res) => {
 
 router.get('/settings', (_, res) => {
   const s = settingsStore.get();
+  const sec = getSecuritySettings();
   res.json({
     wirex: s.wirex ?? {},
     feePolicy: s.feePolicy ?? {},
+    security: sec,
     useMockWirex: s.useMockWirex ?? true,
     updatedAt: s.updatedAt,
     _masked: {
@@ -341,11 +482,26 @@ router.put('/settings', (req, res) => {
     cardMonthlyFee: typeof feePolicy.cardMonthlyFee === 'number' ? feePolicy.cardMonthlyFee : undefined,
     partnerMonthlyFee: typeof feePolicy.partnerMonthlyFee === 'number' ? feePolicy.partnerMonthlyFee : undefined,
   };
-  settingsStore.update({ wirex: wirexUpdate, useMockWirex, feePolicy: feePolicyUpdate });
+  const securityBody = body.security ?? {};
+  const securityUpdate: {
+    otpRequiredAdmin?: boolean;
+    otpRequiredMember?: boolean;
+    otpRequiredOrg?: boolean;
+  } = {};
+  if (typeof securityBody.otpRequiredAdmin === 'boolean') securityUpdate.otpRequiredAdmin = securityBody.otpRequiredAdmin;
+  if (typeof securityBody.otpRequiredMember === 'boolean') securityUpdate.otpRequiredMember = securityBody.otpRequiredMember;
+  if (typeof securityBody.otpRequiredOrg === 'boolean') securityUpdate.otpRequiredOrg = securityBody.otpRequiredOrg;
+  settingsStore.update({
+    wirex: wirexUpdate,
+    useMockWirex,
+    feePolicy: feePolicyUpdate,
+    ...(Object.keys(securityUpdate).length ? { security: securityUpdate } : {}),
+  });
   const s = settingsStore.get();
   res.json({
     wirex: s.wirex ?? {},
     feePolicy: s.feePolicy ?? {},
+    security: getSecuritySettings(),
     useMockWirex: s.useMockWirex ?? true,
     updatedAt: s.updatedAt,
   });

@@ -7,7 +7,6 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { createHash, randomUUID } from 'crypto';
 import { config } from '../config.js';
-import { generateOtpSecret } from '../lib/totp.js';
 
 export type OperatorScope = 'HQ' | 'PARTNER';
 export type OperatorRole = 'ADMIN' | 'STAFF';
@@ -118,8 +117,8 @@ export const operatorStore = {
       partnerId: data.scope === 'PARTNER' ? data.partnerId : undefined,
       orgUnitId: data.orgUnitId,
       mustChangePassword: data.mustChangePassword !== false,
-      otpSecret: generateOtpSecret(),
-      otpEnabled: true,
+      otpSecret: undefined,
+      otpEnabled: false,
       status: 'active',
       createdAt: new Date().toISOString(),
     };
@@ -131,6 +130,7 @@ export const operatorStore = {
     id: string,
     data: Partial<Pick<Operator, 'name' | 'role' | 'status' | 'partnerId' | 'orgUnitId' | 'mustChangePassword' | 'otpEnabled' | 'otpSecret'>> & {
       password?: string;
+      clearOtp?: boolean;
     }
   ): Operator | undefined {
     const o = operators.get(id);
@@ -142,7 +142,12 @@ export const operatorStore = {
     if (data.orgUnitId != null) o.orgUnitId = data.orgUnitId;
     if (data.mustChangePassword != null) o.mustChangePassword = data.mustChangePassword;
     if (data.otpEnabled != null) o.otpEnabled = data.otpEnabled;
-    if (data.otpSecret != null) o.otpSecret = data.otpSecret;
+    if (data.clearOtp) {
+      delete o.otpSecret;
+      o.otpEnabled = false;
+    } else if (data.otpSecret != null) {
+      o.otpSecret = data.otpSecret;
+    }
     if (data.password) {
       o.passwordHash = hashPassword(data.password);
       o.mustChangePassword = false;

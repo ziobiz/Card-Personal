@@ -139,4 +139,17 @@ export const store = {
     saveToFile(Array.from(users.values()));
     return user;
   },
+
+  updateOtp(
+    id: string,
+    data: { otpSecret?: string | null; otpEnabled?: boolean }
+  ): AppUser | undefined {
+    const user = users.get(id);
+    if (!user) return undefined;
+    if (data.otpSecret === null) delete user.otpSecret;
+    else if (data.otpSecret != null) user.otpSecret = data.otpSecret;
+    if (data.otpEnabled != null) user.otpEnabled = data.otpEnabled;
+    saveToFile(Array.from(users.values()));
+    return user;
+  },
 };

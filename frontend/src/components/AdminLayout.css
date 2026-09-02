@@ -1,17 +1,31 @@
-/* ziobiz/PG 관리자 셸 — 작은 글꼴 · 상단 유틸 · 탭 · 사이드바 */
+/* Wirex One 톤 관리자 셸 — 사용자 앱과 동일 패턴 · 작은 글꼴 · 상단 유틸 · 탭 · 사이드바 */
 
 .is-admin {
   min-height: 100vh;
-  background: #f5f5f5;
-  color: #212529;
+  background: #000;
+  color: #f4f4f5;
   font-size: 13px;
   letter-spacing: -0.02em;
 }
 
 .is-admin .admin-login-page {
-  background: #2b2f36;
+  background: #000 url('/user-hero-bg.png') center top / cover no-repeat;
   min-height: 100vh;
-  color: #e2e8f0;
+  color: #f4f4f5;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
+.is-admin .admin-login-card {
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(180deg, rgba(28, 28, 30, 0.82) 0%, rgba(10, 10, 12, 0.88) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 22px !important;
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  color: #f4f4f5;
 }
 
 .is-admin .hq-shell,
@@ -20,17 +34,17 @@
 }
 
 .is-admin .hq-shell {
-  --hq-header: #e8e8e8;
-  --hq-side: #2c3138;
-  --hq-accent: #6658dd;
-  --hq-logo-bg: #2c3138;
+  --hq-header: rgba(12, 12, 14, 0.92);
+  --hq-side: #0a0a0c;
+  --hq-accent: #c4a484;
+  --hq-logo-bg: #0a0a0c;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex !important;
   flex-direction: column;
-  background: #f5f5f5;
-  color: #212529;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  background: #000 url('/user-hero-bg.png') center top / 120% auto no-repeat;
+  color: #f4f4f5;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
   font-size: 13px;
   letter-spacing: -0.02em;
   font-weight: 400;
@@ -51,17 +65,19 @@
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
-  background: #e8e8e8;
-  color: #1f2937;
+  background: rgba(8, 8, 10, 0.88);
+  color: #f4f4f5;
   min-height: 52px;
   height: 52px;
   padding: 0 0 0 16px;
   flex-shrink: 0;
   width: 100%;
   overflow: visible;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
   z-index: 40;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .is-admin .hq-side-logo {
@@ -146,7 +162,7 @@
   gap: 6px;
   font-size: 13px;
   font-weight: 500;
-  color: #1f2937;
+  color: #cfcfcf;
   white-space: nowrap;
   padding: 0;
   flex-shrink: 0;
@@ -166,10 +182,10 @@
   gap: 4px 10px;
   padding: 4px 14px;
   flex-shrink: 0;
-  border: 1px solid #b6d4fe;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.65);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: none;
 }
 
 .is-admin .hq-langs button {
@@ -179,7 +195,7 @@
   padding: 2px;
   border: 0;
   background: transparent;
-  color: #1e293b;
+  color: #cfcfcf;
   font-size: 13px;
   font-weight: 500;
   border-radius: 4px;
@@ -197,9 +213,9 @@
 }
 
 .is-admin .hq-langs button.on {
-  background: #fff;
-  color: #1d4ed8;
-  border: 1px solid #2f6fed;
+  background: rgba(196, 164, 132, 0.25);
+  color: #fff;
+  border: 1px solid rgba(196, 164, 132, 0.45);
   box-shadow: none;
   font-weight: 700;
   text-decoration: none;
@@ -210,7 +226,7 @@
 .is-admin .hq-meta-item {
   font-size: 13px;
   font-weight: 500;
-  color: #1f2937;
+  color: #cfcfcf;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -231,7 +247,7 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #1f2937;
+  color: #f4f4f5;
   white-space: nowrap;
   padding: 4px 2px;
   background: transparent;
@@ -249,8 +265,8 @@
 .is-admin .hq-user-caret {
   width: 7px;
   height: 7px;
-  border-right: 1.5px solid #666;
-  border-bottom: 1.5px solid #666;
+  border-right: 1.5px solid #9a9a9a;
+  border-bottom: 1.5px solid #9a9a9a;
   transform: rotate(45deg);
   margin-top: -4px;
 }
@@ -265,10 +281,10 @@
   top: calc(100% + 6px);
   right: 0;
   min-width: 140px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
-  border-radius: 2px;
+  background: #161618;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  border-radius: 12px;
   padding: 6px 0;
   z-index: 50;
 }
@@ -281,38 +297,38 @@
   border: 0;
   padding: 8px 16px;
   font-size: 13px;
-  color: #212529;
+  color: #e8e8e8;
   cursor: pointer;
   min-height: 0 !important;
 }
 
 .is-admin .hq-user-menu button:hover {
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .is-admin .hq-avatar {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #c9cfd6 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 20c1.5-4 14.5-4 16 0'/%3E%3C/svg%3E") center/14px no-repeat;
+  background: rgba(196, 164, 132, 0.35) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e8e8e8'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 20c1.5-4 14.5-4 16 0'/%3E%3C/svg%3E") center/14px no-repeat;
 }
 
 .is-admin .hq-user-caret {
   width: 5px;
   height: 5px;
-  border-right: 1.4px solid #666;
-  border-bottom: 1.4px solid #666;
+  border-right: 1.4px solid #9a9a9a;
+  border-bottom: 1.4px solid #9a9a9a;
   transform: rotate(45deg);
   margin-top: -2px;
 }
 
 .is-admin .hq-close {
-  background: #c00 !important;
-  color: #fff !important;
-  border: 1px solid #a00 !important;
+  background: transparent !important;
+  color: #f4f4f5 !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
   padding: 6px 14px;
   height: auto;
-  border-radius: 2px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 13px;
   min-height: 0 !important;
@@ -325,8 +341,8 @@
 .is-admin .hq-tabbar {
   display: flex;
   align-items: stretch;
-  background: #4a4a4a;
-  border-bottom: 1px solid #333;
+  background: rgba(0, 0, 0, 0.55);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   height: 40px;
   min-height: 40px;
   padding: 0 12px;
@@ -341,17 +357,18 @@
   gap: 4px;
   padding: 0;
   height: 40px;
-  background: #4a4a4a;
-  color: #ccc;
+  background: transparent;
+  color: #9a9a9a;
   font-size: 13px;
-  border-right: 1px solid #555;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
 }
 
 .is-admin .hq-tab.on {
-  background: #5a5a5a;
+  background: rgba(196, 164, 132, 0.12);
   color: #fff;
   font-weight: 600;
+  box-shadow: inset 0 -2px 0 #c4a484;
 }
 
 .is-admin .hq-tab a {
@@ -398,8 +415,8 @@
   flex-direction: column;
   width: 260px;
   min-width: 260px;
-  background: var(--hq-side, #2c3138);
-  color: #a6b0bf;
+  background: rgba(8, 8, 10, 0.96);
+  color: #9a9a9a;
   overflow: hidden;
   position: relative;
   z-index: 100;
@@ -446,7 +463,7 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: transparent;
 }
 
 .is-admin .hq-group-title {
@@ -474,9 +491,9 @@
 
 .is-admin .hq-group-title.is-open,
 .is-admin .hq-group-title.is-active {
-  background: #3a4149;
+  background: rgba(196, 164, 132, 0.14);
   color: #fff;
-  border-left-color: #6658dd;
+  border-left-color: #c4a484;
 }
 
 .is-admin .hq-ico {
@@ -542,7 +559,7 @@
 .is-admin .hq-flyout a:hover,
 .is-admin .hq-flyout a.on {
   color: #fff !important;
-  background: #6658dd;
+  background: rgba(196, 164, 132, 0.22);
 }
 
 .is-admin .hq-sub {
@@ -568,7 +585,7 @@
 }
 
 .is-admin .hq-sub a.on {
-  background: #6658dd;
+  background: rgba(196, 164, 132, 0.22);
   color: #fff !important;
   font-weight: 500;
 }
@@ -578,8 +595,8 @@
   min-width: 0;
   padding: 0;
   overflow: auto;
-  background: #fff;
-  color: #212529;
+  background: transparent;
+  color: #f4f4f5;
   font-size: 13px;
   display: flex;
   flex-direction: column;
@@ -591,8 +608,8 @@
   align-items: center;
   padding: 10px 20px 6px;
   font-size: 13px;
-  color: #212529;
-  background: #fff;
+  color: #f4f4f5;
+  background: transparent;
 }
 
 .is-admin .hq-crumb-left {
@@ -601,12 +618,12 @@
 
 .is-admin .hq-crumb-right {
   font-size: 11px;
-  color: #777;
+  color: #9a9a9a;
 }
 
 .is-admin .hq-crumb-sep {
   margin: 0 5px;
-  color: #999;
+  color: #6b6b6b;
 }
 
 .is-admin .hq-nav {
@@ -623,8 +640,8 @@
 
 .is-admin .hq-page {
   padding: 8px 20px 20px;
-  background: #fff;
-  color: #212529;
+  background: transparent;
+  color: #f4f4f5;
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -649,7 +666,7 @@
 .is-admin .hq-page h1,
 .is-admin .hq-page h2,
 .is-admin .hq-page h3 {
-  color: #212529;
+  color: #f4f4f5;
   font-size: 13px;
   letter-spacing: -0.02em;
 }
@@ -661,50 +678,52 @@
 }
 
 .is-admin .hq-page .muted-text {
-  color: #777 !important;
+  color: #9a9a9a !important;
   font-size: 11px;
 }
 
 .is-admin .hq-page .card-surface,
 .is-admin .hq-page .stat-card {
-  background: #fff !important;
-  border: 1px solid #d0d5dd;
-  color: #222 !important;
-  border-radius: 2px;
-  box-shadow: none;
-  backdrop-filter: none;
-  padding: 0 12px 12px !important;
+  background: linear-gradient(180deg, rgba(28, 28, 30, 0.82) 0%, rgba(10, 10, 12, 0.88) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f4f4f5 !important;
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 0 14px 14px !important;
 }
 
 .is-admin .hq-page .card-surface > .section-title,
 .is-admin .hq-page .card-surface > h3:first-child {
-  background: #eceef1;
-  margin: 0 -12px 10px;
-  padding: 8px 12px;
-  border-bottom: 1px solid #d9dde3;
+  background: rgba(255, 255, 255, 0.04);
+  margin: 0 -14px 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px 18px 0 0;
   font-size: 12px;
   font-weight: 700;
-  color: #212529;
+  color: #fff;
 }
 
 .is-admin .hq-page .stat-label {
-  color: #666 !important;
+  color: #9a9a9a !important;
   font-size: 11px;
 }
 
 .is-admin .hq-page .stat-value {
-  color: #111 !important;
+  color: #fff !important;
   font-size: 18px;
 }
 
 .is-admin .hq-page .stat-success {
-  color: #1a7f37 !important;
+  color: #7dcc8a !important;
 }
 
 .is-admin .hq-page .stat-link,
 .is-admin .hq-page a.primary-link,
 .is-admin .hq-page .section-link {
-  color: #2563eb !important;
+  color: #c4a484 !important;
   font-size: 11px;
 }
 
@@ -718,8 +737,8 @@
 .is-admin .hq-page .admin-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
-  color: #222;
+  background: transparent;
+  color: #e8e8e8;
   font-size: 11px;
 }
 
@@ -730,18 +749,18 @@
 }
 
 .is-admin .hq-page .admin-table th {
-  background: #f3f5f8;
-  border: 1px solid #d5dae2;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 5px 4px;
   font-weight: 600;
-  color: #333;
+  color: #cfcfcf;
   font-size: 11px;
 }
 
 .is-admin .hq-page .admin-table td {
-  border: 1px solid #e2e6ec;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 4px;
-  color: #222;
+  color: #e8e8e8;
 }
 
 .is-admin .hq-page .admin-table input,
@@ -757,10 +776,10 @@
 .is-admin .hq-page select.input,
 .is-admin .hq-page .admin-status-select,
 .is-admin .hq-page textarea {
-  background: #fff !important;
-  color: #222 !important;
-  border: 1px solid #c5cad3 !important;
-  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.45) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 12px;
   font-size: 12px !important;
   min-height: 26px !important;
   padding: 3px 8px !important;
@@ -778,7 +797,7 @@
   padding: 0 10px !important;
   font-size: 12px !important;
   font-weight: 500;
-  border-radius: 3px;
+  border-radius: 999px;
   width: auto;
   cursor: pointer;
   line-height: 1;
@@ -786,29 +805,31 @@
 }
 
 .is-admin .hq-page .btn-primary {
-  background: #0d6efd !important;
-  color: #fff !important;
-  border: 1px solid #0d6efd !important;
+  background: #fff !important;
+  color: #111 !important;
+  border: 1px solid #fff !important;
+  border-radius: 999px !important;
 }
 
 .is-admin .hq-page .btn-primary:hover {
-  background: #0b5ed7 !important;
-  border-color: #0a58ca !important;
-  color: #fff !important;
+  background: #e8e8e8 !important;
+  border-color: #e8e8e8 !important;
+  color: #111 !important;
 }
 
 .is-admin .hq-page .btn-secondary,
 .is-admin .hq-page .btn-outline {
-  background: #fff !important;
-  color: #212529 !important;
-  border: 1px solid #ced4da !important;
+  background: transparent !important;
+  color: #f4f4f5 !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 999px !important;
 }
 
 .is-admin .hq-page .btn-secondary:hover,
 .is-admin .hq-page .btn-outline:hover {
-  background: #f8f9fa !important;
-  color: #111 !important;
-  border-color: #adb5bd !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
 }
 
 .is-admin .hq-page .admin-table .btn-outline,
@@ -1066,7 +1087,7 @@
 .is-admin .hq-req .input,
 .is-admin .hq-req select.input,
 .is-admin .hq-req .org-combo .input {
-  background: #fff3d4 !important;
+  background: rgba(196, 164, 132, 0.12) !important;
 }
 
 .is-admin .hq-page .hq-card-hint,
@@ -1280,11 +1301,13 @@
 .is-admin .pg-modal {
   width: min(720px, 100%);
   max-height: 80vh;
-  background: #fff;
-  border: 1px solid #c5cad3;
+  background: #141416;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .is-admin .pg-modal-head {
@@ -1292,8 +1315,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  border-bottom: 1px solid #d5dae2;
-  background: #f4f6f8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .is-admin .pg-modal-head h3 {
@@ -1338,4 +1361,342 @@
   margin: 8px 14px 12px;
   font-size: 12px;
   color: #666;
+}
+
+/* ========== Wirex One tone — admin shell ========== */
+.is-admin {
+  background: #000 !important;
+  color: #f4f4f5 !important;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+}
+
+.is-admin .hq-shell {
+  --hq-header: rgba(12, 12, 14, 0.92);
+  --hq-side: #0a0a0c;
+  --hq-accent: #c4a484;
+  --hq-logo-bg: #0a0a0c;
+  background: #000 url('/user-hero-bg.png') center top / 120% auto no-repeat !important;
+  color: #f4f4f5 !important;
+}
+
+.is-admin .hq-top {
+  background: rgba(8, 8, 10, 0.88) !important;
+  color: #f4f4f5 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.is-admin .hq-tablet,
+.is-admin .hq-lang-label,
+.is-admin .hq-langs button {
+  color: #cfcfcf !important;
+}
+
+.is-admin .hq-langs {
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  box-shadow: none !important;
+}
+
+.is-admin .hq-langs button.on {
+  color: #fff !important;
+  background: rgba(196, 164, 132, 0.25) !important;
+}
+
+.is-admin .hq-side {
+  background: rgba(8, 8, 10, 0.96) !important;
+  color: #9a9a9a !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.is-admin .hq-side-logo {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.is-admin .hq-side-logo-text {
+  letter-spacing: 0.18em;
+  font-size: 0.78rem !important;
+}
+
+.is-admin .hq-fold {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.is-admin .hq-fold:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.is-admin .hq-group-btn,
+.is-admin .hq-nav a,
+.is-admin .hq-side a,
+.is-admin .hq-side button {
+  color: #bdbdbd !important;
+}
+
+.is-admin .hq-group-btn:hover,
+.is-admin .hq-nav a:hover,
+.is-admin .hq-side a:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.is-admin .hq-nav a.on,
+.is-admin .hq-nav a.active,
+.is-admin a.active {
+  color: #fff !important;
+  background: rgba(196, 164, 132, 0.18) !important;
+  border-left-color: #c4a484 !important;
+}
+
+.is-admin .hq-body,
+.is-admin .hq-main,
+.is-admin .hq-content {
+  background: transparent !important;
+}
+
+.is-admin .hq-tabs,
+.is-admin .hq-tabbar {
+  background: rgba(0, 0, 0, 0.45) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.is-admin .hq-tab,
+.is-admin .hq-tabs button,
+.is-admin .hq-tabs a {
+  color: #9a9a9a !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+.is-admin .hq-tab.on,
+.is-admin .hq-tabs .on,
+.is-admin .hq-tabs a.on {
+  color: #fff !important;
+  border-bottom: 2px solid #c4a484 !important;
+}
+
+.is-admin .hq-page,
+.is-admin .hq-page .muted-text,
+.is-admin .hq-page .section-title,
+.is-admin .hq-page label,
+.is-admin .hq-page p,
+.is-admin .hq-page h1,
+.is-admin .hq-page h2,
+.is-admin .hq-page h3 {
+  color: #f4f4f5 !important;
+}
+
+.is-admin .hq-page .muted-text {
+  color: #9a9a9a !important;
+}
+
+.is-admin .hq-page .card-surface,
+.is-admin .hq-page .stat-card {
+  background: linear-gradient(180deg, rgba(28, 28, 30, 0.82) 0%, rgba(10, 10, 12, 0.88) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #f4f4f5 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  padding: 0 14px 14px !important;
+}
+
+.is-admin .hq-page .card-surface > .section-title,
+.is-admin .hq-page .card-surface > h3:first-child {
+  background: rgba(255, 255, 255, 0.04) !important;
+  margin: 0 -14px 12px !important;
+  padding: 12px 14px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 18px 18px 0 0;
+  font-size: 12px !important;
+  font-weight: 700;
+  color: #fff !important;
+  letter-spacing: 0.04em;
+}
+
+.is-admin .hq-page .stat-label {
+  color: #9a9a9a !important;
+}
+
+.is-admin .hq-page .stat-value {
+  color: #fff !important;
+}
+
+.is-admin .hq-page .stat-success {
+  color: #7dcc8a !important;
+}
+
+.is-admin .hq-page .stat-link,
+.is-admin .hq-page a.primary-link,
+.is-admin .hq-page .section-link {
+  color: #c4a484 !important;
+}
+
+.is-admin .hq-page .admin-table {
+  color: #e8e8e8;
+}
+
+.is-admin .hq-page .admin-table th {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #cfcfcf !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.is-admin .hq-page .admin-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: #e8e8e8 !important;
+}
+
+.is-admin .hq-page .admin-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.is-admin .hq-page .input,
+.is-admin .hq-page select.input,
+.is-admin .hq-page .admin-status-select,
+.is-admin .hq-page textarea,
+.is-admin .hq-page .org-profile-grid .input,
+.is-admin .hq-page .org-profile-grid select.input {
+  background: rgba(0, 0, 0, 0.45) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 12px !important;
+}
+
+.is-admin .hq-page .input:focus,
+.is-admin .hq-page select.input:focus {
+  border-color: rgba(196, 164, 132, 0.55) !important;
+  outline: none;
+}
+
+.is-admin .hq-req .input,
+.is-admin .hq-req select.input,
+.is-admin .hq-req .org-combo .input {
+  background: rgba(196, 164, 132, 0.12) !important;
+  border-color: rgba(196, 164, 132, 0.35) !important;
+}
+
+.is-admin .hq-page .btn-primary {
+  background: #fff !important;
+  color: #111 !important;
+  border: 1px solid #fff !important;
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+  min-height: 32px !important;
+  height: auto !important;
+  padding: 0 16px !important;
+}
+
+.is-admin .hq-page .btn-primary:hover {
+  background: #e8e8e8 !important;
+  border-color: #e8e8e8 !important;
+  color: #111 !important;
+}
+
+.is-admin .hq-page .btn-secondary,
+.is-admin .hq-page .btn-outline,
+.is-admin .hq-page .btn-compact {
+  background: transparent !important;
+  color: #f4f4f5 !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 999px !important;
+  min-height: 32px !important;
+  height: auto !important;
+}
+
+.is-admin .hq-page .btn-secondary:hover,
+.is-admin .hq-page .btn-outline:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+.is-admin .hq-card-hint,
+.is-admin .hq-page .hq-card-hint {
+  color: #8a9099 !important;
+}
+
+.is-admin .pg-modal {
+  background: #141416 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #f4f4f5 !important;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.is-admin .pg-modal-head {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+.is-admin .pg-modal-close {
+  color: #cfcfcf !important;
+}
+
+.is-admin .pg-modal-table-wrap tbody tr:hover {
+  background: rgba(196, 164, 132, 0.12) !important;
+}
+
+.is-admin .pg-modal-hint {
+  color: #9a9a9a !important;
+}
+
+.is-admin .pg-confirm-actions {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.is-admin .auth-error {
+  background: rgba(239, 107, 107, 0.12);
+  border: 1px solid rgba(239, 107, 107, 0.35);
+  color: #ffb4b4;
+  border-radius: 12px;
+}
+
+.is-admin .admin-wx-auth.wx-auth {
+  background: #000 url('/user-hero-bg.png') center top / cover no-repeat;
+}
+
+.is-admin .mono,
+.is-admin code {
+  color: #c4a484;
+}
+
+.is-admin .hq-page .page-title {
+  color: #fff !important;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+
+.is-admin .lang-switcher {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e8e8e8;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.is-admin .hq-brand-card,
+.is-admin .reg-card {
+  background: linear-gradient(180deg, rgba(28, 28, 30, 0.82) 0%, rgba(10, 10, 12, 0.88) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 18px !important;
+}
+
+.is-admin .hq-content {
+  background: transparent !important;
+}
+
+.is-admin .hq-flyout {
+  background: #161618 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #f4f4f5 !important;
+}
+
+.is-admin .hq-group-title.is-open,
+.is-admin .hq-group-title.is-active {
+  color: #fff !important;
+  background: rgba(196, 164, 132, 0.14) !important;
 }

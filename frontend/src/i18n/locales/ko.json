@@ -40,7 +40,17 @@
     "submit": "확인",
     "agreePrefix": "로그인하면 다음에 동의합니다:",
     "terms": "이용약관",
-    "privacy": "개인정보 처리방침"
+    "privacy": "개인정보 처리방침",
+    "otpTitle": "2단계 인증",
+    "otpTotpHint": "인증 앱에 표시된 6자리 코드를 입력하세요.",
+    "otpCode": "인증번호",
+    "otpVerify": "인증 확인",
+    "otpVerifying": "확인 중...",
+    "otpInvalid": "인증번호가 올바르지 않습니다.",
+    "otpBack": "로그인으로 돌아가기",
+    "otpGoogleTitle": "Google OTP 등록",
+    "otpScanHint": "Google Authenticator 앱으로 QR을 스캔한 뒤 6자리 코드를 입력하세요.",
+    "otpSecret": "시크릿 키"
   },
   "dashboard": {
     "title": "홈",
@@ -383,7 +393,15 @@
     "colChannel": "가입경로",
     "channelDirect": "자체회원",
     "channelPartner": "파트너회원",
-    "directMemberDesc": "자체회원은 /register 에서 가입한 ICOCARD 회원입니다. 파트너회원은 가맹점 API로 생성된 계정입니다. 자체회원도 카드 발급·충전이 됩니다."
+    "directMemberDesc": "자체회원은 /register 에서 가입한 ICOCARD 회원입니다. 파트너회원은 가맹점 API로 생성된 계정입니다. 자체회원도 카드 발급·충전이 됩니다.",
+    "sectionOtp": "OTP 정책",
+    "otpPolicyDesc": "관리자·회원·파트너 로그인 Google OTP 필수 여부를 설정합니다. (Crypto 기준)",
+    "otpRequiredAdmin": "관리자 로그인 OTP 필수",
+    "otpRequiredMember": "회원 로그인 OTP 필수",
+    "otpRequiredOrg": "파트너/조직 로그인 OTP 필수",
+    "resetOtpBtn": "OTP 초기화",
+    "resetOtpConfirm": "{email} 계정의 Google OTP를 초기화하시겠습니까?\\n(다음 로그인 시 OTP를 다시 등록해야 합니다)",
+    "otpResetDone": "{email} 계정의 OTP가 초기화되었습니다."
   },
   "earn": {
     "title": "리워드",
@@ -413,7 +431,7 @@
     "setPassword": "비밀번호 설정",
     "setPasswordHint": "최초 로그인입니다. 사용할 비밀번호를 설정하세요.",
     "otpTitle": "OTP 인증",
-    "otpHint": "인증앱의 6자리 코드를 입력하세요. (회원 OTP는 현재 비활성입니다.)",
+    "otpHint": "인증앱의 6자리 코드를 입력하세요.",
     "navHome": "홈",
     "navApi": "API 연동",
     "navFees": "수수료 안내",

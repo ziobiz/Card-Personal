@@ -6,7 +6,8 @@ import { operatorStore } from '../data/operatorStore.js';
 import { partnerStore, issuePolicyFromPartner, flagsFromIssuePolicy } from '../data/partnerStore.js';
 import { feeSettings } from '../data/feeSettings.js';
 import { resolvePartnerPolicy } from '../data/feePolicyTemplateStore.js';
-import { otpAuthUrl, verifyTotp } from '../lib/totp.js';
+import { generateOtpSecret, otpAuthUrl, verifyTotp } from '../lib/totp.js';
+import { getSecuritySettings } from '../lib/otpPolicy.js';
 
 const router = Router();
 
@@ -73,14 +74,31 @@ router.post('/login', (req, res) => {
   if (!partner || partner.status !== 'active') {
     return res.status(403).json({ error: 'Partner suspended' });
   }
-  const otpRequired = config.otpRequiredOrg && Boolean(op.otpEnabled);
-  const token = signPartner(op, otpRequired ? { otpPending: true } : {});
+  const sec = getSecuritySettings();
+  let current = op;
+  if (sec.otpRequiredOrg) {
+    if (!current.otpSecret) {
+      current = operatorStore.update(current.id, { otpSecret: generateOtpSecret(), otpEnabled: false }) || current;
+    }
+    const mustSetup = !current.otpEnabled;
+    const token = signPartner(current, { otpPending: true });
+    return res.json({
+      token,
+      otpRequired: true,
+      mustSetupOtp: mustSetup,
+      otpEnabled: Boolean(current.otpEnabled),
+      mustChangePassword: Boolean(current.mustChangePassword),
+      operator: { id: current.id, email: current.email, name: current.name, role: current.role },
+      partner: { id: partner.id, name: partner.name, companyName: partner.companyName },
+    });
+  }
+  const token = signPartner(current);
   res.json({
     token,
-    otpRequired,
-    otpEnabled: Boolean(op.otpEnabled),
-    mustChangePassword: Boolean(op.mustChangePassword),
-    operator: { id: op.id, email: op.email, name: op.name, role: op.role },
+    otpRequired: false,
+    otpEnabled: Boolean(current.otpEnabled),
+    mustChangePassword: Boolean(current.mustChangePassword),
+    operator: { id: current.id, email: current.email, name: current.name, role: current.role },
     partner: { id: partner.id, name: partner.name, companyName: partner.companyName },
   });
 });
@@ -97,6 +115,9 @@ router.post('/otp/verify', (req, res) => {
   if (!verifyTotp(op.otpSecret, String(req.body?.code || ''))) {
     return res.status(401).json({ error: 'Invalid OTP' });
   }
+  if (!op.otpEnabled) {
+    operatorStore.update(op.id, { otpEnabled: true });
+  }
   const partner = partnerStore.getById(op.partnerId!);
   res.json({
     token: signPartner(op),
@@ -109,12 +130,15 @@ router.post('/otp/verify', (req, res) => {
 router.get('/otp/setup', (req, res) => {
   const decoded = readToken(req);
   if (!decoded?.operatorId) return res.status(401).json({ error: 'Unauthorized' });
-  const op = operatorStore.getById(decoded.operatorId);
-  if (!op?.otpSecret) return res.status(404).json({ error: 'OTP not provisioned' });
+  let op = operatorStore.getById(decoded.operatorId);
+  if (!op) return res.status(404).json({ error: 'OTP not provisioned' });
+  if (!op.otpSecret) {
+    op = operatorStore.update(op.id, { otpSecret: generateOtpSecret(), otpEnabled: false }) || op;
+  }
   res.json({
     otpEnabled: Boolean(op.otpEnabled),
-    otpRequired: config.otpRequiredOrg,
-    otpauthUrl: otpAuthUrl(op.email, op.otpSecret),
+    otpRequired: getSecuritySettings().otpRequiredOrg,
+    otpauthUrl: otpAuthUrl(op.email, op.otpSecret!),
     secret: op.otpSecret,
   });
 });

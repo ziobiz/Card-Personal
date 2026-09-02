@@ -35,7 +35,17 @@
     "submit": "ส่ง",
     "agreePrefix": "การเข้าสู่ระบบถือว่ายอมรับ",
     "terms": "ข้อกำหนด",
-    "privacy": "นโยบายความเป็นส่วนตัว"
+    "privacy": "นโยบายความเป็นส่วนตัว",
+    "otpTitle": "ยืนยันตัวตนสองขั้นตอน",
+    "otpTotpHint": "กรอกรหัส 6 หลักจากแอปยืนยันตัวตน",
+    "otpCode": "รหัสยืนยัน",
+    "otpVerify": "ยืนยัน",
+    "otpVerifying": "กำลังยืนยัน...",
+    "otpInvalid": "รหัสยืนยันไม่ถูกต้อง",
+    "otpBack": "กลับไปเข้าสู่ระบบ",
+    "otpGoogleTitle": "ลงทะเบียน Google OTP",
+    "otpScanHint": "สแกน QR ด้วย Google Authenticator แล้วกรอกรหัส 6 หลัก",
+    "otpSecret": "รหัสลับ"
   },
   "dashboard": {
     "title": "แดชบอร์ด",
@@ -343,7 +353,15 @@
     "colChannel": "ช่องทางสมัคร",
     "channelDirect": "สมาชิกโดยตรง",
     "channelPartner": "สมาชิกพาร์ทเนอร์",
-    "directMemberDesc": "สมาชิกโดยตรงสมัครที่ /register สมาชิกพาร์ทเนอร์สร้างจาก API ของร้าน สมาชิกโดยตรงออกบัตรและเติมเงินได้"
+    "directMemberDesc": "สมาชิกโดยตรงสมัครที่ /register สมาชิกพาร์ทเนอร์สร้างจาก API ของร้าน สมาชิกโดยตรงออกบัตรและเติมเงินได้",
+    "sectionOtp": "นโยบาย OTP",
+    "otpPolicyDesc": "บังคับ Google OTP สำหรับแอดมิน สมาชิก และพาร์ทเนอร์ (มาตรฐาน Crypto)",
+    "otpRequiredAdmin": "บังคับ OTP สำหรับแอดมิน",
+    "otpRequiredMember": "บังคับ OTP สำหรับสมาชิก",
+    "otpRequiredOrg": "บังคับ OTP สำหรับพาร์ทเนอร์/องค์กร",
+    "resetOtpBtn": "รีเซ็ต OTP",
+    "resetOtpConfirm": "รีเซ็ต Google OTP ของ {email}?\\n(ต้องลงทะเบียนใหม่ในการเข้าสู่ระบบครั้งถัดไป)",
+    "otpResetDone": "รีเซ็ต OTP ของ {email} แล้ว"
   },
   "earn": {
     "title": "รับรางวัล",
@@ -373,7 +391,7 @@
     "setPassword": "ตั้งรหัสผ่าน",
     "setPasswordHint": "เข้าสู่ระบบครั้งแรก โปรดตั้งรหัสผ่านที่จะใช้",
     "otpTitle": "ยืนยัน OTP",
-    "otpHint": "กรอกรหัส 6 หลักจากแอปยืนยันตัวตน (OTP ของสมาชิกปิดอยู่ชั่วคราว)",
+    "otpHint": "กรอกรหัส 6 หลักจากแอปยืนยันตัวตน",
     "navHome": "หน้าหลัก",
     "navApi": "API",
     "navFees": "ค่าธรรมเนียม",

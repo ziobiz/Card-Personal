@@ -9,6 +9,7 @@ import Activity from './pages/Activity';
 import Earn from './pages/Earn';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminPassword from './pages/admin/AdminPassword';
+import AdminOtp from './pages/admin/AdminOtp';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminOperators from './pages/admin/AdminOperators';
 import AdminMembers from './pages/admin/AdminMembers';
@@ -81,6 +82,7 @@ export default function App() {
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/password" element={<AdminPassword />} />
+        <Route path="/admin/otp" element={<AdminOtp />} />
         <Route
           path="/admin"
           element={

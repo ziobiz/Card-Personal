@@ -36,7 +36,17 @@
     "submit": "送信",
     "agreePrefix": "ログインすると同意します:",
     "terms": "利用規約",
-    "privacy": "プライバシー"
+    "privacy": "プライバシー",
+    "otpTitle": "二要素認証",
+    "otpTotpHint": "認証アプリに表示された6桁コードを入力してください。",
+    "otpCode": "認証コード",
+    "otpVerify": "認証する",
+    "otpVerifying": "確認中...",
+    "otpInvalid": "認証コードが正しくありません。",
+    "otpBack": "ログインに戻る",
+    "otpGoogleTitle": "Google OTP 登録",
+    "otpScanHint": "Google Authenticator で QR を読み取り、6桁コードを入力してください。",
+    "otpSecret": "シークレットキー"
   },
   "dashboard": {
     "title": "ダッシュボード",
@@ -344,7 +354,15 @@
     "colChannel": "登録経路",
     "channelDirect": "自社会員",
     "channelPartner": "パートナー会員",
-    "directMemberDesc": "自社会員は /register で登録します。パートナー会員は加盟店 API で作られます。自社会員もカード発行・チャージができます。"
+    "directMemberDesc": "自社会員は /register で登録します。パートナー会員は加盟店 API で作られます。自社会員もカード発行・チャージができます。",
+    "sectionOtp": "OTP ポリシー",
+    "otpPolicyDesc": "管理者・会員・パートナーログインの Google OTP 必須設定（Crypto 基準）",
+    "otpRequiredAdmin": "管理者ログイン OTP 必須",
+    "otpRequiredMember": "会員ログイン OTP 必須",
+    "otpRequiredOrg": "パートナー/組織ログイン OTP 必須",
+    "resetOtpBtn": "OTP 初期化",
+    "resetOtpConfirm": "{email} の Google OTP を初期化しますか？\\n(次回ログインで再登録が必要です)",
+    "otpResetDone": "{email} の OTP を初期化しました。"
   },
   "earn": {
     "title": "リワード",
@@ -374,7 +392,7 @@
     "setPassword": "パスワード設定",
     "setPasswordHint": "初回ログインです。使用するパスワードを設定してください。",
     "otpTitle": "OTP認証",
-    "otpHint": "認証アプリの6桁コードを入力してください。（会員OTPは現在無効です）",
+    "otpHint": "認証アプリの6桁コードを入力してください。",
     "navHome": "ホーム",
     "navApi": "API連携",
     "navFees": "手数料",

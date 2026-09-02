@@ -49,6 +49,7 @@ export default function AdminMembers({ source }: { source: 'direct' | 'partner' 
                 <th>KYC</th>
                 <th>{t('admin.colStatus')}</th>
                 <th>{t('admin.colJoined')}</th>
+                <th>{t('admin.colActions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -72,6 +73,19 @@ export default function AdminMembers({ source }: { source: 'direct' | 'partner' 
                     </select>
                   </td>
                   <td>{new Date(m.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn-outline btn-compact"
+                      onClick={async () => {
+                        if (!window.confirm(t('admin.resetOtpConfirm', { email: m.email }))) return;
+                        await api.admin.resetMemberOtp(m.id);
+                        load();
+                      }}
+                    >
+                      {t('admin.resetOtpBtn')}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

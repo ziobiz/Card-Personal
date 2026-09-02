@@ -44,8 +44,13 @@ export default function Register() {
     setError('');
     setLoading(true);
     try {
-      const { token } = await api.auth.register(email, password);
-      setToken(token);
+      const r = await api.auth.register(email, password);
+      if (r.mustSetupOtp && r.enrollToken) {
+        sessionStorage.setItem('memberOtpEnroll', r.enrollToken);
+        navigate('/otp');
+        return;
+      }
+      if (r.token) setToken(r.token);
       navigate('/');
     } catch (err) {
       setError((err as Error).message);

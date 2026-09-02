@@ -155,12 +155,24 @@ export async function fetchPublicBrand(): Promise<BrandConfig> {
 export const api = {
   auth: {
     register: (email: string, password: string) =>
-      request<{ token: string; user: User }>('/auth/register', {
+      request<{
+        token?: string;
+        user?: User;
+        mustSetupOtp?: boolean;
+        enrollToken?: string;
+      }>('/auth/register', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       }),
     login: (email: string, password: string) =>
-      request<{ token: string; user: User; otpRequired?: boolean; mustChangePassword?: boolean }>('/auth/login', {
+      request<{
+        token?: string;
+        user?: User;
+        otpRequired?: boolean;
+        mustSetupOtp?: boolean;
+        enrollToken?: string;
+        mustChangePassword?: boolean;
+      }>('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       }),
@@ -168,6 +180,16 @@ export const api = {
       request<{ token: string; user?: User }>('/auth/otp/verify', {
         method: 'POST',
         body: JSON.stringify({ code }),
+      }),
+    setupOtp: (enrollToken: string) =>
+      request<{ secret: string; otpauthUrl: string; enrollToken: string }>('/auth/otp/setup', {
+        method: 'POST',
+        body: JSON.stringify({ enrollToken }),
+      }),
+    activateOtp: (enrollToken: string, code: string) =>
+      request<{ token: string; user?: User }>('/auth/otp/activate', {
+        method: 'POST',
+        body: JSON.stringify({ enrollToken, code }),
       }),
   },
   user: {
@@ -210,12 +232,44 @@ export const api = {
   },
   admin: {
     login: (email: string, password: string) =>
-      request<{ token: string; user: { email: string; isAdmin: boolean }; mustChangePassword?: boolean }>('/admin/login', {
+      request<{
+        token?: string;
+        user: { email: string; isAdmin: boolean };
+        mustChangePassword?: boolean;
+        otpRequired?: boolean;
+        mustSetupOtp?: boolean;
+        enrollToken?: string;
+      }>('/admin/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       }),
     changePassword: (password: string) =>
-      request<{ ok: boolean }>('/admin/me/password', { method: 'PUT', body: JSON.stringify({ password }) }),
+      request<{
+        ok: boolean;
+        mustSetupOtp?: boolean;
+        otpRequired?: boolean;
+        enrollToken?: string;
+        token?: string;
+      }>('/admin/me/password', { method: 'PUT', body: JSON.stringify({ password }) }),
+    verifyOtp: (code: string) =>
+      request<{ token: string }>('/admin/otp/verify', {
+        method: 'POST',
+        body: JSON.stringify({ code }),
+      }),
+    setupOtp: (enrollToken: string) =>
+      request<{ secret: string; otpauthUrl: string; enrollToken: string }>('/admin/otp/setup', {
+        method: 'POST',
+        body: JSON.stringify({ enrollToken }),
+      }),
+    activateOtp: (enrollToken: string, code: string) =>
+      request<{ token: string }>('/admin/otp/activate', {
+        method: 'POST',
+        body: JSON.stringify({ enrollToken, code }),
+      }),
+    resetOperatorOtp: (id: string) =>
+      request<{ ok: boolean }>(`/admin/operators/${id}/reset-otp`, { method: 'POST' }),
+    resetMemberOtp: (id: string) =>
+      request<{ ok: boolean }>(`/admin/members/${id}/reset-otp`, { method: 'POST' }),
     getUsers: () =>
       request<{ items: { id: string; email: string; wirexUserId?: string; createdAt: string; source?: string; partnerId?: string }[]; total: number }>('/admin/users'),
     getOperators: (scope?: 'HQ' | 'PARTNER') =>
@@ -242,6 +296,12 @@ export const api = {
     getSettings: () =>
       request<{
         wirex: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string };
+        feePolicy?: Record<string, number | string | undefined>;
+        security?: {
+          otpRequiredAdmin?: boolean;
+          otpRequiredMember?: boolean;
+          otpRequiredOrg?: boolean;
+        };
         useMockWirex: boolean;
         updatedAt?: string;
         _masked?: { clientSecret: string };
@@ -359,10 +419,20 @@ export const api = {
     updateSettings: (data: {
       wirex?: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string; environment?: 'sandbox' | 'production' };
       feePolicy?: { treasuryWalletAddress?: string; cardIssuanceFee?: number; cardTopUpFeePercent?: number; cardUsageFeePerTransaction?: number; cardMonthlyFee?: number; partnerMonthlyFee?: number };
+      security?: {
+        otpRequiredAdmin?: boolean;
+        otpRequiredMember?: boolean;
+        otpRequiredOrg?: boolean;
+      };
       useMockWirex?: boolean;
     }) =>
       request<{
         wirex: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string };
+        security?: {
+          otpRequiredAdmin?: boolean;
+          otpRequiredMember?: boolean;
+          otpRequiredOrg?: boolean;
+        };
         useMockWirex: boolean;
         updatedAt?: string;
       }>('/admin/settings', {
@@ -421,6 +491,7 @@ export const api = {
       request<{
         token: string;
         otpRequired?: boolean;
+        mustSetupOtp?: boolean;
         mustChangePassword?: boolean;
         operator: { id: string; email: string; name: string; role: string };
         partner: { id: string; name: string; companyName?: string };
@@ -432,6 +503,13 @@ export const api = {
         body: JSON.stringify({ code }),
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
+    },
+    otpSetup: () => {
+      const token = localStorage.getItem('partnerToken');
+      return request<{ secret: string; otpauthUrl: string; otpEnabled: boolean; otpRequired: boolean }>(
+        '/partner-portal/otp/setup',
+        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
+      );
     },
     changePassword: (password: string) => {
       const token = localStorage.getItem('partnerToken');

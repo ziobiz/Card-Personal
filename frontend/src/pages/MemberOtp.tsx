@@ -1,49 +1,31 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { api } from '../api';
-import LanguageSwitcher from '../components/LanguageSwitcher';
-import { useBrand } from '../brand/BrandContext';
+import OtpChallenge from '../components/OtpChallenge';
 import { useAuth } from '../hooks/useAuth';
-import './Auth.css';
 
 export default function MemberOtp() {
-  const { t } = useTranslation();
-  const { brand } = useBrand();
-  const { setToken } = useAuth();
   const navigate = useNavigate();
-  const [code, setCode] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const r = await api.auth.verifyOtp(code.trim());
-      setToken(r.token);
-      navigate('/');
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { setToken } = useAuth();
+  const enrollToken = useMemo(() => sessionStorage.getItem('memberOtpEnroll') || '', []);
+  const mode = enrollToken ? 'setup' : 'verify';
 
   return (
-    <div className="wx-auth">
-      <header className="wx-auth-top">
-        <span className="wx-mark">{brand.productName}</span>
-        <LanguageSwitcher />
-      </header>
-      <form className="wx-auth-card" onSubmit={handleSubmit}>
-        <h1>{t('partner.otpTitle')}</h1>
-        <p className="auth-subtitle">{t('partner.otpHint')}</p>
-        {error ? <div className="auth-error">{error}</div> : null}
-        <input className="input" inputMode="numeric" maxLength={6} value={code} onChange={(e) => setCode(e.target.value)} required />
-        <button type="submit" className="btn-primary" disabled={loading} style={{ marginTop: 12 }}>{t('common.confirm')}</button>
-      </form>
-    </div>
+    <OtpChallenge
+      mode={mode}
+      enrollToken={enrollToken}
+      backHref="/login"
+      onSetup={(token) => api.auth.setupOtp(token)}
+      onActivate={async (token, code) => {
+        const r = await api.auth.activateOtp(token, code);
+        sessionStorage.removeItem('memberOtpEnroll');
+        return r;
+      }}
+      onVerify={(code) => api.auth.verifyOtp(code)}
+      onSuccess={(token) => {
+        setToken(token);
+        navigate('/');
+      }}
+    />
   );
 }

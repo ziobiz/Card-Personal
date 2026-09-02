@@ -109,6 +109,7 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
               <th>{t('admin.operatorRole')}</th>
               <th>{t('admin.colStatus')}</th>
               <th>{t('admin.colJoined')}</th>
+              <th>{t('admin.colActions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -132,6 +133,23 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
                   </select>
                 </td>
                 <td>{new Date(o.createdAt).toLocaleDateString()}</td>
+                <td>
+                  <button
+                    type="button"
+                    className="btn-outline btn-compact"
+                    onClick={async () => {
+                      if (!window.confirm(t('admin.resetOtpConfirm', { email: o.email }))) return;
+                      try {
+                        await api.admin.resetOperatorOtp(o.id);
+                        setMessage(t('admin.otpResetDone', { email: o.email }));
+                      } catch (err) {
+                        setMessage((err as Error).message);
+                      }
+                    }}
+                  >
+                    {t('admin.resetOtpBtn')}
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

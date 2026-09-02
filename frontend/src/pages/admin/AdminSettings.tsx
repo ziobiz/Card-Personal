@@ -15,6 +15,11 @@ type FeePolicy = {
 type Settings = {
   wirex: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string };
   feePolicy?: FeePolicy;
+  security?: {
+    otpRequiredAdmin?: boolean;
+    otpRequiredMember?: boolean;
+    otpRequiredOrg?: boolean;
+  };
   useMockWirex: boolean;
   updatedAt?: string;
 };
@@ -39,6 +44,9 @@ export default function AdminSettings() {
     cardUsageFeePerTransaction: 0.1,
     cardMonthlyFee: 2,
     partnerMonthlyFee: 50,
+    otpRequiredAdmin: true,
+    otpRequiredMember: true,
+    otpRequiredOrg: true,
   });
 
   useEffect(() => {
@@ -60,6 +68,9 @@ export default function AdminSettings() {
           cardUsageFeePerTransaction: fp.cardUsageFeePerTransaction ?? 0.1,
           cardMonthlyFee: fp.cardMonthlyFee ?? 2,
           partnerMonthlyFee: fp.partnerMonthlyFee ?? 50,
+          otpRequiredAdmin: r.security?.otpRequiredAdmin ?? true,
+          otpRequiredMember: r.security?.otpRequiredMember ?? true,
+          otpRequiredOrg: r.security?.otpRequiredOrg ?? true,
         });
       })
       .catch((e) => {
@@ -93,6 +104,11 @@ export default function AdminSettings() {
           cardUsageFeePerTransaction: form.cardUsageFeePerTransaction,
           cardMonthlyFee: form.cardMonthlyFee,
           partnerMonthlyFee: form.partnerMonthlyFee,
+        },
+        security: {
+          otpRequiredAdmin: form.otpRequiredAdmin,
+          otpRequiredMember: form.otpRequiredMember,
+          otpRequiredOrg: form.otpRequiredOrg,
         },
         useMockWirex: form.useMockWirex,
       });
@@ -189,6 +205,33 @@ export default function AdminSettings() {
             onChange={(e) => setForm((f) => ({ ...f, clientSecret: e.target.value }))}
             placeholder={t('admin.clientSecretHint')}
           />
+        </label>
+
+        <h3 className="section-title" style={{ marginTop: '2rem' }}>{t('admin.sectionOtp')}</h3>
+        <p className="muted-text admin-settings-desc">{t('admin.otpPolicyDesc')}</p>
+        <label className="admin-settings-checkbox">
+          <input
+            type="checkbox"
+            checked={form.otpRequiredAdmin}
+            onChange={(e) => setForm((f) => ({ ...f, otpRequiredAdmin: e.target.checked }))}
+          />
+          {t('admin.otpRequiredAdmin')}
+        </label>
+        <label className="admin-settings-checkbox">
+          <input
+            type="checkbox"
+            checked={form.otpRequiredMember}
+            onChange={(e) => setForm((f) => ({ ...f, otpRequiredMember: e.target.checked }))}
+          />
+          {t('admin.otpRequiredMember')}
+        </label>
+        <label className="admin-settings-checkbox">
+          <input
+            type="checkbox"
+            checked={form.otpRequiredOrg}
+            onChange={(e) => setForm((f) => ({ ...f, otpRequiredOrg: e.target.checked }))}
+          />
+          {t('admin.otpRequiredOrg')}
         </label>
 
         <h3 className="section-title" style={{ marginTop: '2rem' }}>{t('admin.sectionFees')}</h3>

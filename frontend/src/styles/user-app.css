@@ -1,4 +1,4 @@
-/* Wirex One 톤 — 사용자 앱 전용. 관리자(.is-admin / .hq-shell)에는 적용하지 않음 */
+/* Wirex One 톤 — 사용자 앱 전용. 관리자 셸 레이아웃은 AdminLayout.css, 인증(.wx-auth)은 공용 */
 
 .user-app {
   --color-bg: #000000;

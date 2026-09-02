@@ -52,8 +52,14 @@ export default function Login() {
     }
     try {
       const r = await api.auth.login(trimmedEmail, trimmedPassword);
-      setToken(r.token);
+      if (r.mustSetupOtp && r.enrollToken) {
+        sessionStorage.setItem('memberOtpEnroll', r.enrollToken);
+        navigate('/otp');
+        return;
+      }
+      if (r.token) setToken(r.token);
       if (r.otpRequired) {
+        sessionStorage.removeItem('memberOtpEnroll');
         navigate('/otp');
         return;
       }

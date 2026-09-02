@@ -24,6 +24,8 @@ export default function PartnerLogin() {
       localStorage.setItem('partnerToken', r.token);
       if (r.otpRequired) localStorage.setItem('partnerOtpPending', '1');
       else localStorage.removeItem('partnerOtpPending');
+      if (r.mustSetupOtp) localStorage.setItem('partnerOtpSetup', '1');
+      else localStorage.removeItem('partnerOtpSetup');
       if (r.mustChangePassword) {
         localStorage.setItem('partnerMustChangePassword', '1');
         navigate('/partner/password');

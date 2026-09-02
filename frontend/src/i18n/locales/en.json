@@ -40,7 +40,17 @@
     "submit": "Submit",
     "agreePrefix": "By logging in I agree to the",
     "terms": "Terms",
-    "privacy": "Privacy Policy"
+    "privacy": "Privacy Policy",
+    "otpTitle": "Two-factor authentication",
+    "otpTotpHint": "Enter the 6-digit code from your authenticator app.",
+    "otpCode": "Verification code",
+    "otpVerify": "Verify",
+    "otpVerifying": "Verifying...",
+    "otpInvalid": "Invalid verification code.",
+    "otpBack": "Back to login",
+    "otpGoogleTitle": "Register Google OTP",
+    "otpScanHint": "Scan the QR with Google Authenticator, then enter the 6-digit code.",
+    "otpSecret": "Secret key"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -376,7 +386,15 @@
     "colChannel": "Channel",
     "channelDirect": "Direct member",
     "channelPartner": "Partner member",
-    "directMemberDesc": "Direct members sign up at /register. Partner members are created by merchant API. Direct members can issue and top up cards."
+    "directMemberDesc": "Direct members sign up at /register. Partner members are created by merchant API. Direct members can issue and top up cards.",
+    "sectionOtp": "OTP policy",
+    "otpPolicyDesc": "Require Google OTP for admin, member, and partner logins (Crypto standard).",
+    "otpRequiredAdmin": "Require OTP for admin login",
+    "otpRequiredMember": "Require OTP for member login",
+    "otpRequiredOrg": "Require OTP for partner/org login",
+    "resetOtpBtn": "Reset OTP",
+    "resetOtpConfirm": "Reset Google OTP for {email}?\\n(They must re-enroll on next login)",
+    "otpResetDone": "OTP for {email} has been reset."
   },
   "earn": {
     "title": "Earn",
@@ -406,7 +424,7 @@
     "setPassword": "Set password",
     "setPasswordHint": "This is your first login. Set the password you will use.",
     "otpTitle": "OTP verification",
-    "otpHint": "Enter the 6-digit code from your authenticator app. (Member OTP is currently disabled.)",
+    "otpHint": "Enter the 6-digit code from your authenticator app.",
     "navHome": "Home",
     "navApi": "API",
     "navFees": "Fees",

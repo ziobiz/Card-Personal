@@ -24,10 +24,17 @@ export interface FeePolicySettings {
   partnerMonthlyFee?: number;
 }
 
+export interface SecuritySettings {
+  otpRequiredAdmin?: boolean;
+  otpRequiredMember?: boolean;
+  otpRequiredOrg?: boolean;
+}
+
 export interface AdminSettings {
   wirex?: WirexSettings;
   useMockWirex?: boolean;
   feePolicy?: FeePolicySettings;
+  security?: SecuritySettings;
   updatedAt?: string;
 }
 
@@ -50,6 +57,11 @@ const DEFAULTS: AdminSettings = {
     cardMonthlyFee: 2,
     partnerMonthlyFee: 50,
   },
+  security: {
+    otpRequiredAdmin: true,
+    otpRequiredMember: true,
+    otpRequiredOrg: true,
+  },
 };
 
 function loadFromFile(): AdminSettings {
@@ -62,6 +74,7 @@ function loadFromFile(): AdminSettings {
       ...parsed,
       wirex: { ...DEFAULTS.wirex, ...parsed.wirex },
       feePolicy: { ...DEFAULTS.feePolicy, ...parsed.feePolicy },
+      security: { ...DEFAULTS.security, ...parsed.security },
     };
   } catch {
     return { ...DEFAULTS };
@@ -89,6 +102,7 @@ export const settingsStore = {
       ...partial,
       wirex: { ...cached.wirex, ...partial.wirex },
       feePolicy: { ...cached.feePolicy, ...partial.feePolicy },
+      security: { ...cached.security, ...partial.security },
       updatedAt: new Date().toISOString(),
     };
     saveToFile(cached);

@@ -40,7 +40,17 @@
     "submit": "提交",
     "agreePrefix": "登录即表示同意",
     "terms": "条款",
-    "privacy": "隐私政策"
+    "privacy": "隐私政策",
+    "otpTitle": "两步验证",
+    "otpTotpHint": "请输入验证器应用中的6位代码。",
+    "otpCode": "验证码",
+    "otpVerify": "确认验证",
+    "otpVerifying": "验证中...",
+    "otpInvalid": "验证码不正确。",
+    "otpBack": "返回登录",
+    "otpGoogleTitle": "注册 Google OTP",
+    "otpScanHint": "使用 Google Authenticator 扫描二维码后输入6位代码。",
+    "otpSecret": "密钥"
   },
   "dashboard": {
     "title": "仪表盘",
@@ -345,7 +355,15 @@
     "colChannel": "注册渠道",
     "channelDirect": "自有会员",
     "channelPartner": "合作方会员",
-    "directMemberDesc": "自有会员在 /register 注册。合作方会员由商户 API 创建。自有会员也可以发卡和充值。"
+    "directMemberDesc": "自有会员在 /register 注册。合作方会员由商户 API 创建。自有会员也可以发卡和充值。",
+    "sectionOtp": "OTP 策略",
+    "otpPolicyDesc": "设置管理员、会员、合作伙伴登录是否必须 Google OTP（Crypto 标准）",
+    "otpRequiredAdmin": "管理员登录必须 OTP",
+    "otpRequiredMember": "会员登录必须 OTP",
+    "otpRequiredOrg": "合作伙伴/组织登录必须 OTP",
+    "resetOtpBtn": "重置 OTP",
+    "resetOtpConfirm": "确定重置 {email} 的 Google OTP 吗？\\n（下次登录需重新绑定）",
+    "otpResetDone": "已重置 {email} 的 OTP。"
   },
   "earn": {
     "title": "收益",
@@ -375,7 +393,7 @@
     "setPassword": "设置密码",
     "setPasswordHint": "首次登录，请设置您将使用的密码。",
     "otpTitle": "OTP 验证",
-    "otpHint": "请输入验证器中的6位代码。（会员 OTP 目前已关闭）",
+    "otpHint": "请输入验证器中的6位代码。",
     "navHome": "首页",
     "navApi": "API 对接",
     "navFees": "费率",

@@ -5,12 +5,31 @@ import { createHash } from 'crypto';
 import { config } from '../config.js';
 import { store } from '../data/store.js';
 import { wirexService } from '../services/wirex/wirexService.js';
-import { generateOtpSecret, verifyTotp } from '../lib/totp.js';
+import { generateOtpSecret, otpAuthUrl, verifyTotp } from '../lib/totp.js';
+import { getSecuritySettings, maskEmail } from '../lib/otpPolicy.js';
 
 const router = Router();
 
 function hashPassword(password: string): string {
   return createHash('sha256').update(password + config.jwtSecret).digest('hex');
+}
+
+function signMember(userId: string, email: string, extra: Record<string, unknown> = {}) {
+  return jwt.sign({ userId, email, ...extra }, config.jwtSecret, { expiresIn: '7d' });
+}
+
+function signEnroll(userId: string) {
+  return jwt.sign({ userId, purpose: 'otp_enroll' }, config.jwtSecret, { expiresIn: '15m' });
+}
+
+function verifyEnroll(token: string): string | null {
+  try {
+    const decoded = jwt.verify(token, config.jwtSecret) as { userId?: string; purpose?: string };
+    if (decoded.purpose !== 'otp_enroll' || !decoded.userId) return null;
+    return decoded.userId;
+  } catch {
+    return null;
+  }
 }
 
 router.post('/register', async (req, res) => {
@@ -45,13 +64,23 @@ router.post('/register', async (req, res) => {
       walletAddress: walletAddress ?? wirexUser.primaryWalletAddress,
       country: residence,
       source: 'direct' as const,
-      otpSecret: generateOtpSecret(),
-      otpEnabled: true,
+      otpSecret: undefined as string | undefined,
+      otpEnabled: false,
       createdAt: new Date().toISOString(),
     };
     store.addUser(appUser);
 
-    const token = jwt.sign({ userId: id, email }, config.jwtSecret, { expiresIn: '7d' });
+    const sec = getSecuritySettings();
+    if (sec.otpRequiredMember) {
+      return res.json({
+        mustSetupOtp: true,
+        enrollToken: signEnroll(id),
+        maskedEmail: maskEmail(email),
+        user: { id, email, wirexUserId: wirexUser.id, walletAddress: appUser.walletAddress },
+      });
+    }
+
+    const token = signMember(id, email);
     res.json({ token, user: { id, email, wirexUserId: wirexUser.id, walletAddress: appUser.walletAddress } });
   } catch (e) {
     res.status(500).json({ error: (e as Error).message });
@@ -66,7 +95,6 @@ router.post('/login', (req, res) => {
   }
   store.loadUsers();
   const user = store.getUserByEmail(email);
-  console.log('[LOGIN] email:', JSON.stringify(email), 'user found:', !!user, 'store size:', store.users.size);
   if (!user) {
     return res.status(401).json({
       error: 'Invalid credentials',
@@ -79,37 +107,92 @@ router.post('/login', (req, res) => {
   if (user.status === 'suspended') {
     return res.status(403).json({ error: 'Account suspended' });
   }
-  const otpRequired = config.otpRequiredMember;
-  const token = jwt.sign(
-    { userId: user.id, email: user.email, ...(otpRequired ? { otpPending: true } : {}) },
-    config.jwtSecret,
-    { expiresIn: '7d' }
-  );
+
+  const sec = getSecuritySettings();
+  if (sec.otpRequiredMember) {
+    if (!user.otpEnabled || !user.otpSecret) {
+      return res.json({
+        mustSetupOtp: true,
+        enrollToken: signEnroll(user.id),
+        maskedEmail: maskEmail(user.email),
+        user: { id: user.id, email: user.email, wirexUserId: user.wirexUserId },
+      });
+    }
+    const token = signMember(user.id, user.email, { otpPending: true });
+    return res.json({
+      token,
+      otpRequired: true,
+      otpMethod: 'totp',
+      maskedEmail: maskEmail(user.email),
+      user: { id: user.id, email: user.email, wirexUserId: user.wirexUserId },
+      mustChangePassword: false,
+    });
+  }
+
+  const token = signMember(user.id, user.email);
   res.json({
     token,
     user: { id: user.id, email: user.email, wirexUserId: user.wirexUserId },
-    otpRequired,
+    otpRequired: false,
     mustChangePassword: false,
   });
+});
+
+router.post('/otp/setup', (req, res) => {
+  const enrollToken = String(req.body?.enrollToken || '');
+  const userId = verifyEnroll(enrollToken);
+  if (!userId) return res.status(401).json({ error: 'Invalid enroll session' });
+  store.loadUsers();
+  const user = store.getUserById(userId);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  const secret = generateOtpSecret();
+  store.updateOtp(user.id, { otpSecret: secret, otpEnabled: false });
+  res.json({
+    secret,
+    otpauthUrl: otpAuthUrl(user.email, secret),
+    enrollToken,
+    maskedEmail: maskEmail(user.email),
+  });
+});
+
+router.post('/otp/activate', (req, res) => {
+  const enrollToken = String(req.body?.enrollToken || '');
+  const code = String(req.body?.code || '');
+  const userId = verifyEnroll(enrollToken);
+  if (!userId) return res.status(401).json({ error: 'Invalid enroll session' });
+  store.loadUsers();
+  const user = store.getUserById(userId);
+  if (!user?.otpSecret) return res.status(400).json({ error: 'OTP not provisioned' });
+  if (!verifyTotp(user.otpSecret, code)) {
+    return res.status(401).json({ error: 'Invalid OTP' });
+  }
+  store.updateOtp(user.id, { otpEnabled: true });
+  const token = signMember(user.id, user.email);
+  res.json({ token, user: { id: user.id, email: user.email, wirexUserId: user.wirexUserId } });
 });
 
 router.post('/otp/verify', (req, res) => {
   const auth = req.headers.authorization;
   if (!auth?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
   try {
-    const decoded = jwt.verify(auth.slice(7), config.jwtSecret) as { userId?: string; email?: string };
+    const decoded = jwt.verify(auth.slice(7), config.jwtSecret) as {
+      userId?: string;
+      email?: string;
+      otpPending?: boolean;
+    };
     if (!decoded.userId) return res.status(401).json({ error: 'Unauthorized' });
     store.loadUsers();
     const user = store.getUserById(decoded.userId);
     if (!user?.otpSecret) return res.status(400).json({ error: 'OTP not provisioned' });
-    if (!config.otpRequiredMember) {
-      const token = jwt.sign({ userId: user.id, email: user.email }, config.jwtSecret, { expiresIn: '7d' });
+    const sec = getSecuritySettings();
+    if (!sec.otpRequiredMember) {
+      const token = signMember(user.id, user.email);
       return res.json({ token, otpRequired: false });
     }
     if (!verifyTotp(user.otpSecret, String(req.body?.code || ''))) {
       return res.status(401).json({ error: 'Invalid OTP' });
     }
-    const token = jwt.sign({ userId: user.id, email: user.email }, config.jwtSecret, { expiresIn: '7d' });
+    const token = signMember(user.id, user.email);
     res.json({ token, user: { id: user.id, email: user.email, wirexUserId: user.wirexUserId } });
   } catch {
     res.status(401).json({ error: 'Unauthorized' });

@@ -43,8 +43,8 @@ body {
 
 .is-admin {
   min-height: 100vh;
-  background: #e8eaed;
-  color: #222;
+  background: #000;
+  color: #f4f4f5;
 }
 
 /* Touch target min 44px for mobile */
@@ -150,28 +150,28 @@ select,
   }
 }
 
-/* Admin must win over global dark theme / 44px tap targets */
+/* Admin Wirex One tone — tap targets remain compact in HQ shell */
 .is-admin {
-  color: #222;
-  background: #e8eaed;
+  color: #f4f4f5;
+  background: #000;
 }
 
 .is-admin .card-surface {
-  background: #fff;
-  color: #222;
-  border: 1px solid #d0d5dd;
-  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(28, 28, 30, 0.82) 0%, rgba(10, 10, 12, 0.88) 100%);
+  color: #f4f4f5;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
 }
 
 .is-admin .page-title,
 .is-admin .section-title,
 .is-admin .stat-label,
 .is-admin .stat-value {
-  color: #222;
+  color: #f4f4f5;
 }
 
 .is-admin .stat-label {
-  color: #666;
+  color: #9a9a9a;
 }
 
 .is-admin .hq-shell a,
@@ -182,6 +182,6 @@ select,
 .is-admin,
 .is-admin .hq-shell {
   font-size: 13px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
   letter-spacing: -0.02em;
 }

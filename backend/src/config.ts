@@ -84,7 +84,8 @@ export const config = {
   webhookSecret: process.env.WIREX_WEBHOOK_SECRET ?? '',
   adminEmail: process.env.ADMIN_EMAIL ?? 'admin@icocard.local',
   adminPassword: process.env.ADMIN_PASSWORD ?? 'admin123',
-  /** OTP 기능은 구현됨. 기본 비활성(회원·조직 모두). OTP_REQUIRED_ORG=true 로 조직 로그인 OTP 켜기 */
-  otpRequiredOrg: process.env.OTP_REQUIRED_ORG === 'true',
-  otpRequiredMember: process.env.OTP_REQUIRED_MEMBER === 'true',
+  /** Crypto 기준 Google OTP. 기본 ON (false 로만 끔). 관리자 설정에서 덮어쓸 수 있음 */
+  otpRequiredOrg: process.env.OTP_REQUIRED_ORG !== 'false',
+  otpRequiredMember: process.env.OTP_REQUIRED_MEMBER !== 'false',
+  otpRequiredAdmin: process.env.OTP_REQUIRED_ADMIN !== 'false',
 };
