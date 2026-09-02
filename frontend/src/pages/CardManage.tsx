@@ -3,12 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { api, type Card } from '../api';
 import CardVisual from '../components/CardVisual';
+import CardActionSheet from '../components/CardActionSheet';
+import { ApplePayIcon, DepositIcon, FreezeIcon, GooglePayIcon, LimitIcon, MenuIcon } from '../components/BrandIcons';
 
-/** 카드 사용 관리 — 잔액·한도·차단·지갑 연동 */
+/** 카드 사용 관리 — 잔액·한도·차단·지갑 연동 (모바일 메뉴형) */
 export default function CardManage() {
   const { t } = useTranslation();
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
+  const [menuCard, setMenuCard] = useState<Card | null>(null);
   const [limitModal, setLimitModal] = useState<Card | null>(null);
   const [newLimit, setNewLimit] = useState('');
   const [depositModal, setDepositModal] = useState<Card | null>(null);
@@ -107,7 +110,7 @@ export default function CardManage() {
         </div>
       ) : (
         <div className="cards-wirex-layout">
-          <div className="cards-row">
+          <div className="cards-row cards-row-responsive">
             {cards.map((card, idx) => (
               <div key={card.id} className="card-tile">
                 <CardVisual
@@ -135,46 +138,58 @@ export default function CardManage() {
                     </span>
                   )}
                 </div>
-                <div className="card-tile-actions">
+
+                <div className="wx-quick-actions" aria-label={t('cards.actionMenuIntro')}>
                   <button
+                    type="button"
+                    className="wx-quick-btn"
                     onClick={() => {
                       setDepositModal(card);
                       setDepositAmount('');
                     }}
-                    className="btn-primary btn-compact"
                   >
-                    {t('cards.depositShort')}
+                    <DepositIcon />
+                    <span>{t('cards.depositShort')}</span>
                   </button>
-                  {card.status === 'blocked' ? (
-                    <button onClick={() => handleUnblock(card)} className="btn-secondary">
-                      {t('cards.unblock')}
-                    </button>
-                  ) : card.status === 'active' ? (
-                    <button onClick={() => handleBlock(card)} className="btn-danger">
-                      {t('cards.block')}
-                    </button>
-                  ) : null}
                   {card.status !== 'closed' && (
                     <button
+                      type="button"
+                      className="wx-quick-btn"
                       onClick={() => {
                         setLimitModal(card);
                         setNewLimit(String(card.dailyLimit ?? card.limit ?? 5000));
                       }}
-                      className="btn-outline"
                     >
-                      {t('dashboard.manage')}
+                      <LimitIcon />
+                      <span>{t('cards.limitAction')}</span>
+                    </button>
+                  )}
+                  {(card.status === 'active' || card.status === 'blocked') && (
+                    <button
+                      type="button"
+                      className="wx-quick-btn"
+                      onClick={() => (card.status === 'blocked' ? handleUnblock(card) : handleBlock(card))}
+                    >
+                      <FreezeIcon />
+                      <span>{card.status === 'blocked' ? t('cards.unblock') : t('cards.block')}</span>
                     </button>
                   )}
                   {card.status === 'active' && (
                     <>
-                      <button onClick={() => handleWallet(card, 'apple_pay')} className="btn-outline">
-                        Apple Pay
+                      <button type="button" className="wx-quick-btn wx-quick-apple" onClick={() => handleWallet(card, 'apple_pay')}>
+                        <ApplePayIcon />
+                        <span>Apple Pay</span>
                       </button>
-                      <button onClick={() => handleWallet(card, 'google_pay')} className="btn-outline">
-                        Google Pay
+                      <button type="button" className="wx-quick-btn wx-quick-google" onClick={() => handleWallet(card, 'google_pay')}>
+                        <GooglePayIcon />
+                        <span>Google Pay</span>
                       </button>
                     </>
                   )}
+                  <button type="button" className="wx-quick-btn wx-quick-more" onClick={() => setMenuCard(card)}>
+                    <MenuIcon />
+                    <span>{t('cards.moreActions')}</span>
+                  </button>
                 </div>
               </div>
             ))}
@@ -184,6 +199,43 @@ export default function CardManage() {
           </Link>
         </div>
       )}
+
+      <CardActionSheet
+        card={menuCard}
+        open={Boolean(menuCard)}
+        onClose={() => setMenuCard(null)}
+        onDeposit={() => {
+          if (!menuCard) return;
+          setDepositModal(menuCard);
+          setDepositAmount('');
+          setMenuCard(null);
+        }}
+        onLimit={() => {
+          if (!menuCard) return;
+          setLimitModal(menuCard);
+          setNewLimit(String(menuCard.dailyLimit ?? menuCard.limit ?? 5000));
+          setMenuCard(null);
+        }}
+        onBlockToggle={() => {
+          if (!menuCard) return;
+          const c = menuCard;
+          setMenuCard(null);
+          if (c.status === 'blocked') handleUnblock(c);
+          else handleBlock(c);
+        }}
+        onApplePay={() => {
+          if (!menuCard) return;
+          const c = menuCard;
+          setMenuCard(null);
+          handleWallet(c, 'apple_pay');
+        }}
+        onGooglePay={() => {
+          if (!menuCard) return;
+          const c = menuCard;
+          setMenuCard(null);
+          handleWallet(c, 'google_pay');
+        }}
+      />
 
       {depositModal && (
         <div className="modal-overlay" onClick={() => setDepositModal(null)}>

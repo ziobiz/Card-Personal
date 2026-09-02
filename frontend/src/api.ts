@@ -172,12 +172,13 @@ export const api = {
         mustSetupOtp?: boolean;
         enrollToken?: string;
         mustChangePassword?: boolean;
+        biometricAvailable?: boolean;
       }>('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       }),
     verifyOtp: (code: string) =>
-      request<{ token: string; user?: User }>('/auth/otp/verify', {
+      request<{ token: string; user?: User; offerBiometric?: boolean }>('/auth/otp/verify', {
         method: 'POST',
         body: JSON.stringify({ code }),
       }),
@@ -187,10 +188,16 @@ export const api = {
         body: JSON.stringify({ enrollToken }),
       }),
     activateOtp: (enrollToken: string, code: string) =>
-      request<{ token: string; user?: User }>('/auth/otp/activate', {
+      request<{ token: string; user?: User; offerBiometric?: boolean }>('/auth/otp/activate', {
         method: 'POST',
         body: JSON.stringify({ enrollToken, code }),
       }),
+    webauthnRegisterOptions: () => request<Record<string, unknown>>('/auth/webauthn/register/options', { method: 'POST', body: '{}' }),
+    webauthnRegisterVerify: (body: unknown) =>
+      request<{ ok: boolean }>('/auth/webauthn/register/verify', { method: 'POST', body: JSON.stringify(body) }),
+    webauthnLoginOptions: () => request<Record<string, unknown>>('/auth/webauthn/login/options', { method: 'POST', body: '{}' }),
+    webauthnLoginVerify: (body: unknown) =>
+      request<{ token: string; user?: User }>('/auth/webauthn/login/verify', { method: 'POST', body: JSON.stringify(body) }),
   },
   user: {
     get: () => request<User & { status?: string }>('/user'),

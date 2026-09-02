@@ -7,6 +7,7 @@ import { store } from '../data/store.js';
 import { wirexService } from '../services/wirex/wirexService.js';
 import { generateOtpSecret, otpAuthUrl, verifyTotp } from '../lib/totp.js';
 import { getSecuritySettings, maskEmail } from '../lib/otpPolicy.js';
+import { webauthnService } from '../lib/webauthn.js';
 
 const router = Router();
 
@@ -27,6 +28,18 @@ function verifyEnroll(token: string): string | null {
     const decoded = jwt.verify(token, config.jwtSecret) as { userId?: string; purpose?: string };
     if (decoded.purpose !== 'otp_enroll' || !decoded.userId) return null;
     return decoded.userId;
+  } catch {
+    return null;
+  }
+}
+
+function readBearerUser(req: { headers: { authorization?: string } }): { userId: string; otpPending?: boolean } | null {
+  const auth = req.headers.authorization;
+  if (!auth?.startsWith('Bearer ')) return null;
+  try {
+    const decoded = jwt.verify(auth.slice(7), config.jwtSecret) as { userId?: string; otpPending?: boolean };
+    if (!decoded.userId) return null;
+    return { userId: decoded.userId, otpPending: decoded.otpPending };
   } catch {
     return null;
   }
@@ -123,6 +136,7 @@ router.post('/login', (req, res) => {
       token,
       otpRequired: true,
       otpMethod: 'totp',
+      biometricAvailable: webauthnService.hasCredentials(user),
       maskedEmail: maskEmail(user.email),
       user: { id: user.id, email: user.email, wirexUserId: user.wirexUserId },
       mustChangePassword: false,
@@ -168,7 +182,11 @@ router.post('/otp/activate', (req, res) => {
   }
   store.updateOtp(user.id, { otpEnabled: true });
   const token = signMember(user.id, user.email);
-  res.json({ token, user: { id: user.id, email: user.email, wirexUserId: user.wirexUserId } });
+  res.json({
+    token,
+    user: { id: user.id, email: user.email, wirexUserId: user.wirexUserId },
+    offerBiometric: true,
+  });
 });
 
 router.post('/otp/verify', (req, res) => {
@@ -187,15 +205,78 @@ router.post('/otp/verify', (req, res) => {
     const sec = getSecuritySettings();
     if (!sec.otpRequiredMember) {
       const token = signMember(user.id, user.email);
-      return res.json({ token, otpRequired: false });
+      return res.json({ token, otpRequired: false, offerBiometric: !webauthnService.hasCredentials(user) });
     }
     if (!verifyTotp(user.otpSecret, String(req.body?.code || ''))) {
       return res.status(401).json({ error: 'Invalid OTP' });
     }
     const token = signMember(user.id, user.email);
-    res.json({ token, user: { id: user.id, email: user.email, wirexUserId: user.wirexUserId } });
+    res.json({
+      token,
+      user: { id: user.id, email: user.email, wirexUserId: user.wirexUserId },
+      offerBiometric: !webauthnService.hasCredentials(user),
+    });
   } catch {
     res.status(401).json({ error: 'Unauthorized' });
+  }
+});
+
+/** Mobile biometric (WebAuthn platform) — register after successful OTP */
+router.post('/webauthn/register/options', async (req, res) => {
+  const sess = readBearerUser(req);
+  if (!sess || sess.otpPending) return res.status(401).json({ error: 'Unauthorized' });
+  store.loadUsers();
+  const user = store.getUserById(sess.userId);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  try {
+    const options = await webauthnService.registrationOptions(user);
+    res.json(options);
+  } catch (e) {
+    res.status(400).json({ error: (e as Error).message });
+  }
+});
+
+router.post('/webauthn/register/verify', async (req, res) => {
+  const sess = readBearerUser(req);
+  if (!sess || sess.otpPending) return res.status(401).json({ error: 'Unauthorized' });
+  store.loadUsers();
+  const user = store.getUserById(sess.userId);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  try {
+    await webauthnService.verifyRegistration(user, req.body);
+    res.json({ ok: true, biometricEnabled: true });
+  } catch (e) {
+    res.status(400).json({ error: (e as Error).message });
+  }
+});
+
+/** Mobile biometric login while otpPending */
+router.post('/webauthn/login/options', async (req, res) => {
+  const sess = readBearerUser(req);
+  if (!sess?.otpPending) return res.status(401).json({ error: 'OTP session required' });
+  store.loadUsers();
+  const user = store.getUserById(sess.userId);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  try {
+    const options = await webauthnService.authenticationOptions(user);
+    res.json(options);
+  } catch (e) {
+    res.status(400).json({ error: (e as Error).message });
+  }
+});
+
+router.post('/webauthn/login/verify', async (req, res) => {
+  const sess = readBearerUser(req);
+  if (!sess?.otpPending) return res.status(401).json({ error: 'OTP session required' });
+  store.loadUsers();
+  const user = store.getUserById(sess.userId);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  try {
+    await webauthnService.verifyAuthentication(user, req.body);
+    const token = signMember(user.id, user.email);
+    res.json({ token, user: { id: user.id, email: user.email, wirexUserId: user.wirexUserId } });
+  } catch (e) {
+    res.status(401).json({ error: (e as Error).message });
   }
 });
 

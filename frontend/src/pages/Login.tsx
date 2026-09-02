@@ -54,12 +54,15 @@ export default function Login() {
       const r = await api.auth.login(trimmedEmail, trimmedPassword);
       if (r.mustSetupOtp && r.enrollToken) {
         sessionStorage.setItem('memberOtpEnroll', r.enrollToken);
+        sessionStorage.removeItem('memberBiometricAvailable');
         navigate('/otp');
         return;
       }
       if (r.token) setToken(r.token);
       if (r.otpRequired) {
         sessionStorage.removeItem('memberOtpEnroll');
+        if (r.biometricAvailable) sessionStorage.setItem('memberBiometricAvailable', '1');
+        else sessionStorage.removeItem('memberBiometricAvailable');
         navigate('/otp');
         return;
       }

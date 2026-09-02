@@ -24,6 +24,18 @@ export interface AppUser {
   status?: 'active' | 'suspended';
   otpSecret?: string;
   otpEnabled?: boolean;
+  /** WebAuthn platform authenticator credentials (mobile biometrics) */
+  webauthnCredentials?: WebAuthnCredential[];
+  createdAt: string;
+}
+
+export interface WebAuthnCredential {
+  id: string;
+  publicKey: string;
+  counter: number;
+  transports?: string[];
+  deviceType?: string;
+  backedUp?: boolean;
   createdAt: string;
 }
 
@@ -151,5 +163,32 @@ export const store = {
     if (data.otpEnabled != null) user.otpEnabled = data.otpEnabled;
     saveToFile(Array.from(users.values()));
     return user;
+  },
+
+  setWebauthnCredentials(id: string, credentials: WebAuthnCredential[]): AppUser | undefined {
+    const user = users.get(id);
+    if (!user) return undefined;
+    user.webauthnCredentials = credentials;
+    saveToFile(Array.from(users.values()));
+    return user;
+  },
+
+  addWebauthnCredential(id: string, cred: WebAuthnCredential): AppUser | undefined {
+    const user = users.get(id);
+    if (!user) return undefined;
+    const list = [...(user.webauthnCredentials || [])].filter((c) => c.id !== cred.id);
+    list.push(cred);
+    user.webauthnCredentials = list;
+    saveToFile(Array.from(users.values()));
+    return user;
+  },
+
+  updateWebauthnCounter(id: string, credId: string, counter: number): void {
+    const user = users.get(id);
+    if (!user?.webauthnCredentials) return;
+    const c = user.webauthnCredentials.find((x) => x.id === credId);
+    if (!c) return;
+    c.counter = counter;
+    saveToFile(Array.from(users.values()));
   },
 };

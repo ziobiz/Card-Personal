@@ -50,7 +50,17 @@
     "otpBack": "กลับไปเข้าสู่ระบบ",
     "otpGoogleTitle": "ลงทะเบียน Google OTP",
     "otpScanHint": "สแกน QR ด้วย Google Authenticator แล้วกรอกรหัส 6 หลัก",
-    "otpSecret": "รหัสลับ"
+    "otpSecret": "รหัสลับ",
+    "secondFactorTitle": "ยืนยันสองขั้นตอน",
+    "secondFactorHint": "บนมือถือเลือกไบโอเมตริกหรือ OTP ได้",
+    "biometricBtn": "ไบโอเมตริก (Face ID / ลายนิ้วมือ)",
+    "useOtpInstead": "ใช้รหัส OTP",
+    "biometricFailed": "ไบโอเมตริกล้มเหลว ใช้ OTP ต่อ",
+    "biometricEnrollTitle": "ลงทะเบียนไบโอเมตริก",
+    "biometricEnrollHint": "ครั้งถัดไปใช้ Face ID/ลายนิ้วมือได้เร็วขึ้น",
+    "biometricEnrollBtn": "ลงทะเบียนไบโอเมตริก",
+    "biometricEnrollFailed": "ลงทะเบียนไบโอเมตริกล้มเหลว",
+    "biometricSkip": "ไว้ทีหลัง"
   },
   "dashboard": {
     "title": "แดชบอร์ด",
@@ -103,7 +113,10 @@
     "noCardsManage": "ยังไม่มีบัตรให้จัดการ กรุณาออกบัตรก่อน",
     "issueSuccess": "ออกบัตรสำเร็จ",
     "applePayDone": "ออกโทเคน Apple Pay แล้ว",
-    "googlePayDone": "ออกโทเคน Google Pay แล้ว"
+    "googlePayDone": "ออกโทเคน Google Pay แล้ว",
+    "actionMenuIntro": "เลือกการทำงานของบัตร",
+    "limitAction": "วงเงิน",
+    "moreActions": "เมนูทั้งหมด"
   },
   "admin": {
     "loginTitle": "เข้าสู่ระบบผู้ดูแล",

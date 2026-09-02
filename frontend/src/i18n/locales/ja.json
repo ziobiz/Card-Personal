@@ -51,7 +51,17 @@
     "otpBack": "ログインに戻る",
     "otpGoogleTitle": "Google OTP 登録",
     "otpScanHint": "Google Authenticator で QR を読み取り、6桁コードを入力してください。",
-    "otpSecret": "シークレットキー"
+    "otpSecret": "シークレットキー",
+    "secondFactorTitle": "二要素認証",
+    "secondFactorHint": "モバイルでは生体認証またはOTPを選択できます。",
+    "biometricBtn": "生体認証 (Face ID / 指紋)",
+    "useOtpInstead": "OTPコードで認証",
+    "biometricFailed": "生体認証に失敗しました。OTPで続行してください。",
+    "biometricEnrollTitle": "生体認証を登録",
+    "biometricEnrollHint": "次回から Face ID/指紋で素早く認証できます。",
+    "biometricEnrollBtn": "生体認証を登録",
+    "biometricEnrollFailed": "生体認証の登録に失敗しました。",
+    "biometricSkip": "後で"
   },
   "dashboard": {
     "title": "ダッシュボード",
@@ -104,7 +114,10 @@
     "noCardsManage": "管理するカードがありません。先に発行してください。",
     "issueSuccess": "カードを発行しました。",
     "applePayDone": "Apple Pay トークンを発行しました。",
-    "googlePayDone": "Google Pay トークンを発行しました。"
+    "googlePayDone": "Google Pay トークンを発行しました。",
+    "actionMenuIntro": "カード操作を選んでください。",
+    "limitAction": "限度額",
+    "moreActions": "メニュー"
   },
   "admin": {
     "loginTitle": "管理者ログイン",

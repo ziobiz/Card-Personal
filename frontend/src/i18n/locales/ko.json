@@ -54,7 +54,17 @@
     "otpBack": "로그인으로 돌아가기",
     "otpGoogleTitle": "Google OTP 등록",
     "otpScanHint": "Google Authenticator 앱으로 QR을 스캔한 뒤 6자리 코드를 입력하세요.",
-    "otpSecret": "시크릿 키"
+    "otpSecret": "시크릿 키",
+    "secondFactorTitle": "2단계 인증",
+    "secondFactorHint": "모바일에서 생체 인증 또는 OTP를 선택할 수 있습니다.",
+    "biometricBtn": "생체 인증 (Face ID / 지문)",
+    "useOtpInstead": "OTP 코드로 인증",
+    "biometricFailed": "생체 인증에 실패했습니다. OTP로 진행해 주세요.",
+    "biometricEnrollTitle": "생체 인증 등록",
+    "biometricEnrollHint": "다음 로그인부터 Face ID/지문으로 빠르게 인증할 수 있습니다.",
+    "biometricEnrollBtn": "생체 인증 등록",
+    "biometricEnrollFailed": "생체 인증 등록에 실패했습니다.",
+    "biometricSkip": "나중에 하기"
   },
   "dashboard": {
     "title": "홈",
@@ -128,7 +138,10 @@
     "noCardsManage": "관리할 카드가 없습니다. 먼저 발급해 주세요.",
     "issueSuccess": "카드가 발급되었습니다.",
     "applePayDone": "Apple Pay 토큰이 발급되었습니다.",
-    "googlePayDone": "Google Pay 토큰이 발급되었습니다."
+    "googlePayDone": "Google Pay 토큰이 발급되었습니다.",
+    "actionMenuIntro": "자주 쓰는 카드 기능을 선택하세요.",
+    "limitAction": "한도",
+    "moreActions": "전체 메뉴"
   },
   "wallet": {
     "title": "월렛 잔액",

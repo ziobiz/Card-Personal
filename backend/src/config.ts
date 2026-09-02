@@ -88,4 +88,8 @@ export const config = {
   otpRequiredOrg: process.env.OTP_REQUIRED_ORG !== 'false',
   otpRequiredMember: process.env.OTP_REQUIRED_MEMBER !== 'false',
   otpRequiredAdmin: process.env.OTP_REQUIRED_ADMIN !== 'false',
+  /** WebAuthn (Face ID / 지문) — 회원 모바일 2차 인증 */
+  webauthnRpId: process.env.WEBAUTHN_RP_ID || 'localhost',
+  webauthnRpName: process.env.WEBAUTHN_RP_NAME || 'ICOCARD',
+  webauthnOrigin: process.env.WEBAUTHN_ORIGIN || 'http://localhost:3000',
 };

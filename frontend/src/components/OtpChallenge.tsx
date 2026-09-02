@@ -5,7 +5,7 @@ import { useBrand } from '../brand/BrandContext';
 import '../pages/Auth.css';
 
 type SetupResult = { secret: string; otpauthUrl: string };
-type VerifyResult = { token: string };
+type VerifyResult = { token: string; offerBiometric?: boolean };
 
 type Props = {
   admin?: boolean;
@@ -14,7 +14,7 @@ type Props = {
   onSetup: (enrollToken: string) => Promise<SetupResult>;
   onActivate: (enrollToken: string, code: string) => Promise<VerifyResult>;
   onVerify: (code: string) => Promise<VerifyResult>;
-  onSuccess: (token: string) => void;
+  onSuccess: (token: string, meta?: { offerBiometric?: boolean }) => void;
   backHref: string;
 };
 
@@ -77,7 +77,7 @@ export default function OtpChallenge({
         mode === 'setup'
           ? await onActivate(String(enrollToken || ''), trimmed)
           : await onVerify(trimmed);
-      onSuccess(r.token);
+      onSuccess(r.token, { offerBiometric: r.offerBiometric });
     } catch (err) {
       setError((err as Error).message || t('auth.otpInvalid'));
     } finally {

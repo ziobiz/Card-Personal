@@ -54,7 +54,17 @@
     "otpBack": "Back to login",
     "otpGoogleTitle": "Register Google OTP",
     "otpScanHint": "Scan the QR with Google Authenticator, then enter the 6-digit code.",
-    "otpSecret": "Secret key"
+    "otpSecret": "Secret key",
+    "secondFactorTitle": "Two-factor auth",
+    "secondFactorHint": "On mobile you can choose biometrics or OTP.",
+    "biometricBtn": "Biometrics (Face ID / fingerprint)",
+    "useOtpInstead": "Use OTP code",
+    "biometricFailed": "Biometrics failed. Continue with OTP.",
+    "biometricEnrollTitle": "Enable biometrics",
+    "biometricEnrollHint": "Use Face ID/fingerprint for faster logins next time.",
+    "biometricEnrollBtn": "Enable biometrics",
+    "biometricEnrollFailed": "Could not enable biometrics.",
+    "biometricSkip": "Skip for now"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -120,7 +130,10 @@
     "noCardsManage": "No cards to manage yet. Issue one first.",
     "issueSuccess": "Card issued successfully.",
     "applePayDone": "Apple Pay token provisioned.",
-    "googlePayDone": "Google Pay token provisioned."
+    "googlePayDone": "Google Pay token provisioned.",
+    "actionMenuIntro": "Choose a card action.",
+    "limitAction": "Limit",
+    "moreActions": "More"
   },
   "wallet": {
     "title": "Wallet Balance",

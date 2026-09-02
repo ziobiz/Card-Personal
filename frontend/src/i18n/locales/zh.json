@@ -54,7 +54,17 @@
     "otpBack": "返回登录",
     "otpGoogleTitle": "注册 Google OTP",
     "otpScanHint": "使用 Google Authenticator 扫描二维码后输入6位代码。",
-    "otpSecret": "密钥"
+    "otpSecret": "密钥",
+    "secondFactorTitle": "两步验证",
+    "secondFactorHint": "在手机上可选择生物识别或 OTP。",
+    "biometricBtn": "生物识别（Face ID / 指纹）",
+    "useOtpInstead": "使用 OTP 验证",
+    "biometricFailed": "生物识别失败，请改用 OTP。",
+    "biometricEnrollTitle": "启用生物识别",
+    "biometricEnrollHint": "下次登录可用 Face ID/指纹更快验证。",
+    "biometricEnrollBtn": "启用生物识别",
+    "biometricEnrollFailed": "启用生物识别失败。",
+    "biometricSkip": "稍后"
   },
   "dashboard": {
     "title": "仪表盘",
@@ -103,7 +113,10 @@
     "noCardsManage": "暂无卡片可管理，请先申请发卡。",
     "issueSuccess": "发卡成功。",
     "applePayDone": "已开通 Apple Pay。",
-    "googlePayDone": "已开通 Google Pay。"
+    "googlePayDone": "已开通 Google Pay。",
+    "actionMenuIntro": "请选择卡片操作。",
+    "limitAction": "限额",
+    "moreActions": "更多"
   },
   "admin": {
     "loginTitle": "管理员登录",
