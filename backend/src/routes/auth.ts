@@ -15,9 +15,14 @@ function hashPassword(password: string): string {
 
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, wallet_address, country } = req.body;
+    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    const password = typeof req.body.password === 'string' ? req.body.password : '';
+    const { wallet_address, country } = req.body;
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password required' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
     store.loadUsers();
     if (store.getUserByEmail(email)) {
@@ -61,13 +66,11 @@ router.post('/login', (req, res) => {
   }
   store.loadUsers();
   const user = store.getUserByEmail(email);
-  // 디버그: store 상태 로그
   console.log('[LOGIN] email:', JSON.stringify(email), 'user found:', !!user, 'store size:', store.users.size);
   if (!user) {
     return res.status(401).json({
       error: 'Invalid credentials',
-      hint: '회원가입을 먼저 해주세요. / Please register first.',
-      _debug: { receivedEmail: email, usersCount: store.users.size },
+      hint: '회원가입을 먼저 해주세요. / Please register first. → http://localhost:3000/register',
     });
   }
   if (user.passwordHash !== hashPassword(password)) {

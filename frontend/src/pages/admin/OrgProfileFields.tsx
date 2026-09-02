@@ -102,6 +102,8 @@ function Field({
 }
 
 const COUNTRY_CODES = ['KR', 'JP', 'US', 'CN', 'TH', 'GB'] as const;
+
+const DIAL_CODES = [
   { id: 'KR', label: 'South Korea (+82)' },
   { id: 'JP', label: 'Japan (+81)' },
   { id: 'US', label: 'United States (+1)' },

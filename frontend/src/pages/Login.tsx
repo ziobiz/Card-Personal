@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../api';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useBrand } from '../brand/BrandContext';
+import { useAuth } from '../hooks/useAuth';
 import './Auth.css';
 
 function MailIcon({ light = false }: { light?: boolean }) {
@@ -18,6 +19,7 @@ function MailIcon({ light = false }: { light?: boolean }) {
 export default function Login() {
   const { t } = useTranslation();
   const { brand } = useBrand();
+  const { setToken } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -50,7 +52,7 @@ export default function Login() {
     }
     try {
       const r = await api.auth.login(trimmedEmail, trimmedPassword);
-      localStorage.setItem('token', r.token);
+      setToken(r.token);
       if (r.otpRequired) {
         navigate('/otp');
         return;

@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../api';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useBrand } from '../brand/BrandContext';
+import { useAuth } from '../hooks/useAuth';
 import './Auth.css';
 
 export default function MemberOtp() {
   const { t } = useTranslation();
   const { brand } = useBrand();
+  const { setToken } = useAuth();
   const navigate = useNavigate();
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -20,7 +22,7 @@ export default function MemberOtp() {
     setError('');
     try {
       const r = await api.auth.verifyOtp(code.trim());
-      localStorage.setItem('token', r.token);
+      setToken(r.token);
       navigate('/');
     } catch (err) {
       setError((err as Error).message);

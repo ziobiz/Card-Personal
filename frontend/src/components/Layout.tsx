@@ -79,6 +79,7 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
+      <p className="wx-shell-copy">{brand.copyright || 'Copyright © 2026 ICOCARD Service by ONTHELINE'}</p>
       <nav className="wx-bottom" aria-label="Primary">
         <NavLink to="/" end className={itemClass}>
           <IconHome />

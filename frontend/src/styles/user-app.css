@@ -319,8 +319,18 @@
 
 .wx-main {
   flex: 1;
-  padding: 1.1rem 1rem 5.5rem;
+  padding: 1.1rem 1rem 1rem;
   width: 100%;
+}
+
+.wx-shell-copy {
+  margin: 0;
+  padding: 0.65rem 1rem calc(4.6rem + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+  font-size: 0.72rem;
+  color: #7a7a7a;
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
 }
 
 .wx-bottom {
@@ -368,6 +378,10 @@
 
   .wx-main {
     padding: 2rem 1.5rem 2.5rem;
+  }
+
+  .wx-shell-copy {
+    padding-bottom: 1.25rem;
   }
 
   .wx-shell {
