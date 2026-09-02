@@ -15,6 +15,9 @@ export interface AppUser {
   /** 사용자 EOA — Wirex 표준 헤더 X-User-Address */
   walletAddress?: string;
   country?: string;
+  /** 표시 이름 (카드/계정 프로필) */
+  displayName?: string;
+  phone?: string;
   kycStatus?: 'pending' | 'verified' | 'rejected';
   kycLevel?: string;
   capabilities?: string[];
@@ -148,6 +151,27 @@ export const store = {
     const user = users.get(id);
     if (!user) return undefined;
     if (data.status) user.status = data.status;
+    saveToFile(Array.from(users.values()));
+    return user;
+  },
+
+  updateProfile(
+    id: string,
+    data: { displayName?: string; phone?: string; country?: string }
+  ): AppUser | undefined {
+    const user = users.get(id);
+    if (!user) return undefined;
+    if (data.displayName !== undefined) user.displayName = data.displayName.trim().slice(0, 80);
+    if (data.phone !== undefined) user.phone = data.phone.trim().slice(0, 32);
+    if (data.country !== undefined) user.country = data.country.trim().toUpperCase().slice(0, 8);
+    saveToFile(Array.from(users.values()));
+    return user;
+  },
+
+  updatePassword(id: string, passwordHash: string): AppUser | undefined {
+    const user = users.get(id);
+    if (!user) return undefined;
+    user.passwordHash = passwordHash;
     saveToFile(Array.from(users.values()));
     return user;
   },

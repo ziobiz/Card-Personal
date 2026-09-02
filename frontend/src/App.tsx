@@ -31,6 +31,7 @@ import PartnerApi from './pages/partner/PartnerApi';
 import PartnerFees from './pages/partner/PartnerFees';
 import PartnerManual from './pages/partner/PartnerManual';
 import MemberOtp from './pages/MemberOtp';
+import Account from './pages/Account';
 import { useAuth } from './hooks/useAuth';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -82,6 +83,7 @@ export default function App() {
           <Route path="cards/manage" element={<CardManage />} />
           <Route path="earn" element={<Earn />} />
           <Route path="activity" element={<Activity />} />
+          <Route path="account" element={<Account />} />
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/password" element={<AdminPassword />} />

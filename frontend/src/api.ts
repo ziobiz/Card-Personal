@@ -56,6 +56,24 @@ export interface User {
   wirexUserId?: string;
 }
 
+export interface MemberProfile {
+  id: string;
+  email: string;
+  displayName?: string;
+  phone?: string;
+  country?: string;
+  wirexUserId?: string | null;
+  walletAddress?: string;
+  kycStatus?: string;
+  source?: string;
+  status?: string;
+  createdAt?: string;
+  otpEnabled?: boolean;
+  biometricEnabled?: boolean;
+  biometricCount?: number;
+  mock?: boolean;
+}
+
 export interface Card {
   id: string;
   userId: string;
@@ -200,7 +218,18 @@ export const api = {
       request<{ token: string; user?: User }>('/auth/webauthn/login/verify', { method: 'POST', body: JSON.stringify(body) }),
   },
   user: {
-    get: () => request<User & { status?: string }>('/user'),
+    get: () => request<MemberProfile>('/user'),
+    updateProfile: (data: { displayName?: string; phone?: string; country?: string }) =>
+      request<{ ok: boolean; user: MemberProfile }>('/user/profile', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    changePassword: (currentPassword: string, newPassword: string) =>
+      request<{ ok: boolean }>('/user/password', {
+        method: 'PUT',
+        body: JSON.stringify({ currentPassword, newPassword }),
+      }),
+    clearBiometric: () => request<{ ok: boolean }>('/user/biometric', { method: 'DELETE' }),
   },
   cards: {
     list: (page = 1, size = 10) =>

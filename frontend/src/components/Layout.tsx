@@ -43,6 +43,14 @@ function IconActivity() {
     </svg>
   );
 }
+function IconAccount() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 19.5c1.6-3.2 4-4.8 7-4.8s5.4 1.6 7 4.8" />
+    </svg>
+  );
+}
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -82,6 +90,9 @@ export default function Layout() {
           <NavLink to="/activity" className={itemClass}>
             <IconActivity /> {t('nav.activity')}
           </NavLink>
+          <NavLink to="/account" className={itemClass}>
+            <IconAccount /> {t('nav.account')}
+          </NavLink>
           <button type="button" onClick={handleLogout}>
             {t('nav.logout')}
           </button>
@@ -107,6 +118,10 @@ export default function Layout() {
         <NavLink to="/activity" className={itemClass}>
           <IconActivity />
           {t('nav.activity')}
+        </NavLink>
+        <NavLink to="/account" className={itemClass}>
+          <IconAccount />
+          {t('nav.accountShort')}
         </NavLink>
       </nav>
     </div>

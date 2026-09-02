@@ -765,3 +765,87 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* —— Account / My info —— */
+.user-app .wx-account {
+  max-width: 560px;
+}
+
+.user-app .wx-account-card {
+  margin-bottom: 1rem;
+}
+
+.user-app .wx-account-card .section-title {
+  margin-top: 0;
+  margin-bottom: 0.65rem;
+}
+
+.user-app .wx-account-hint {
+  margin: 0 0 0.85rem;
+  font-size: 0.85rem;
+}
+
+.user-app .wx-account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.user-app .wx-account-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: #cfcfcf;
+}
+
+.user-app .wx-account-field .input {
+  width: 100%;
+}
+
+.user-app .wx-account-field .input[readonly] {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.user-app .wx-account-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.1rem;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.user-app .wx-account-ok {
+  margin: 0;
+  color: #7ddea0;
+  font-size: 0.88rem;
+}
+
+.user-app .wx-account-sec-list {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+}
+
+.user-app .wx-account-sec-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 0.9rem;
+}
+
+.user-app .wx-account-sec-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.user-app .wx-bottom a {
+  font-size: 0.62rem;
+  padding: 0 0.1rem;
+}
+
