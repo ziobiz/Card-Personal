@@ -67,8 +67,8 @@
     "title": "卡片",
     "issueVirtual": "发行虚拟卡",
     "issuing": "发行中...",
-    "issueVirtualShort": "+ 发行虚拟卡",
-    "issuePlasticShort": "+ 发行实体卡",
+    "issueVirtualShort": "发行虚拟卡",
+    "issuePlasticShort": "发行实体卡",
     "noCards": "暂无卡片",
     "status": {
       "active": "有效",
@@ -79,7 +79,16 @@
     "block": "冻结",
     "unblock": "解冻",
     "confirmBlock": "确定冻结此卡？",
-    "depositShort": "充值"
+    "depositShort": "充值",
+    "sampleVirtual": "虚拟卡样例",
+    "samplePlastic": "实体卡样例",
+    "sampleName": "持卡人",
+    "cardHolder": "持卡人",
+    "typeVirtual": "虚拟",
+    "typePlastic": "实体",
+    "issueVirtualDesc": "用于线上/移动支付的即时发卡",
+    "issuePlasticDesc": "金属质感实体 Visa · 全球通用",
+    "issuePlastic": "发行实体卡"
   },
   "admin": {
     "loginTitle": "管理员登录",

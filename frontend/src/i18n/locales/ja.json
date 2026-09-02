@@ -63,7 +63,7 @@
     "title": "カード管理",
     "issueVirtual": "仮想カード発行",
     "issuing": "発行中...",
-    "issueVirtualShort": "+ 仮想カード発行",
+    "issueVirtualShort": "仮想カード発行",
     "noCards": "発行されたカードがありません",
     "expiry": "有効期限",
     "limit": "限度額",
@@ -78,7 +78,17 @@
     "changeLimit": "限度額変更",
     "changeLimitModal": "限度額変更",
     "limitPlaceholder": "限度額",
-    "confirmBlock": "このカードを停止しますか？"
+    "confirmBlock": "このカードを停止しますか？",
+    "sampleVirtual": "バーチャル見本",
+    "samplePlastic": "リアル見本",
+    "sampleName": "カード名義",
+    "cardHolder": "カード名義",
+    "typeVirtual": "バーチャル",
+    "typePlastic": "リアル",
+    "issueVirtualDesc": "オンライン・モバイル決済用の即時発行カード",
+    "issuePlasticDesc": "メタル調のリアルVisaカード・世界で利用",
+    "issuePlastic": "リアルカード発行",
+    "issuePlasticShort": "リアルカード発行"
   },
   "admin": {
     "loginTitle": "管理者ログイン",

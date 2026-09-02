@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api, type Card } from '../api';
 import CardVisual from '../components/CardVisual';
+import IssueCardTile from '../components/IssueCardTile';
 
 export default function Cards() {
   const { t } = useTranslation();
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
-  const [issuing, setIssuing] = useState(false);
+  const [issuing, setIssuing] = useState<'virtual' | 'plastic' | null>(null);
   const [limitModal, setLimitModal] = useState<Card | null>(null);
   const [newLimit, setNewLimit] = useState('');
   const [depositModal, setDepositModal] = useState<Card | null>(null);
@@ -27,7 +28,7 @@ export default function Cards() {
   }, []);
 
   const handleIssue = async (type: 'virtual' | 'plastic' = 'virtual') => {
-    setIssuing(true);
+    setIssuing(type);
     try {
       if (type === 'plastic') {
         await api.cards.createPlastic({ card_name: 'Co-Brand Physical' });
@@ -38,7 +39,7 @@ export default function Cards() {
     } catch (e) {
       alert((e as Error).message);
     } finally {
-      setIssuing(false);
+      setIssuing(null);
     }
   };
 
@@ -113,26 +114,18 @@ export default function Cards() {
       ) : cards.length === 0 ? (
         <div className="cards-wirex-layout">
           <div className="cards-row">
-            <div className="card-tile card-tile-add">
-              <button
-                onClick={() => handleIssue('virtual')}
-                disabled={issuing}
-                className="card-add-button"
-              >
-                <span className="card-add-icon">+</span>
-                <span className="card-add-text">{t('cards.issueVirtualShort')}</span>
-              </button>
-            </div>
-            <div className="card-tile card-tile-add">
-              <button
-                onClick={() => handleIssue('plastic')}
-                disabled={issuing}
-                className="card-add-button"
-              >
-                <span className="card-add-icon">+</span>
-                <span className="card-add-text">{t('cards.issuePlasticShort')}</span>
-              </button>
-            </div>
+            <IssueCardTile
+              type="virtual"
+              loading={issuing === 'virtual'}
+              disabled={Boolean(issuing)}
+              onClick={() => handleIssue('virtual')}
+            />
+            <IssueCardTile
+              type="plastic"
+              loading={issuing === 'plastic'}
+              disabled={Boolean(issuing)}
+              onClick={() => handleIssue('plastic')}
+            />
           </div>
           <p className="empty-text muted-text">{t('cards.noCards')}</p>
         </div>
@@ -146,9 +139,18 @@ export default function Cards() {
                   status={card.status}
                   currency={card.currency}
                   type={card.type}
-                  variant={['dark', 'blue', 'purple'][idx % 3] as 'dark' | 'blue' | 'purple'}
+                  variant={
+                    card.type === 'plastic'
+                      ? 'metal'
+                      : (['virtual', 'blue', 'purple'][idx % 3] as 'virtual' | 'blue' | 'purple')
+                  }
                 />
-                <div className="card-tile-label">Visa •••• {card.panLast4}</div>
+                <div className="card-tile-label">
+                  Visa •••• {card.panLast4}
+                  <span className="card-tile-type-tag">
+                    {card.type === 'plastic' ? t('cards.typePlastic') : t('cards.typeVirtual')}
+                  </span>
+                </div>
                 <div className="card-tile-meta">
                   {(card.balance ?? 0).toLocaleString()} {card.currency}
                   {(card.dailyLimit ?? card.limit) != null && (
@@ -194,26 +196,18 @@ export default function Cards() {
                 </div>
               </div>
             ))}
-            <div className="card-tile card-tile-add">
-              <button
-                onClick={() => handleIssue('virtual')}
-                disabled={issuing}
-                className="card-add-button"
-              >
-                <span className="card-add-icon">+</span>
-                <span className="card-add-text">{t('cards.issueVirtualShort')}</span>
-              </button>
-            </div>
-            <div className="card-tile card-tile-add">
-              <button
-                onClick={() => handleIssue('plastic')}
-                disabled={issuing}
-                className="card-add-button"
-              >
-                <span className="card-add-icon">+</span>
-                <span className="card-add-text">{t('cards.issuePlasticShort')}</span>
-              </button>
-            </div>
+            <IssueCardTile
+              type="virtual"
+              loading={issuing === 'virtual'}
+              disabled={Boolean(issuing)}
+              onClick={() => handleIssue('virtual')}
+            />
+            <IssueCardTile
+              type="plastic"
+              loading={issuing === 'plastic'}
+              disabled={Boolean(issuing)}
+              onClick={() => handleIssue('plastic')}
+            />
           </div>
         </div>
       )}

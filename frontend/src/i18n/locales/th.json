@@ -62,7 +62,7 @@
     "title": "จัดการบัตร",
     "issueVirtual": "ออกบัตรเสมือน",
     "issuing": "กำลังออก...",
-    "issueVirtualShort": "+ ออกบัตรเสมือน",
+    "issueVirtualShort": "ออกบัตรเสมือน",
     "noCards": "ไม่มีบัตรที่ออก",
     "expiry": "วันหมดอายุ",
     "limit": "วงเงิน",
@@ -77,7 +77,17 @@
     "changeLimit": "เปลี่ยนวงเงิน",
     "changeLimitModal": "เปลี่ยนวงเงิน",
     "limitPlaceholder": "วงเงิน",
-    "confirmBlock": "ต้องการระงับบัตรนี้หรือไม่?"
+    "confirmBlock": "ต้องการระงับบัตรนี้หรือไม่?",
+    "sampleVirtual": "ตัวอย่างบัตรเสมือน",
+    "samplePlastic": "ตัวอย่างบัตรจริง",
+    "sampleName": "ผู้ถือบัตร",
+    "cardHolder": "ผู้ถือบัตร",
+    "typeVirtual": "เสมือน",
+    "typePlastic": "บัตรจริง",
+    "issueVirtualDesc": "บัตรดิจิทัลออกทันที สำหรับชำระออนไลน์/มือถือ",
+    "issuePlasticDesc": "บัตร Visa จริงโทนเมทัล ใช้ได้ทั่วโลก",
+    "issuePlastic": "ออกบัตรจริง",
+    "issuePlasticShort": "ออกบัตรจริง"
   },
   "admin": {
     "loginTitle": "เข้าสู่ระบบผู้ดูแล",

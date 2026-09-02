@@ -362,57 +362,216 @@
 }
 
 .card-visual {
+  position: relative;
   aspect-ratio: 1.586;
-  border-radius: 12px;
-  padding: 1.25rem;
+  border-radius: 16px;
+  padding: 1.15rem 1.2rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 140px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 168px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  color: #fff;
+  isolation: isolate;
+}
+
+.card-visual-sheen {
+  pointer-events: none;
+  position: absolute;
+  inset: -40% -20%;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.14) 48%,
+    transparent 62%
+  );
+  transform: rotate(8deg);
+  opacity: 0.55;
+  z-index: 0;
+}
+
+.card-visual-header,
+.card-visual-mid,
+.card-visual-pan,
+.card-visual-footer {
+  position: relative;
+  z-index: 1;
 }
 
 .card-visual-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 
 .card-visual-brand {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #fff;
-  letter-spacing: 0.08em;
-  text-transform: none;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-.card-visual-status {
-  font-size: 0.7rem;
+.card-visual-status,
+.card-visual-badge-preview {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  white-space: nowrap;
+}
+
+.card-visual-badge-preview {
+  color: #f5e6d3;
+  border-color: rgba(196, 164, 132, 0.45);
+  background: rgba(196, 164, 132, 0.18);
+}
+
+.card-visual-mid {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0.35rem 0 0.15rem;
+}
+
+.card-visual-chip {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
+.card-visual-wave {
+  color: rgba(255, 255, 255, 0.75);
+  opacity: 0.9;
 }
 
 .card-visual-pan {
-  font-size: 1rem;
-  letter-spacing: 3px;
+  font-size: 1.05rem;
+  letter-spacing: 0.18em;
   color: #fff;
-  font-weight: 500;
+  font-weight: 560;
+  font-variant-numeric: tabular-nums;
 }
 
 .card-visual-footer {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  gap: 10px;
+}
+
+.card-visual-holder-label {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 2px;
+}
+
+.card-visual-holder-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.card-visual-right {
+  text-align: right;
 }
 
 .card-visual-type {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.7);
+  display: block;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 2px;
 }
 
 .card-visual-network {
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 800;
   color: #fff;
-  letter-spacing: 1px;
+  letter-spacing: 0.12em;
+  font-style: italic;
+}
+
+.card-visual-preview {
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+}
+
+.card-visual-plastic.card-visual-preview,
+.card-visual-plastic {
+  border-color: rgba(196, 164, 132, 0.4);
+}
+
+.card-issue-button {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 0;
+}
+
+.card-issue-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.card-issue-button:hover:not(:disabled) .card-visual {
+  transform: translateY(-3px) scale(1.01);
+  transition: transform 0.2s ease;
+}
+
+.card-issue-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.card-issue-plus {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #111;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  margin-bottom: 0.15rem;
+}
+
+.card-issue-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.card-issue-desc {
+  font-size: 0.8rem;
+  color: var(--color-muted, #9a9a9a);
+  line-height: 1.35;
+}
+
+.card-tile-type-tag {
+  margin-left: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #c4a484;
+  letter-spacing: 0.04em;
+}
+
+.card-visual-status {
+  font-size: 0.7rem;
 }
 
 .cards-wirex-layout {
