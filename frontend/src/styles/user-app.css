@@ -598,16 +598,50 @@
   }
 }
 
-/* Mobile-first card actions */
+/* Mobile-first card actions — wallet-sized card (not full-bleed) */
 .user-app .cards-row-responsive {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 1rem;
 }
 
 .user-app .cards-row-responsive .card-tile {
-  width: min(100%, 360px);
-  flex: 1 1 280px;
+  /* Real credit-card visual scale: ~300–320px, never stretch to fill desktop */
+  flex: 0 1 320px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.user-app .cards-row-responsive .card-tile .card-visual {
+  width: 100%;
+  max-width: 320px;
+  min-height: 0;
+  aspect-ratio: 1.586;
+  height: auto;
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+.user-app .cards-row-responsive .card-tile .card-visual-pan {
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+}
+
+.user-app .cards-row-responsive .card-tile .card-visual-brand {
+  font-size: 0.75rem;
+}
+
+/* Issue tiles: keep sample cards compact too */
+.user-app .card-tile-issue {
+  max-width: 320px;
+  width: 100%;
+}
+
+.user-app .card-tile-issue .card-visual {
+  max-width: 100%;
+  min-height: 0;
 }
 
 .user-app .wx-quick-actions {
