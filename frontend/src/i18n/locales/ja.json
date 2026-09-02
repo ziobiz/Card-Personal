@@ -13,7 +13,12 @@
     "dashboard": "ダッシュボード",
     "cards": "カード",
     "logout": "ログアウト",
-    "earn": "リワード"
+    "earn": "リワード",
+    "cardsIssue": "カード発行",
+    "cardsManage": "カード管理",
+    "cardsIssueShort": "発行",
+    "cardsManageShort": "管理",
+    "activity": "取引"
   },
   "auth": {
     "login": "ログイン",
@@ -88,7 +93,18 @@
     "issueVirtualDesc": "オンライン・モバイル決済用の即時発行カード",
     "issuePlasticDesc": "メタル調のリアルVisaカード・世界で利用",
     "issuePlastic": "リアルカード発行",
-    "issuePlasticShort": "リアルカード発行"
+    "issuePlasticShort": "リアルカード発行",
+    "issueTitle": "カード発行申請",
+    "issueIntro": "バーチャル/リアルの見本カードを選んですぐ発行できます。",
+    "manageTitle": "カード利用管理",
+    "manageIntro": "チャージ・限度額・停止・Apple/Google Pay を管理します。",
+    "ownedCount": "保有カード {count}枚",
+    "goManage": "カード管理へ",
+    "goIssue": "カード発行へ",
+    "noCardsManage": "管理するカードがありません。先に発行してください。",
+    "issueSuccess": "カードを発行しました。",
+    "applePayDone": "Apple Pay トークンを発行しました。",
+    "googlePayDone": "Google Pay トークンを発行しました。"
   },
   "admin": {
     "loginTitle": "管理者ログイン",
@@ -392,8 +408,11 @@
     "physicalDesc": "加盟店が許可した場合に発行。"
   },
   "activity": {
-    "title": "明細",
-    "empty": "まだ取引がありません。"
+    "title": "取引履歴",
+    "empty": "まだ取引がありません。カード決済と Webhook がここに表示されます。",
+    "intro": "カード決済・チャージ・Webhook などアカウント活動を時系列で表示します。Wirex 接続時はライブ、Mock ではローカル台帳です。",
+    "kycLabel": "KYC 状態",
+    "itemFallback": "活動"
   },
   "partner": {
     "portal": "パートナーポータル",

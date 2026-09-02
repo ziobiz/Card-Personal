@@ -4,7 +4,8 @@ import AdminLayout from './components/AdminLayout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import Cards from './pages/Cards';
+import CardIssue from './pages/CardIssue';
+import CardManage from './pages/CardManage';
 import Activity from './pages/Activity';
 import Earn from './pages/Earn';
 import AdminLogin from './pages/admin/AdminLogin';
@@ -76,7 +77,9 @@ export default function App() {
           }
         >
           <Route index element={<Dashboard />} />
-          <Route path="cards" element={<Cards />} />
+          <Route path="cards" element={<Navigate to="/cards/issue" replace />} />
+          <Route path="cards/issue" element={<CardIssue />} />
+          <Route path="cards/manage" element={<CardManage />} />
           <Route path="earn" element={<Earn />} />
           <Route path="activity" element={<Activity />} />
         </Route>

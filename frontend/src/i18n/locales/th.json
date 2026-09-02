@@ -12,7 +12,12 @@
     "dashboard": "แดชบอร์ด",
     "cards": "บัตร",
     "logout": "ออกจากระบบ",
-    "earn": "รับรางวัล"
+    "earn": "รับรางวัล",
+    "cardsIssue": "ออกบัตร",
+    "cardsManage": "จัดการบัตร",
+    "cardsIssueShort": "ออกบัตร",
+    "cardsManageShort": "จัดการ",
+    "activity": "ธุรกรรม"
   },
   "auth": {
     "login": "เข้าสู่ระบบ",
@@ -87,7 +92,18 @@
     "issueVirtualDesc": "บัตรดิจิทัลออกทันที สำหรับชำระออนไลน์/มือถือ",
     "issuePlasticDesc": "บัตร Visa จริงโทนเมทัล ใช้ได้ทั่วโลก",
     "issuePlastic": "ออกบัตรจริง",
-    "issuePlasticShort": "ออกบัตรจริง"
+    "issuePlasticShort": "ออกบัตรจริง",
+    "issueTitle": "คำขอออกบัตร",
+    "issueIntro": "เลือกตัวอย่างบัตรเสมือนหรือบัตรจริงเพื่อออกทันที",
+    "manageTitle": "จัดการการใช้บัตร",
+    "manageIntro": "จัดการเติมเงิน วงเงิน ระงับ และ Apple/Google Pay",
+    "ownedCount": "มีบัตร {count} ใบ",
+    "goManage": "ไปจัดการบัตร",
+    "goIssue": "ไปออกบัตร",
+    "noCardsManage": "ยังไม่มีบัตรให้จัดการ กรุณาออกบัตรก่อน",
+    "issueSuccess": "ออกบัตรสำเร็จ",
+    "applePayDone": "ออกโทเคน Apple Pay แล้ว",
+    "googlePayDone": "ออกโทเคน Google Pay แล้ว"
   },
   "admin": {
     "loginTitle": "เข้าสู่ระบบผู้ดูแล",
@@ -391,8 +407,11 @@
     "physicalDesc": "ออกได้เมื่อร้านค้าเปิดสิทธิ์"
   },
   "activity": {
-    "title": "รายการ",
-    "empty": "ยังไม่มีรายการ"
+    "title": "ประวัติธุรกรรม",
+    "empty": "ยังไม่มีธุรกรรม การชำระบัตรและ webhook จะแสดงที่นี่",
+    "intro": "แสดงกิจกรรมบัญชี เช่น การชำระด้วยบัตร เติมเงิน และ webhook ตามเวลา เมื่อเชื่อม Wirex จะเป็นฟีดสด ในโหมด Mock ใช้สมุดบัญชีในเครื่อง",
+    "kycLabel": "สถานะ KYC",
+    "itemFallback": "กิจกรรม"
   },
   "partner": {
     "portal": "พอร์ทัลพาร์ทเนอร์",

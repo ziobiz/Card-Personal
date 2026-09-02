@@ -17,7 +17,11 @@
     "activity": "交易",
     "addFunds": "充值",
     "logout": "退出",
-    "earn": "收益"
+    "earn": "收益",
+    "cardsIssue": "卡片申请",
+    "cardsManage": "卡片管理",
+    "cardsIssueShort": "申请",
+    "cardsManageShort": "管理"
   },
   "auth": {
     "login": "登录",
@@ -88,7 +92,18 @@
     "typePlastic": "实体",
     "issueVirtualDesc": "用于线上/移动支付的即时发卡",
     "issuePlasticDesc": "金属质感实体 Visa · 全球通用",
-    "issuePlastic": "发行实体卡"
+    "issuePlastic": "发行实体卡",
+    "issueTitle": "卡片申请",
+    "issueIntro": "选择虚拟或实体样例卡即可立即发卡。",
+    "manageTitle": "卡片使用管理",
+    "manageIntro": "管理充值、限额、冻结以及 Apple/Google Pay。",
+    "ownedCount": "已持有 {count} 张卡",
+    "goManage": "前往卡片管理",
+    "goIssue": "前往卡片申请",
+    "noCardsManage": "暂无卡片可管理，请先申请发卡。",
+    "issueSuccess": "发卡成功。",
+    "applePayDone": "已开通 Apple Pay。",
+    "googlePayDone": "已开通 Google Pay。"
   },
   "admin": {
     "loginTitle": "管理员登录",
@@ -392,8 +407,11 @@
     "physicalDesc": "商户开通后可发行。"
   },
   "activity": {
-    "title": "交易",
-    "empty": "暂无交易。"
+    "title": "交易记录",
+    "empty": "暂无交易。卡片支付与 Webhook 将显示在此。",
+    "intro": "按时间显示卡片支付、充值、Webhook 等账户活动。已连接 Wirex 时为实时动态，Mock 模式显示本地账本。",
+    "kycLabel": "KYC 状态",
+    "itemFallback": "活动"
   },
   "partner": {
     "portal": "合作方门户",

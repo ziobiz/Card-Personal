@@ -17,7 +17,11 @@
     "activity": "Activity",
     "addFunds": "Add Funds",
     "logout": "Log out",
-    "earn": "Earn"
+    "earn": "Earn",
+    "cardsIssue": "Card issue",
+    "cardsManage": "Card manage",
+    "cardsIssueShort": "Issue",
+    "cardsManageShort": "Manage"
   },
   "auth": {
     "login": "Login",
@@ -105,7 +109,18 @@
     "cardHolder": "Cardholder",
     "issueVirtualDesc": "Instant digital card for online and mobile payments",
     "issuePlasticDesc": "Metal-tone physical Visa card for global spend",
-    "issuePlastic": "Issue plastic card"
+    "issuePlastic": "Issue plastic card",
+    "issueTitle": "Card application",
+    "issueIntro": "Choose a virtual or plastic sample card to issue instantly.",
+    "manageTitle": "Card management",
+    "manageIntro": "Manage top-ups, limits, freeze, and Apple/Google Pay for your cards.",
+    "ownedCount": "{count} card(s) owned",
+    "goManage": "Go to card management",
+    "goIssue": "Go to card issue",
+    "noCardsManage": "No cards to manage yet. Issue one first.",
+    "issueSuccess": "Card issued successfully.",
+    "applePayDone": "Apple Pay token provisioned.",
+    "googlePayDone": "Google Pay token provisioned."
   },
   "wallet": {
     "title": "Wallet Balance",
@@ -422,7 +437,10 @@
   },
   "activity": {
     "title": "Activity",
-    "empty": "No transactions yet. Card spend and webhook events will appear here."
+    "empty": "No activity yet. Card payments and webhooks will appear here.",
+    "intro": "Shows account activities such as card payments, top-ups, and webhooks in time order. Live Wirex feed when connected; local ledger in mock mode.",
+    "kycLabel": "KYC status",
+    "itemFallback": "Activity"
   },
   "partner": {
     "portal": "Partner portal",

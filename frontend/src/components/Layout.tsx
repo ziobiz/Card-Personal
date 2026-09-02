@@ -12,11 +12,19 @@ function IconHome() {
     </svg>
   );
 }
-function IconCards() {
+function IconIssue() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <rect x="3" y="6" width="18" height="12" rx="2" />
-      <path d="M3 10h18" />
+      <path d="M12 9v6M9 12h6" />
+    </svg>
+  );
+}
+function IconManage() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="3" y="6" width="18" height="12" rx="2" />
+      <path d="M3 10h18M8 14h4" />
     </svg>
   );
 }
@@ -62,8 +70,11 @@ export default function Layout() {
           <NavLink to="/" end className={itemClass}>
             <IconHome /> {t('nav.home')}
           </NavLink>
-          <NavLink to="/cards" className={itemClass}>
-            <IconCards /> {t('nav.cards')}
+          <NavLink to="/cards/issue" className={itemClass}>
+            <IconIssue /> {t('nav.cardsIssue')}
+          </NavLink>
+          <NavLink to="/cards/manage" className={itemClass}>
+            <IconManage /> {t('nav.cardsManage')}
           </NavLink>
           <NavLink to="/earn" className={itemClass}>
             <IconEarn /> {t('nav.earn')}
@@ -85,13 +96,13 @@ export default function Layout() {
           <IconHome />
           {t('nav.home')}
         </NavLink>
-        <NavLink to="/cards" className={itemClass}>
-          <IconCards />
-          {t('nav.cards')}
+        <NavLink to="/cards/issue" className={itemClass}>
+          <IconIssue />
+          {t('nav.cardsIssueShort')}
         </NavLink>
-        <NavLink to="/earn" className={itemClass}>
-          <IconEarn />
-          {t('nav.earn')}
+        <NavLink to="/cards/manage" className={itemClass}>
+          <IconManage />
+          {t('nav.cardsManageShort')}
         </NavLink>
         <NavLink to="/activity" className={itemClass}>
           <IconActivity />

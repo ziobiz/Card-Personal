@@ -59,7 +59,7 @@ export default function Dashboard() {
         <p className="wx-kicker">{t('dashboard.totalBalance')}</p>
         <h1 className="wx-balance">${loading ? '—' : totalUsd.toLocaleString()}</h1>
         <div className="wx-actions">
-          <Link to="/cards" className="btn-primary">
+          <Link to="/cards/manage" className="btn-primary">
             {t('dashboard.addFunds')}
           </Link>
           <Link to="/earn" className="wx-ghost">
@@ -76,7 +76,7 @@ export default function Dashboard() {
               <div className="stat-label">{t('wallet.primaryWallet')}</div>
               <div className="wallet-tokens">
                 {walletBalance.primary.map((tok) => (
-                  <Link key={tok.symbol} to="/cards" className="wallet-token-chip">
+                  <Link key={tok.symbol} to="/cards/manage" className="wallet-token-chip">
                     {tok.symbol}: {tok.balance.toLocaleString()}
                   </Link>
                 ))}
@@ -90,7 +90,7 @@ export default function Dashboard() {
           <h3 className="section-title">{t('dashboard.linkedCards')}</h3>
           {walletBalance?.cardSummaries.length ? (
             walletBalance.cardSummaries.map((c) => (
-              <Link key={c.cardId} to="/cards" className="wx-list-row">
+              <Link key={c.cardId} to="/cards/manage" className="wx-list-row">
                 <span>Visa ···· {c.panLast4}</span>
                 <span className="muted-text">
                   {c.balance.toLocaleString()} {c.currency}
@@ -115,7 +115,7 @@ export default function Dashboard() {
         ) : cards.length === 0 ? (
           <p className="muted-text">
             {t('dashboard.noActivity')}{' '}
-            <Link to="/cards" className="primary-link">
+            <Link to="/cards/manage" className="primary-link">
               {t('dashboard.issueCard')}
             </Link>
           </p>

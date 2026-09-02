@@ -33,7 +33,7 @@ export default function Earn() {
             <h3>{t('earn.cardSpend')}</h3>
             <p>{t('earn.cardSpendDesc')}</p>
           </div>
-          <Link to="/cards" className="wx-ghost">
+          <Link to="/cards/issue" className="wx-ghost">
             {t('nav.cards')}
           </Link>
         </div>
@@ -51,7 +51,7 @@ export default function Earn() {
             <h3>{t('earn.physical')}</h3>
             <p>{t('earn.physicalDesc')}</p>
           </div>
-          <Link to="/cards" className="wx-ghost">
+          <Link to="/cards/issue" className="wx-ghost">
             {t('cards.issuePlasticShort')}
           </Link>
         </div>

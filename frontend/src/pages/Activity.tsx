@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api';
 
-function labelOf(row: unknown): string {
+function labelOf(row: unknown, t: (k: string) => string): string {
   if (!row || typeof row !== 'object') return String(row);
   const o = row as Record<string, unknown>;
-  return String(o.type || o.kind || o.status || o.id || 'Activity');
+  const raw = String(o.type || o.kind || o.status || o.id || '');
+  if (!raw) return t('activity.itemFallback');
+  return raw;
 }
 
 function metaOf(row: unknown): string {
@@ -39,7 +41,10 @@ export default function Activity() {
     <div className="app-container">
       <h1 className="page-title">{t('activity.title')}</h1>
       <p className="muted-text" style={{ marginTop: 0 }}>
-        KYC: {kyc}
+        {t('activity.intro')}
+      </p>
+      <p className="muted-text">
+        {t('activity.kycLabel')}: {kyc}
       </p>
       {error && <p className="auth-error">{error}</p>}
       <div className="card-surface" style={{ marginTop: 12 }}>
@@ -48,7 +53,7 @@ export default function Activity() {
         ) : (
           rows.slice(0, 50).map((r, i) => (
             <div key={i} className="wx-list-row">
-              <span>{labelOf(r)}</span>
+              <span>{labelOf(r, t)}</span>
               <span className="muted-text">{metaOf(r)}</span>
             </div>
           ))
