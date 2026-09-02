@@ -34,7 +34,7 @@ export default function AdminPartnerRegister() {
     id: string;
     name: string;
     isHqDefault: boolean;
-    fees?: ReturnType<typeof emptyFees>;
+    fees?: Partial<ReturnType<typeof emptyFees>>;
   }>>([]);
   const [parentOpen, setParentOpen] = useState(false);
   const [searchLevel, setSearchLevel] = useState('MERCHANT');
@@ -47,7 +47,12 @@ export default function AdminPartnerRegister() {
 
   useEffect(() => {
     api.admin.getFeeTemplates().then((r) => {
-      setTemplates(r.items);
+      setTemplates(r.items.map((x) => ({
+        id: x.id,
+        name: x.name,
+        isHqDefault: x.isHqDefault,
+        fees: x.fees,
+      })));
       const hq = r.items.find((x) => x.isHqDefault);
       if (hq?.fees) {
         setCustomFees({
