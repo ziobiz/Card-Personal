@@ -17,6 +17,7 @@ import complianceRoutes from './routes/compliance.js';
 import { store } from './data/store.js';
 import { getWirexBaaSConfig } from './config.js';
 import { brandStore } from './data/brandStore.js';
+import { packageManifest } from './data/packageManifest.js';
 
 const app = express();
 app.use(cors({ origin: true }));
@@ -29,29 +30,44 @@ app.use(express.json({
 
 app.get('/health', (_, res) => {
   const w = getWirexBaaSConfig();
+  const pkg = packageManifest.get();
   res.json({
     ok: true,
     mock: config.useMockWirex,
     environment: w.environment,
     chainId: w.chainId,
     apiBase: w.apiBase,
+    packageVersion: pkg.packageVersion,
+    packageMode: pkg.mode,
   });
 });
 app.get('/api/health', (_, res) => {
   const w = getWirexBaaSConfig();
-  res.json({ ok: true, environment: w.environment, mock: config.useMockWirex });
+  const pkg = packageManifest.get();
+  res.json({
+    ok: true,
+    environment: w.environment,
+    mock: config.useMockWirex,
+    packageVersion: pkg.packageVersion,
+    packageMode: pkg.mode,
+  });
 });
 app.get('/api/brand', (_, res) => {
   res.json(brandStore.publicView());
+});
+app.get('/api/package', (_, res) => {
+  res.json(packageManifest.publicView());
 });
 
 app.get('/api/catalog', (_, res) => {
   const w = getWirexBaaSConfig();
   const brand = brandStore.get();
+  const pkg = packageManifest.publicView();
   res.json({
     product: brand.productName,
     environment: w.environment,
     mock: config.useMockWirex,
+    package: pkg,
     features: {
       cardIssuance: ['POST /api/cards/virtual', 'POST /api/cards/plastic', 'POST /api/cards/:id/wallet-tokens'],
       userKyc: ['POST /api/auth/register', 'GET /api/kyc/verification-link', 'GET /api/kyc/status', 'POST /api/compliance/travel-rule/validate'],
@@ -59,6 +75,7 @@ app.get('/api/catalog', (_, res) => {
       settlementReporting: ['GET /api/activities', 'GET /api/reporting/statement', 'GET /api/reporting/reconciliation'],
       multiTenant: ['/api/partner/v1/*'],
       sandboxProduction: ['WIREX_ENV=sandbox|production', 'GET /health'],
+      packaging: ['GET /api/package', 'white_label | saas_hq | single_tenant'],
     },
   });
 });

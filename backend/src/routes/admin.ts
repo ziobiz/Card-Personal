@@ -15,6 +15,7 @@ import { webhookStore } from '../data/webhookStore.js';
 import { orgStore, parseOrgProfile } from '../data/orgStore.js';
 import { createOrgLogin } from '../data/orgLogin.js';
 import { brandStore } from '../data/brandStore.js';
+import { packageManifest } from '../data/packageManifest.js';
 import { resolvePartnerPolicy } from '../data/feePolicyTemplateStore.js';
 import { operatorStore } from '../data/operatorStore.js';
 import adminSales from './adminSales.js';
@@ -442,6 +443,16 @@ router.get('/brand', (_, res) => {
 router.put('/brand', (req, res) => {
   const updated = brandStore.update(req.body ?? {});
   res.json(updated);
+});
+
+/** Sellable package / white-label deployment profile (no Wirex secrets) */
+router.get('/package', (_, res) => {
+  res.json(packageManifest.publicView());
+});
+
+router.put('/package', (req, res) => {
+  packageManifest.update(req.body ?? {});
+  res.json(packageManifest.publicView());
 });
 
 router.get('/settings', (_, res) => {
