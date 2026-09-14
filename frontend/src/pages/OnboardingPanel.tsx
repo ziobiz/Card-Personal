@@ -53,7 +53,7 @@ export default function OnboardingPanel() {
     setBusy(true);
     setMsg('');
     try {
-      const r = await api.user.onboard({ issueCard: true });
+      const r = await api.user.onboard({ issueCard: info.kycStatus === 'verified' });
       setInfo({
         status: r.onboarding.status,
         error: r.onboarding.error,

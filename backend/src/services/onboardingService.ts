@@ -191,18 +191,24 @@ export const onboardingService = {
         steps.push({ step: 'kycLink', ok: false, detail: (e as Error).message });
       }
 
+      let visaActive = false;
       try {
         const profile = (await wirexClient.getUser({
           walletAddress: eoa,
           userId: wirexUserId,
           email: user0.email,
         })) as Record<string, unknown>;
+        const caps = Array.isArray(profile.capabilities)
+          ? (profile.capabilities as Array<{ type?: string; status?: string; status_reason?: string }>)
+          : [];
+        const visa = caps.find((c) => c.type === 'VisaVirtualCard');
+        visaActive = visa?.status === 'Active';
         steps.push({
           step: 'getUser',
           ok: true,
           detail: {
             verification: profile.verification ?? profile.verification_status,
-            capabilities: profile.capabilities,
+            visaVirtualCard: visa ?? null,
           },
         });
       } catch (e) {
@@ -220,31 +226,39 @@ export const onboardingService = {
 
       let card: unknown;
       if (opts?.issueCard) {
-        try {
-          const brand = brandStore.get();
-          const cardName = `${brand.cardBrandName || brand.productName} Virtual`.slice(0, 32);
-          let last = '';
-          for (let i = 0; i < 3; i++) {
-            try {
-              card = await wirexClient.issueVirtualCard(
-                { walletAddress: eoa, email: user0.email, userId: wirexUserId },
-                { card_name: cardName, name_on_card: (user0.displayName || 'CARD HOLDER').slice(0, 24) }
-              );
-              last = '';
-              break;
-            } catch (e) {
-              last = (e as Error).message;
-              await sleep(3000 * (i + 1));
+        if (!visaActive) {
+          steps.push({
+            step: 'issueVirtualCard',
+            ok: false,
+            detail: 'VisaVirtualCard not active — complete KYC first',
+          });
+        } else {
+          try {
+            const brand = brandStore.get();
+            const cardName = `${brand.cardBrandName || brand.productName} Virtual`.slice(0, 32);
+            let last = '';
+            for (let i = 0; i < 3; i++) {
+              try {
+                card = await wirexClient.issueVirtualCard(
+                  { walletAddress: eoa, email: user0.email, userId: wirexUserId },
+                  { card_name: cardName, name_on_card: (user0.displayName || 'CARD HOLDER').slice(0, 24) }
+                );
+                last = '';
+                break;
+              } catch (e) {
+                last = (e as Error).message;
+                await sleep(3000 * (i + 1));
+              }
             }
+            if (card) {
+              steps.push({ step: 'issueVirtualCard', ok: true, detail: card });
+              store.updateOnboarding(userId, { onboardingStatus: 'ready' });
+            } else {
+              steps.push({ step: 'issueVirtualCard', ok: false, detail: last });
+            }
+          } catch (e) {
+            steps.push({ step: 'issueVirtualCard', ok: false, detail: (e as Error).message });
           }
-          if (card) {
-            steps.push({ step: 'issueVirtualCard', ok: true, detail: card });
-            store.updateOnboarding(userId, { onboardingStatus: 'ready' });
-          } else {
-            steps.push({ step: 'issueVirtualCard', ok: false, detail: last });
-          }
-        } catch (e) {
-          steps.push({ step: 'issueVirtualCard', ok: false, detail: (e as Error).message });
         }
       } else if (!kycUrl) {
         store.updateOnboarding(userId, { onboardingStatus: 'registered' });
