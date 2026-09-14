@@ -29,7 +29,7 @@ export const wirexService = {
       return mockWirex.createUser(data);
     }
     if (!data.wallet_address) {
-      return mockWirex.createUser(data);
+      throw new Error('wallet_address required for live Wirex register');
     }
     const token = await wirexBaaSClient.registerUser({
       wallet_address: data.wallet_address,

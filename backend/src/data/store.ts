@@ -12,7 +12,7 @@ export interface AppUser {
   email: string;
   passwordHash: string;
   wirexUserId?: string;
-  /** 사용자 EOA — Wirex 표준 헤더 X-User-Address */
+  /** 사용자 EOA — Wirex 표준 헤더 X-User-Wallet */
   walletAddress?: string;
   /** Kernel AA Smart Wallet 주소 */
   smartWalletAddress?: string;

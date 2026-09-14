@@ -81,8 +81,8 @@ export class WirexClient {
       'Content-Type': 'application/json',
       'X-Chain-Id': String(c.chainId),
     };
-    // 공식: 사용자 식별 헤더는 하나만 (X-User-Address | X-User-Id | X-User-Email)
-    if (user?.walletAddress) h['X-User-Address'] = user.walletAddress;
+    // 공식: 사용자 식별 헤더는 하나만 (X-User-Wallet | X-User-Id | X-User-Email)
+    if (user?.walletAddress) h['X-User-Wallet'] = user.walletAddress;
     else if (user?.userId) h['X-User-Id'] = user.userId;
     else if (user?.email) h['X-User-Email'] = user.email;
     return h;
@@ -131,12 +131,12 @@ export class WirexClient {
     try {
       const out = await this.request<{ url?: string }>('POST', '/api/v1/user/verification-link', user, {});
       return out.url ?? null;
-    } catch {
+    } catch (first) {
       try {
         const out = await this.request<{ url?: string }>('GET', '/api/v1/user/verification-link', user);
         return out.url ?? null;
-      } catch {
-        return null;
+      } catch (second) {
+        throw second instanceof Error ? second : first;
       }
     }
   }
