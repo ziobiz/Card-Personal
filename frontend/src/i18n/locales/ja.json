@@ -40,6 +40,8 @@
     "adminLink": "管理者",
     "loginHint": "メールとパスワードを入力してください。",
     "registerHint": "メールとパスワードでICOCARDアカウントを作成します。",
+    "tenantMismatch": "このソリューションでは利用できないアカウントです。",
+    "tenantNotFound": "ソリューションが見つかりません。",
     "submit": "送信",
     "agreePrefix": "ログインすると同意します:",
     "terms": "利用規約",
@@ -488,7 +490,18 @@
     "deliverySub": "サブソリューション",
     "solutionName": "ソリューションブランド名",
     "webhookUrl": "Webhook URL",
-    "bridgeDebitUrl": "ブリッジ引き落とし URL"
+    "bridgeDebitUrl": "ブリッジ引き落とし URL",
+    "deliveryStandalone": "サブソリューション単独型",
+    "deliveryStandaloneHint": "加盟店が Wirex と直接契約したキーで運営のみ行います。ICOCARD 再販キーは発行しません。",
+    "walletPolicy": "ウォレット方式ポリシー",
+    "walletFollowHq": "本社設定に従う",
+    "walletFollowHqHint": "本社環境設定の既定ウォレット3方式に従います。",
+    "walletCustom": "個別",
+    "walletHqDefault": "本社既定ウォレット方式",
+    "walletHqHint": "「本社設定に従う」加盟店に適用されます。許可しない方式は会員アプリと API で遮断されます。",
+    "isolationHqHint": "Wirex には ICOCARD 運営としてのみ見えます。パートナーは Wirex キーを受け取りません。",
+    "standaloneWirexSaved": "単独型 Wirex キーを暗号化して保存しました。",
+    "opsOnly": "運営専用"
   },
   "earn": {
     "title": "リワード",
@@ -534,7 +547,10 @@
     "ourKeysNotWirex": "認証は本社発行の MID / API Key / Secret です。Wirex キーは使わないでください。",
     "hmacHint": "HMAC ペイロード: timestamp.METHOD.path.sha256(body)。path は /api/partner/v1/... です。",
     "manual5": "ウォレットは埋め込み / 外部 EOA 接続 / ブリッジの3方式です。カード決済は当社 Smart Wallet のみです。",
-    "manual6": "サブソリューションは /s/{slug} の会員アプリです。キーは本社発行で Wirex キーは受け取りません。"
+    "manual6": "サブソリューションは /s/{slug} の会員アプリです。キーは本社発行で Wirex キーは受け取りません。",
+    "standaloneHint": "単独型は運営のみです。ICOCARD パートナー API キーはありません。",
+    "noReseller": "単独型では再販 API が無効です。会員アプリで運営します。",
+    "manual7": "サブソリューション単独型は加盟店の Wirex 契約キーで運営のみ行います。再販キーは発行しません。"
   },
   "walletMode": {
     "title": "ウォレット接続",
@@ -553,6 +569,7 @@
     "bridgeDesc": "接続できない資産はパートナー台帳で引き落とし、当社 Smart Wallet に入金します。",
     "amount": "金額",
     "bridgeTopup": "ブリッジ入金を依頼",
-    "bridgeDone": "ブリッジ入金を記録しました。"
+    "bridgeDone": "ブリッジ入金を記録しました。",
+    "noneEnabled": "この加盟店では許可されたウォレット方式がありません。本社へ連絡してください。"
   }
 }

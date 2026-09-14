@@ -43,6 +43,8 @@
     "adminLink": "管理员",
     "loginHint": "请输入邮箱和密码。",
     "registerHint": "使用邮箱和密码创建 ICOCARD 账户。",
+    "tenantMismatch": "此账户无法在该方案租户中使用。",
+    "tenantNotFound": "未找到该方案。",
     "submit": "提交",
     "agreePrefix": "登录即表示同意",
     "terms": "条款",
@@ -487,7 +489,18 @@
     "deliverySub": "子方案",
     "solutionName": "方案品牌名",
     "webhookUrl": "Webhook URL",
-    "bridgeDebitUrl": "桥接扣款 URL"
+    "bridgeDebitUrl": "桥接扣款 URL",
+    "deliveryStandalone": "子方案独立型",
+    "deliveryStandaloneHint": "商户使用其与 Wirex 直接签约的密钥，仅运营。不发放 ICOCARD 转售密钥。",
+    "walletPolicy": "钱包方式策略",
+    "walletFollowHq": "遵循总部设置",
+    "walletFollowHqHint": "使用总部默认的三种钱包方式。",
+    "walletCustom": "单独设置",
+    "walletHqDefault": "总部默认钱包方式",
+    "walletHqHint": "选择“遵循总部”的商户使用这些方式。未允许的方式会在会员应用与 API 中拦截。",
+    "isolationHqHint": "Wirex 仅看到 ICOCARD 运营。合作方不会收到 Wirex 密钥。",
+    "standaloneWirexSaved": "已加密保存独立型 Wirex 密钥。",
+    "opsOnly": "仅运营"
   },
   "earn": {
     "title": "收益",
@@ -533,7 +546,10 @@
     "ourKeysNotWirex": "请使用总部签发的 MID / API Key / Secret，不要使用 Wirex 密钥。",
     "hmacHint": "HMAC 载荷：timestamp.METHOD.path.sha256(body)。path 为 /api/partner/v1/...",
     "manual5": "钱包有内置、外部 EOA 连接、桥接三种。刷卡只使用我们的 Smart Wallet。",
-    "manual6": "子方案是 /s/{slug} 会员应用。密钥由总部签发，不会收到 Wirex 密钥。"
+    "manual6": "子方案是 /s/{slug} 会员应用。密钥由总部签发，不会收到 Wirex 密钥。",
+    "standaloneHint": "独立型仅运营，没有 ICOCARD 合作方 API 密钥。",
+    "noReseller": "独立型已关闭转售 API，请通过会员应用运营。",
+    "manual7": "子方案独立型使用商户自己的 Wirex 合同密钥，仅运营，不发放转售密钥。"
   },
   "walletMode": {
     "title": "钱包连接方式",
@@ -552,6 +568,7 @@
     "bridgeDesc": "无法一键连接的资产从合作方账本扣减后，记入我们的 Smart Wallet。",
     "amount": "金额",
     "bridgeTopup": "申请桥接入金",
-    "bridgeDone": "已记录桥接入金。"
+    "bridgeDone": "已记录桥接入金。",
+    "noneEnabled": "此商户未启用任何钱包方式，请联系总部。"
   }
 }

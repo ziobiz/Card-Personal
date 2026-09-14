@@ -8,9 +8,12 @@ import { createSDK, type WirexPaySDK } from '@wirexapp/wpay-baas-sdk';
 import type { Hex } from 'viem';
 import { getWirexBaaSConfig } from '../../config.js';
 import { mainWalletFromPrivateKey } from '../../lib/embeddedWallet.js';
+import { partnerStore } from '../../data/partnerStore.js';
+import { wirexConfigForPartner } from '../../lib/wirexScope.js';
 
-export async function createWirexSdk(privateKey: Hex): Promise<WirexPaySDK> {
-  const w = getWirexBaaSConfig();
+export async function createWirexSdk(privateKey: Hex, partnerId?: string): Promise<WirexPaySDK> {
+  const partner = partnerId ? partnerStore.getById(partnerId) : undefined;
+  const w = partner ? wirexConfigForPartner(partner) : getWirexBaaSConfig();
   const wallet = mainWalletFromPrivateKey(privateKey);
   const sdk = await createSDK({
     env: w.environment === 'production' ? 'prod' : 'dev',

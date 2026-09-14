@@ -11,7 +11,7 @@
 import { config } from '../config.js';
 import { store, type AppUser } from '../data/store.js';
 import { brandStore } from '../data/brandStore.js';
-import { wirexClient } from '../clients/wirex/WirexClient.js';
+import { wirexClientForUser } from '../clients/wirex/wirexClients.js';
 import { createWirexSdk } from '../clients/wirex/wirexSdk.js';
 import { sandboxHelper } from '../clients/wirex/SandboxHelperClient.js';
 import {
@@ -58,9 +58,9 @@ async function ensureKey(user: AppUser): Promise<{ pk: `0x${string}`; eoa: `0x${
   return { pk, eoa };
 }
 
-async function deployOnchain(pk: `0x${string}`): Promise<{ smart: `0x${string}`; steps: OnboardStep[] }> {
+async function deployOnchain(pk: `0x${string}`, partnerId?: string): Promise<{ smart: `0x${string}`; steps: OnboardStep[] }> {
   const steps: OnboardStep[] = [];
-  const sdk = await createWirexSdk(pk);
+  const sdk = await createWirexSdk(pk, partnerId);
   const smart = await sdk.crypto.wallet.getSmartWalletAddress();
   steps.push({ step: 'smartWalletAddress', ok: true, detail: smart });
 
@@ -88,11 +88,12 @@ async function deployOnchain(pk: `0x${string}`): Promise<{ smart: `0x${string}`;
   return { smart, steps };
 }
 
-async function registerApi(email: string, country: string, eoa: string): Promise<string> {
+async function registerApi(email: string, country: string, eoa: string, partnerId?: string): Promise<string> {
+  const client = wirexClientForUser({ partnerId });
   let last = '';
   for (let i = 0; i < 4; i++) {
     try {
-      const created = await wirexClient.registerUser({
+      const created = await client.registerUser({
         wallet_address: eoa,
         email,
         country: country || 'GB',
@@ -101,7 +102,7 @@ async function registerApi(email: string, country: string, eoa: string): Promise
     } catch (e) {
       last = (e as Error).message;
       try {
-        const existing = (await wirexClient.getUser({ walletAddress: eoa, email })) as {
+        const existing = (await client.getUser({ walletAddress: eoa, email })) as {
           id?: string;
           user_id?: string;
         };
@@ -145,6 +146,7 @@ export const onboardingService = {
     try {
       const user0 = store.getUserById(userId);
       if (!user0) throw new Error('User not found');
+      const wx = wirexClientForUser(user0);
 
       let eoa: `0x${string}`;
       let pk: `0x${string}` | null = null;
@@ -164,7 +166,7 @@ export const onboardingService = {
       const needChain =
         !external && (!smart || ['none', 'wallet', 'error'].includes(afterKey.onboardingStatus || 'none'));
       if (needChain && pk) {
-        const deployed = await deployOnchain(pk);
+        const deployed = await deployOnchain(pk, user0.partnerId);
         smart = deployed.smart;
         steps.push(...deployed.steps);
         store.updateOnboarding(userId, {
@@ -186,7 +188,7 @@ export const onboardingService = {
 
       let wirexUserId = store.getUserById(userId)!.wirexUserId;
       if (!wirexUserId) {
-        wirexUserId = await registerApi(user0.email, user0.country || 'GB', eoa);
+        wirexUserId = await registerApi(user0.email, user0.country || 'GB', eoa, user0.partnerId);
         steps.push({ step: 'registerUser', ok: true, detail: wirexUserId });
         store.updateOnboarding(userId, { wirexUserId, onboardingStatus: 'registered' });
       } else {
@@ -198,7 +200,7 @@ export const onboardingService = {
 
       let kycUrl: string | null = null;
       try {
-        kycUrl = await wirexClient.getVerificationLink({
+        kycUrl = await wx.getVerificationLink({
           walletAddress: eoa,
           email: user0.email,
           userId: wirexUserId,
@@ -211,7 +213,7 @@ export const onboardingService = {
 
       let visaActive = false;
       try {
-        const profile = (await wirexClient.getUser({
+        const profile = (await wx.getUser({
           walletAddress: eoa,
           userId: wirexUserId,
           email: user0.email,
@@ -257,7 +259,7 @@ export const onboardingService = {
             let last = '';
             for (let i = 0; i < 3; i++) {
               try {
-                card = await wirexClient.issueVirtualCard(
+                card = await wx.issueVirtualCard(
                   { walletAddress: eoa, email: user0.email, userId: wirexUserId },
                   { card_name: cardName, name_on_card: (user0.displayName || 'CARD HOLDER').slice(0, 24) }
                 );

@@ -13,8 +13,11 @@ import {
   newApiSecret,
   newHmacSecret,
   newMid,
+  parseDeliveryMode,
   slugify,
 } from '../lib/partnerCredentials.js';
+import { resolveWalletModes, type WalletPolicySource } from '../lib/walletPolicy.js';
+import { canRedistributeKeys, isolationNote, isStandalone } from '../lib/wirexScope.js';
 import { getWirexEnvironment } from '../config.js';
 import { packageManifest } from './packageManifest.js';
 
@@ -79,7 +82,7 @@ export function canIssueCard(
   return { ok: true };
 }
 
-export type DeliveryMode = 'api' | 'sub_solution';
+export type DeliveryMode = 'api' | 'sub_solution' | 'sub_solution_standalone';
 
 export interface PartnerWalletModes {
   embedded: boolean;
@@ -99,10 +102,15 @@ export interface Partner {
   cardIssuePolicy: CardIssuePolicy;
   allowVirtual: boolean;
   allowPlastic: boolean;
-  /** HQ-issued merchant id (PG MID). Partners never receive Wirex keys. */
+  /** HQ-issued merchant id (PG MID). Modes 1–2 never receive Wirex keys. */
   mid?: string;
   deliveryMode?: DeliveryMode;
+  walletPolicySource?: WalletPolicySource;
   walletModes?: PartnerWalletModes;
+  /** Standalone only: tenant Wirex contract (encrypted). Never used for API/sub_solution. */
+  wirexClientIdEnc?: string;
+  wirexClientSecretEnc?: string;
+  wirexPartnerId?: string;
   apiSecretHash?: string;
   hmacSecretHash?: string;
   hmacSecretEnc?: string;
@@ -111,8 +119,8 @@ export interface Partner {
   solutionSlug?: string;
   solutionName?: string;
   bridgeDebitUrl?: string;
-  apiKeyHash: string;
-  apiKeyPrefix: string;
+  apiKeyHash?: string;
+  apiKeyPrefix?: string;
   status: 'active' | 'suspended';
   billingWalletAddress?: string;
   billingWarnings: number;
@@ -258,7 +266,7 @@ function loadAll(): void {
   mappings.clear();
   for (const p of loadPartners()) {
     partners.set(p.id, p);
-    apiKeyToPartner.set(p.apiKeyPrefix, p.id);
+    if (p.apiKeyPrefix) apiKeyToPartner.set(p.apiKeyPrefix, p.id);
   }
   for (const m of loadMappings()) {
     mappings.set(mappingKey(m.partnerId, m.partnerUserId), m);
@@ -293,20 +301,28 @@ export const partnerStore = {
   },
 
   publicCredentialView(p: Partner) {
+    const standalone = isStandalone(p);
     return {
       mid: p.mid || '',
       deliveryMode: p.deliveryMode || 'api',
-      walletModes: p.walletModes ?? { embedded: true, externalEoa: true, bridge: true },
-      apiKeyPrefix: (p.apiKeyPrefix || '') + '...',
-      hasApiSecret: Boolean(p.apiSecretHash),
-      hasHmac: Boolean(p.hmacSecretHash),
+      walletPolicySource: p.walletPolicySource === 'custom' ? 'custom' : 'follow_hq',
+      walletModes: resolveWalletModes(p),
+      apiKeyPrefix: standalone ? '' : (p.apiKeyPrefix || '') + '...',
+      hasApiSecret: standalone ? false : Boolean(p.apiSecretHash),
+      hasHmac: standalone ? false : Boolean(p.hmacSecretHash),
+      canRedistributeKeys: canRedistributeKeys(p),
+      isolation: isolationNote(p),
+      wirexRail: standalone ? 'tenant_contract' : 'icocard_hq',
+      wirexConfigured: standalone ? Boolean(p.wirexClientIdEnc && p.wirexClientSecretEnc) : true,
       webhookUrl: p.webhookUrl || '',
       allowedIps: p.allowedIps || [],
       solutionSlug: p.solutionSlug || '',
       solutionName: p.solutionName || p.companyName || p.name,
       solutionUrl: p.solutionSlug ? `${memberBase()}/s/${p.solutionSlug}` : '',
       bridgeDebitUrl: p.bridgeDebitUrl || '',
-      endpoints: buildKit(p, { apiKey: '', apiSecret: '', hmacSecret: '', live: getWirexEnvironment() === 'production' }).endpoints,
+      endpoints: standalone
+        ? {}
+        : buildKit(p, { apiKey: '', apiSecret: '', hmacSecret: '', live: getWirexEnvironment() === 'production' }).endpoints,
     };
   },
 
@@ -324,21 +340,26 @@ export const partnerStore = {
     feePolicyId?: string;
     distribution?: Partner['distribution'];
     deliveryMode?: DeliveryMode;
+    walletPolicySource?: WalletPolicySource;
     walletModes?: PartnerWalletModes;
     webhookUrl?: string;
     solutionName?: string;
     bridgeDebitUrl?: string;
-  }): { partner: Partner; apiKey: string; kit: CredentialKit } {
+    wirexClientId?: string;
+    wirexClientSecret?: string;
+    wirexPartnerId?: string;
+  }): { partner: Partner; apiKey: string; kit: CredentialKit | null } {
     const id = 'ptr_' + randomBytes(8).toString('hex');
     const live = getWirexEnvironment() === 'production';
-    const apiKey = newApiKey(live);
-    const apiSecret = newApiSecret(live);
-    const hmacSecret = newHmacSecret();
-    const prefix = apiKey.slice(0, 12);
+    const deliveryMode = parseDeliveryMode(data.deliveryMode);
+    const standalone = deliveryMode === 'sub_solution_standalone';
+    const apiKey = standalone ? '' : newApiKey(live);
+    const apiSecret = standalone ? '' : newApiSecret(live);
+    const hmacSecret = standalone ? '' : newHmacSecret();
+    const prefix = apiKey ? apiKey.slice(0, 12) : '';
     const cardIssuePolicy = data.cardIssuePolicy
       ?? issuePolicyFromPartner({ allowVirtual: data.allowVirtual, allowPlastic: data.allowPlastic });
     const flags = flagsFromIssuePolicy(cardIssuePolicy);
-    const deliveryMode = data.deliveryMode === 'sub_solution' ? 'sub_solution' : 'api';
     const mid = newMid();
     const slugBase = slugify(data.companyName || data.name);
     let solutionSlug = slugBase;
@@ -346,6 +367,8 @@ export const partnerStore = {
     while ([...partners.values()].some((x) => x.solutionSlug === solutionSlug)) {
       solutionSlug = `${slugBase}${n++}`;
     }
+    const needsSlug = deliveryMode === 'sub_solution' || deliveryMode === 'sub_solution_standalone';
+    const walletPolicySource: WalletPolicySource = data.walletPolicySource === 'custom' ? 'custom' : 'follow_hq';
     const partner: Partner = {
       id,
       name: data.name,
@@ -359,15 +382,19 @@ export const partnerStore = {
       allowPlastic: flags.allowPlastic,
       mid,
       deliveryMode,
-      walletModes: data.walletModes ?? { embedded: true, externalEoa: true, bridge: true },
-      apiSecretHash: hashSecret(apiSecret),
-      hmacSecretHash: hashSecret(hmacSecret),
-      hmacSecretEnc: encryptSecret(hmacSecret),
+      walletPolicySource,
+      walletModes: walletPolicySource === 'custom' ? resolveWalletModes({ walletPolicySource: 'custom', walletModes: data.walletModes }) : undefined,
+      apiSecretHash: standalone ? undefined : hashSecret(apiSecret),
+      hmacSecretHash: standalone ? undefined : hashSecret(hmacSecret),
+      hmacSecretEnc: standalone ? undefined : encryptSecret(hmacSecret),
       webhookUrl: data.webhookUrl,
-      solutionSlug: deliveryMode === 'sub_solution' ? solutionSlug : undefined,
+      solutionSlug: needsSlug ? solutionSlug : undefined,
+      wirexClientIdEnc: standalone && data.wirexClientId ? encryptSecret(data.wirexClientId) : undefined,
+      wirexClientSecretEnc: standalone && data.wirexClientSecret ? encryptSecret(data.wirexClientSecret) : undefined,
+      wirexPartnerId: standalone ? data.wirexPartnerId : undefined,
       solutionName: data.solutionName || data.companyName || data.name,
       bridgeDebitUrl: data.bridgeDebitUrl,
-      apiKeyHash: hashApiKey(apiKey),
+      apiKeyHash: standalone ? undefined : hashApiKey(apiKey),
       apiKeyPrefix: prefix,
       status: 'active',
       billingWarnings: 0,
@@ -378,13 +405,13 @@ export const partnerStore = {
       createdAt: new Date().toISOString(),
     };
     partners.set(id, partner);
-    apiKeyToPartner.set(prefix, id);
+    if (prefix) apiKeyToPartner.set(prefix, id);
     savePartners(Array.from(partners.values()));
-    const kit = buildKit(partner, { apiKey, apiSecret, hmacSecret, live });
-    return { partner, apiKey, kit };
+    const kit = canRedistributeKeys(partner) ? buildKit(partner, { apiKey, apiSecret, hmacSecret, live }) : null;
+    return { partner, apiKey: kit ? apiKey : '', kit };
   },
 
-  update(id: string, data: Partial<Pick<Partner, 'name' | 'companyName' | 'status' | 'billingWalletAddress' | 'billingWarnings' | 'lastBillingMonth' | 'suspendedAt' | 'fees' | 'feePolicyId' | 'feeOverride' | 'businessNo' | 'ceoName' | 'phone' | 'orgUnitId' | 'orgParentId' | 'cardIssuePolicy' | 'allowVirtual' | 'allowPlastic' | 'distribution' | 'distributionApplyStart' | 'deliveryMode' | 'walletModes' | 'webhookUrl' | 'allowedIps' | 'solutionSlug' | 'solutionName' | 'bridgeDebitUrl'>>): Partner | undefined {
+  update(id: string, data: Partial<Pick<Partner, 'name' | 'companyName' | 'status' | 'billingWalletAddress' | 'billingWarnings' | 'lastBillingMonth' | 'suspendedAt' | 'fees' | 'feePolicyId' | 'feeOverride' | 'businessNo' | 'ceoName' | 'phone' | 'orgUnitId' | 'orgParentId' | 'cardIssuePolicy' | 'allowVirtual' | 'allowPlastic' | 'distribution' | 'distributionApplyStart' | 'deliveryMode' | 'walletPolicySource' | 'walletModes' | 'webhookUrl' | 'allowedIps' | 'solutionSlug' | 'solutionName' | 'bridgeDebitUrl' | 'wirexPartnerId'>>): Partner | undefined {
     const p = partners.get(id);
     if (!p) return undefined;
     if (data.name != null) p.name = data.name;
@@ -414,19 +441,33 @@ export const partnerStore = {
     }
     if (data.distribution !== undefined) p.distribution = data.distribution;
     if (data.distributionApplyStart !== undefined) p.distributionApplyStart = data.distributionApplyStart;
-    if (data.deliveryMode === 'api' || data.deliveryMode === 'sub_solution') p.deliveryMode = data.deliveryMode;
-    if (data.walletModes) p.walletModes = data.walletModes;
+    if (data.deliveryMode === 'api' || data.deliveryMode === 'sub_solution' || data.deliveryMode === 'sub_solution_standalone') {
+      p.deliveryMode = data.deliveryMode;
+    }
+    if (data.walletPolicySource === 'follow_hq' || data.walletPolicySource === 'custom') {
+      p.walletPolicySource = data.walletPolicySource;
+    }
+    if (data.walletModes) p.walletModes = resolveWalletModes({ walletPolicySource: 'custom', walletModes: data.walletModes });
     if (data.webhookUrl !== undefined) p.webhookUrl = data.webhookUrl;
     if (data.allowedIps !== undefined) p.allowedIps = data.allowedIps;
     if (data.solutionName !== undefined) p.solutionName = data.solutionName;
     if (data.bridgeDebitUrl !== undefined) p.bridgeDebitUrl = data.bridgeDebitUrl;
+    if (data.wirexPartnerId !== undefined) p.wirexPartnerId = data.wirexPartnerId;
     if (data.solutionSlug !== undefined) {
       const slug = slugify(data.solutionSlug || p.companyName || p.name);
       const clash = Array.from(partners.values()).find((x) => x.id !== p.id && x.solutionSlug === slug);
       p.solutionSlug = clash ? `${slug}${randomBytes(2).toString('hex')}` : slug;
     }
-    if (p.deliveryMode === 'sub_solution' && !p.solutionSlug) {
+    if ((p.deliveryMode === 'sub_solution' || p.deliveryMode === 'sub_solution_standalone') && !p.solutionSlug) {
       p.solutionSlug = slugify(p.companyName || p.name) + randomBytes(2).toString('hex');
+    }
+    if (isStandalone(p)) {
+      if (p.apiKeyPrefix) apiKeyToPartner.delete(p.apiKeyPrefix);
+      p.apiKeyPrefix = '';
+      p.apiKeyHash = undefined;
+      p.apiSecretHash = undefined;
+      p.hmacSecretHash = undefined;
+      p.hmacSecretEnc = undefined;
     }
     if (!p.mid) p.mid = newMid();
     if (p.allowVirtual === undefined) p.allowVirtual = true;
@@ -436,10 +477,20 @@ export const partnerStore = {
     return p;
   },
 
+  setStandaloneWirexKeys(id: string, clientId: string, clientSecret: string): Partner | undefined {
+    const p = partners.get(id);
+    if (!p || !isStandalone(p)) return undefined;
+    if (clientId) p.wirexClientIdEnc = encryptSecret(clientId);
+    if (clientSecret) p.wirexClientSecretEnc = encryptSecret(clientSecret);
+    p.updatedAt = new Date().toISOString();
+    savePartners(Array.from(partners.values()));
+    return p;
+  },
+
   regenerateApiKey(id: string): { partner: Partner; apiKey: string; kit: CredentialKit } | undefined {
     const p = partners.get(id);
-    if (!p) return undefined;
-    apiKeyToPartner.delete(p.apiKeyPrefix);
+    if (!p || isStandalone(p)) return undefined;
+    if (p.apiKeyPrefix) apiKeyToPartner.delete(p.apiKeyPrefix);
     const live = getWirexEnvironment() === 'production';
     const apiKey = newApiKey(live);
     const apiSecret = newApiSecret(live);

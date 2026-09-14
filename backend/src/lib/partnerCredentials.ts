@@ -6,7 +6,12 @@
 import { createHash, createHmac, createCipheriv, createDecipheriv, randomBytes, timingSafeEqual } from 'crypto';
 import { config } from '../config.js';
 
-export type DeliveryMode = 'api' | 'sub_solution';
+export type DeliveryMode = 'api' | 'sub_solution' | 'sub_solution_standalone';
+
+export function parseDeliveryMode(raw: unknown): DeliveryMode {
+  if (raw === 'sub_solution' || raw === 'sub_solution_standalone') return raw;
+  return 'api';
+}
 
 function encKey(): Buffer {
   return createHash('sha256').update(config.walletEncKey || config.jwtSecret).digest();

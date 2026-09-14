@@ -39,6 +39,8 @@
     "adminLink": "ผู้ดูแลระบบ",
     "loginHint": "กรอกอีเมลและรหัสผ่าน",
     "registerHint": "สร้างบัญชี ICOCARD ด้วยอีเมลและรหัสผ่าน",
+    "tenantMismatch": "บัญชีนี้ใช้กับโซลูชันนี้ไม่ได้",
+    "tenantNotFound": "ไม่พบโซลูชัน",
     "submit": "ส่ง",
     "agreePrefix": "การเข้าสู่ระบบถือว่ายอมรับ",
     "terms": "ข้อกำหนด",
@@ -487,7 +489,18 @@
     "deliverySub": "โซลูชันย่อย",
     "solutionName": "ชื่อแบรนด์โซลูชัน",
     "webhookUrl": "Webhook URL",
-    "bridgeDebitUrl": "URL หักบริดจ์"
+    "bridgeDebitUrl": "URL หักบริดจ์",
+    "deliveryStandalone": "โซลูชันย่อยแบบสแตนด์อโลน",
+    "deliveryStandaloneHint": "ร้านใช้คีย์สัญญา Wirex ของตนเองเพื่อดำเนินงานเท่านั้น ไม่จ่ายคีย์ขายต่อของ ICOCARD",
+    "walletPolicy": "นโยบายวอลเล็ต",
+    "walletFollowHq": "ตามสำนักงานใหญ่",
+    "walletFollowHqHint": "ใช้โหมดวอลเล็ตเริ่มต้นของสำนักงานใหญ่",
+    "walletCustom": "กำหนดเอง",
+    "walletHqDefault": "โหมดวอลเล็ตเริ่มต้นของสำนักงานใหญ่",
+    "walletHqHint": "ร้านที่เลือกตามสำนักงานใหญ่จะใช้ค่านี้ โหมดที่ไม่อนุญาตจะถูกบล็อก",
+    "isolationHqHint": "Wirex เห็นเฉพาะการดำเนินงานของ ICOCARD พาร์ทเนอร์ไม่ได้รับคีย์ Wirex",
+    "standaloneWirexSaved": "บันทึกคีย์ Wirex แบบสแตนด์อโลนแบบเข้ารหัสแล้ว",
+    "opsOnly": "ดำเนินงานเท่านั้น"
   },
   "earn": {
     "title": "รับรางวัล",
@@ -533,7 +546,10 @@
     "ourKeysNotWirex": "ยืนยันด้วย MID / API Key / Secret จากเรา ห้ามใช้คีย์ Wirex",
     "hmacHint": "HMAC payload: timestamp.METHOD.path.sha256(body) path คือ /api/partner/v1/...",
     "manual5": "วอลเล็ตมี 3 แบบ: ฝังตัว / EOA ภายนอก / บริดจ์ การใช้บัตรใช้ Smart Wallet ของเราเท่านั้น",
-    "manual6": "โซลูชันย่อยคือแอปสมาชิกที่ /s/{slug} คีย์ออกโดยเรา ไม่ได้รับคีย์ Wirex"
+    "manual6": "โซลูชันย่อยคือแอปสมาชิกที่ /s/{slug} คีย์ออกโดยเรา ไม่ได้รับคีย์ Wirex",
+    "standaloneHint": "สแตนด์อโลนดำเนินงานเท่านั้น ไม่มีคีย์ Partner API ของ ICOCARD",
+    "noReseller": "สแตนด์อโลนปิด API ขายต่อ ใช้แอปสมาชิกเท่านั้น",
+    "manual7": "โซลูชันย่อยสแตนด์อโลนใช้คีย์สัญญา Wirex ของร้านเพื่อดำเนินงานเท่านั้น"
   },
   "walletMode": {
     "title": "การเชื่อมวอลเล็ต",
@@ -552,6 +568,7 @@
     "bridgeDesc": "สินทรัพย์ที่เชื่อมปุ่มไม่ได้จะหักจากบัญชีพาร์ทเนอร์แล้วเครดิตเข้า Smart Wallet ของเรา",
     "amount": "จำนวน",
     "bridgeTopup": "ขอเครดิตบริดจ์",
-    "bridgeDone": "บันทึกบริดจ์แล้ว"
+    "bridgeDone": "บันทึกบริดจ์แล้ว",
+    "noneEnabled": "ร้านนี้ไม่มีโหมดวอลเล็ตที่อนุญาต ติดต่อสำนักงานใหญ่"
   }
 }

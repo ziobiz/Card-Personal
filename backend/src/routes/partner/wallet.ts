@@ -8,6 +8,7 @@ import { requirePartnerAuth } from '../../middleware/partnerAuth.js';
 import { store } from '../../data/store.js';
 import { partnerStore } from '../../data/partnerStore.js';
 import { wirexService } from '../../services/wirex/wirexService.js';
+import { isWalletModeAllowed, walletModeDeniedError } from '../../lib/walletPolicy.js';
 
 const router = Router();
 router.use(requirePartnerAuth);
@@ -18,6 +19,9 @@ router.get('/challenge', async (req, res) => {
     if (!pid) return res.status(400).json({ error: 'partner_user_id required' });
     const { resolvePartnerUser } = await import('./resolveUser.js');
     const { issueWalletChallenge } = await import('../../lib/walletBind.js');
+    if (!isWalletModeAllowed(req.partner, 'external_eoa')) {
+      return res.status(403).json({ error: walletModeDeniedError('external_eoa') });
+    }
     const ourId = await resolvePartnerUser(req.partner!.id, pid, req.partnerUserEmail, 'external_eoa');
     res.json({ ourUserId: ourId, ...issueWalletChallenge(ourId) });
   } catch (e) {
@@ -29,6 +33,9 @@ router.post('/connect', async (req, res) => {
   try {
     const pid = req.partnerUserId || req.body?.partner_user_id;
     if (!pid) return res.status(400).json({ error: 'partner_user_id required' });
+    if (!isWalletModeAllowed(req.partner, 'external_eoa')) {
+      return res.status(403).json({ error: walletModeDeniedError('external_eoa') });
+    }
     const address = String(req.body?.address || '').trim() as `0x${string}`;
     const signature = String(req.body?.signature || '').trim() as `0x${string}`;
     if (!/^0x[a-fA-F0-9]{40}$/.test(address) || !signature.startsWith('0x')) {
@@ -58,6 +65,9 @@ router.post('/embedded', async (req, res) => {
   try {
     const pid = req.partnerUserId || req.body?.partner_user_id;
     if (!pid) return res.status(400).json({ error: 'partner_user_id required' });
+    if (!isWalletModeAllowed(req.partner, 'embedded')) {
+      return res.status(403).json({ error: walletModeDeniedError('embedded') });
+    }
     const { resolvePartnerUser } = await import('./resolveUser.js');
     const ourId = await resolvePartnerUser(req.partner!.id, pid, req.partnerUserEmail, 'embedded');
     store.updateOnboarding(ourId, { walletMode: 'embedded', onboardingStatus: 'none', onboardingError: null });

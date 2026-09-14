@@ -65,7 +65,7 @@ Wirex 클라이언트·카드·웹훅 코어는 **브랜드와 분리**되어 �
 - `env.package.example` → 구매사 `.env`
 - Webhook: `{API_DOMAIN}/v2/webhooks/*`
 - 관리자 최초 계정 / OTP 시크릿 전달 절차
-- 파트너 API 매뉴얼 (`docs/PARTNER_API.md`) — 본사 발급 키트, 지갑 3방식, API/서브솔루션 2방식
+- 파트너 API 매뉴얼 (`docs/PARTNER_API.md`) — 본사 발급 키트, 지갑 3방식(본사설정 따름/별도), 연동 배포 3방식(API/서브 솔루션/서브 솔루션 단독형)
 - 본 문서 + `GET /api/package` 상태 확인
 
 ## 5. Wirex 키 정책 (중요)
@@ -73,9 +73,11 @@ Wirex 클라이언트·카드·웹훅 코어는 **브랜드와 분리**되어 �
 | 대상 | 키 |
 |------|----|
 | HQ 배포 인스턴스 `.env` | Wirex client id/secret (운영사만) |
-| 화이트라벨 / 서브 솔루션 / 파트너 API | **ICOCARD MID + API Key + Secret + HMAC** (본사 발급) |
+| API / 서브 솔루션 | **ICOCARD MID + API Key + Secret + HMAC** (본사 발급). Wirex는 ICOCARD만 봄 |
+| 서브 솔루션 단독형 | 업체의 Wirex 계약 키(암호화). ICOCARD 재판매 키 없음 |
 
-파트너·화이트라벨 구매사는 **Wirex 키를 받지 않습니다.** PG(ziobiz/PG)와 같이 본사가 가맹점 키를 발급·재발급(1회 표시, 재발급 시 폐기)합니다.
+API·서브 솔루션 가맹점은 **Wirex 키를 받지 않습니다.** Wirex에는 ICOCARD 운영으로만 보입니다.  
+**서브 솔루션 단독형**만 업체의 Wirex 계약 키를 암호화 저장하며, 재판매/키 재배포 기능은 없습니다.
 
 | 단계 | 상태 |
 |------|------|

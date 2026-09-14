@@ -4,12 +4,15 @@ import { api } from '../api';
 
 type Mode = 'embedded' | 'external_eoa' | 'bridge';
 
+type Allowed = { embedded: boolean; externalEoa: boolean; bridge: boolean };
+
 type Props = {
   current?: Mode;
+  allowed?: Allowed;
   onChanged?: () => void;
 };
 
-export default function WalletModePanel({ current = 'embedded', onChanged }: Props) {
+export default function WalletModePanel({ current = 'embedded', allowed, onChanged }: Props) {
   const { t } = useTranslation();
   const [mode, setMode] = useState<Mode>(current);
   const [busy, setBusy] = useState(false);
@@ -17,6 +20,18 @@ export default function WalletModePanel({ current = 'embedded', onChanged }: Pro
   const [err, setErr] = useState('');
   const [amount, setAmount] = useState('10');
   const [bridgeItems, setBridgeItems] = useState<Array<{ id: string; amount: number; currency: string; status: string; direction: string; createdAt: string }>>([]);
+  const [policy, setPolicy] = useState<Allowed>(allowed ?? { embedded: true, externalEoa: true, bridge: true });
+
+  useEffect(() => {
+    if (allowed) setPolicy(allowed);
+  }, [allowed]);
+
+  useEffect(() => {
+    if (allowed) return;
+    api.user.onboarding().then((r) => {
+      if (r.allowedWalletModes) setPolicy(r.allowedWalletModes);
+    }).catch(() => undefined);
+  }, [allowed]);
 
   useEffect(() => {
     setMode(current);
@@ -101,32 +116,41 @@ export default function WalletModePanel({ current = 'embedded', onChanged }: Pro
       <p className="muted-text">{t('walletMode.lead')}</p>
       <p className="muted-text wx-wallet-spend">{t('walletMode.spendNote')}</p>
       <div className="wx-wallet-grid">
-        <article className={mode === 'embedded' ? 'on' : ''}>
-          <h4>{t('walletMode.embedded')}</h4>
-          <p>{t('walletMode.embeddedDesc')}</p>
-          <button type="button" className="btn-primary" disabled={busy} onClick={() => void useEmbedded()}>
-            {busy && mode !== 'embedded' ? t('common.loading') : t('walletMode.useEmbedded')}
-          </button>
-        </article>
-        <article className={mode === 'external_eoa' ? 'on' : ''}>
-          <h4>{t('walletMode.external')}</h4>
-          <p>{t('walletMode.externalDesc')}</p>
-          <button type="button" className="btn-secondary" disabled={busy} onClick={() => void connectExternal()}>
-            {t('walletMode.connectWallet')}
-          </button>
-        </article>
-        <article className={mode === 'bridge' ? 'on' : ''}>
-          <h4>{t('walletMode.bridge')}</h4>
-          <p>{t('walletMode.bridgeDesc')}</p>
-          <label>
-            <span>{t('walletMode.amount')}</span>
-            <input className="input" type="number" min={1} step={1} value={amount} onChange={(e) => setAmount(e.target.value)} />
-          </label>
-          <button type="button" className="btn-secondary" disabled={busy} onClick={() => void bridgeTopup()}>
-            {t('walletMode.bridgeTopup')}
-          </button>
-        </article>
+        {policy.embedded ? (
+          <article className={mode === 'embedded' ? 'on' : ''}>
+            <h4>{t('walletMode.embedded')}</h4>
+            <p>{t('walletMode.embeddedDesc')}</p>
+            <button type="button" className="btn-primary" disabled={busy} onClick={() => void useEmbedded()}>
+              {busy && mode !== 'embedded' ? t('common.loading') : t('walletMode.useEmbedded')}
+            </button>
+          </article>
+        ) : null}
+        {policy.externalEoa ? (
+          <article className={mode === 'external_eoa' ? 'on' : ''}>
+            <h4>{t('walletMode.external')}</h4>
+            <p>{t('walletMode.externalDesc')}</p>
+            <button type="button" className="btn-secondary" disabled={busy} onClick={() => void connectExternal()}>
+              {t('walletMode.connectWallet')}
+            </button>
+          </article>
+        ) : null}
+        {policy.bridge ? (
+          <article className={mode === 'bridge' ? 'on' : ''}>
+            <h4>{t('walletMode.bridge')}</h4>
+            <p>{t('walletMode.bridgeDesc')}</p>
+            <label>
+              <span>{t('walletMode.amount')}</span>
+              <input className="input" type="number" min={1} step={1} value={amount} onChange={(e) => setAmount(e.target.value)} />
+            </label>
+            <button type="button" className="btn-secondary" disabled={busy} onClick={() => void bridgeTopup()}>
+              {t('walletMode.bridgeTopup')}
+            </button>
+          </article>
+        ) : null}
       </div>
+      {!policy.embedded && !policy.externalEoa && !policy.bridge ? (
+        <p className="auth-error">{t('walletMode.noneEnabled')}</p>
+      ) : null}
       {msg ? <p className="admin-settings-success">{msg}</p> : null}
       {err ? <p className="auth-error">{err}</p> : null}
       {bridgeItems.length ? (

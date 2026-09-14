@@ -9,6 +9,7 @@ import { partnerStore } from '../../data/partnerStore.js';
 import { bridgeStore } from '../../data/bridgeStore.js';
 import { sandboxHelper } from '../../clients/wirex/SandboxHelperClient.js';
 import { config } from '../../config.js';
+import { isWalletModeAllowed, walletModeDeniedError } from '../../lib/walletPolicy.js';
 
 const router = Router();
 router.use(requirePartnerAuth);
@@ -32,6 +33,9 @@ router.post('/credit', async (req, res) => {
   try {
     const partnerUserId = req.partnerUserId || req.body?.partner_user_id;
     if (!partnerUserId) return res.status(400).json({ error: 'partner_user_id required' });
+    if (!isWalletModeAllowed(req.partner, 'bridge')) {
+      return res.status(403).json({ error: walletModeDeniedError('bridge') });
+    }
     const amount = Number(req.body?.amount || 0);
     const currency = String(req.body?.currency || 'USD');
     if (!(amount > 0)) return res.status(400).json({ error: 'amount required' });

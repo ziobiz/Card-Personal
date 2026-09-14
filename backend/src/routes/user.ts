@@ -8,6 +8,16 @@ import { config } from '../config.js';
 import { webauthnService } from '../lib/webauthn.js';
 import { issueWalletChallenge, verifyWalletBind } from '../lib/walletBind.js';
 import { bridgeStore } from '../data/bridgeStore.js';
+import { partnerStore } from '../data/partnerStore.js';
+import { isWalletModeAllowed, resolveWalletModes, walletModeDeniedError, type WalletModeKey } from '../lib/walletPolicy.js';
+
+function partnerForUser(user: { partnerId?: string }) {
+  return user.partnerId ? partnerStore.getById(user.partnerId) : undefined;
+}
+
+function assertWalletMode(user: { partnerId?: string }, mode: WalletModeKey): string | null {
+  return isWalletModeAllowed(partnerForUser(user), mode) ? null : walletModeDeniedError(mode);
+}
 
 const router = Router();
 router.use(requireAuth);
@@ -88,6 +98,8 @@ router.get('/onboarding', (req, res) => {
     wirexUserId: user.wirexUserId || null,
     kycStatus: user.kycStatus || 'pending',
     walletMode: user.walletMode || 'embedded',
+    allowedWalletModes: resolveWalletModes(partnerForUser(user)),
+    walletPolicySource: partnerForUser(user)?.walletPolicySource === 'custom' ? 'custom' : 'follow_hq',
     mock: config.useMockWirex,
   });
 });
@@ -99,6 +111,10 @@ router.get('/wallet/challenge', (req, res) => {
 router.post('/wallet/connect', async (req, res) => {
   try {
     const userId = req.auth!.userId;
+    const user0 = store.getUserById(userId);
+    if (!user0) return res.status(404).json({ error: 'User not found' });
+    const denied = assertWalletMode(user0, 'external_eoa');
+    if (denied) return res.status(403).json({ error: denied });
     const address = String(req.body?.address || '').trim() as `0x${string}`;
     const signature = String(req.body?.signature || '').trim() as `0x${string}`;
     if (!/^0x[a-fA-F0-9]{40}$/.test(address) || !signature.startsWith('0x')) {
@@ -124,6 +140,10 @@ router.post('/wallet/connect', async (req, res) => {
 router.post('/wallet/embedded', async (req, res) => {
   try {
     const userId = req.auth!.userId;
+    const user0 = store.getUserById(userId);
+    if (!user0) return res.status(404).json({ error: 'User not found' });
+    const denied = assertWalletMode(user0, 'embedded');
+    if (denied) return res.status(403).json({ error: denied });
     store.updateOnboarding(userId, { walletMode: 'embedded', onboardingStatus: 'none', onboardingError: null });
     const { onboardingService } = await import('../services/onboardingService.js');
     const result = await onboardingService.run(userId, { issueCard: false, mint: true });
@@ -137,6 +157,8 @@ router.post('/wallet/bridge/topup', async (req, res) => {
   try {
     const user = store.getUserById(req.auth!.userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
+    const denied = assertWalletMode(user, 'bridge');
+    if (denied) return res.status(403).json({ error: denied });
     const amount = Number(req.body?.amount || 0);
     const currency = String(req.body?.currency || 'USD');
     if (!(amount > 0)) return res.status(400).json({ error: 'amount required' });

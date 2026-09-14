@@ -21,6 +21,7 @@ type Settings = {
     otpRequiredOrg?: boolean;
   };
   useMockWirex: boolean;
+  walletPolicy?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
   updatedAt?: string;
 };
 
@@ -47,6 +48,9 @@ export default function AdminSettings() {
     otpRequiredAdmin: true,
     otpRequiredMember: true,
     otpRequiredOrg: true,
+    walletEmbedded: true,
+    walletExternal: true,
+    walletBridge: true,
   });
 
   useEffect(() => {
@@ -71,6 +75,9 @@ export default function AdminSettings() {
           otpRequiredAdmin: r.security?.otpRequiredAdmin ?? true,
           otpRequiredMember: r.security?.otpRequiredMember ?? true,
           otpRequiredOrg: r.security?.otpRequiredOrg ?? true,
+          walletEmbedded: r.walletPolicy?.embedded !== false,
+          walletExternal: r.walletPolicy?.externalEoa !== false,
+          walletBridge: r.walletPolicy?.bridge !== false,
         });
       })
       .catch((e) => {
@@ -111,6 +118,11 @@ export default function AdminSettings() {
           otpRequiredOrg: form.otpRequiredOrg,
         },
         useMockWirex: form.useMockWirex,
+        walletPolicy: {
+          embedded: form.walletEmbedded,
+          externalEoa: form.walletExternal,
+          bridge: form.walletBridge,
+        },
       });
       setMessage(t('admin.saved'));
       setSaveOk(true);
@@ -205,6 +217,21 @@ export default function AdminSettings() {
             onChange={(e) => setForm((f) => ({ ...f, clientSecret: e.target.value }))}
             placeholder={t('admin.clientSecretHint')}
           />
+        </label>
+
+        <h3 className="section-title" style={{ marginTop: '2rem' }}>{t('admin.walletHqDefault')}</h3>
+        <p className="muted-text admin-settings-desc">{t('admin.walletHqHint')}</p>
+        <label className="admin-settings-checkbox">
+          <input type="checkbox" checked={form.walletEmbedded} onChange={(e) => setForm((f) => ({ ...f, walletEmbedded: e.target.checked }))} />
+          {t('walletMode.embedded')}
+        </label>
+        <label className="admin-settings-checkbox">
+          <input type="checkbox" checked={form.walletExternal} onChange={(e) => setForm((f) => ({ ...f, walletExternal: e.target.checked }))} />
+          {t('walletMode.external')}
+        </label>
+        <label className="admin-settings-checkbox">
+          <input type="checkbox" checked={form.walletBridge} onChange={(e) => setForm((f) => ({ ...f, walletBridge: e.target.checked }))} />
+          {t('walletMode.bridge')}
         </label>
 
         <h3 className="section-title" style={{ marginTop: '2rem' }}>{t('admin.sectionOtp')}</h3>

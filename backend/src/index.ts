@@ -67,6 +67,8 @@ app.get('/api/brand', (req, res) => {
     operatorName: p.companyName || p.name,
     tenantSlug: p.solutionSlug,
     deliveryMode: p.deliveryMode || 'sub_solution',
+    walletModes: partnerStore.publicCredentialView(p).walletModes,
+    isolation: partnerStore.publicCredentialView(p).isolation,
   });
 });
 app.get('/api/package', (_, res) => {
@@ -92,7 +94,7 @@ app.get('/api/catalog', (_, res) => {
       packaging: ['GET /api/package', 'white_label | saas_hq | single_tenant'],
       partnerKeys: ['ICOCARD MID + API Key + Secret (not Wirex)'],
       wallets: ['embedded', 'external_eoa', 'bridge'],
-      delivery: ['api', 'sub_solution /s/:slug'],
+      delivery: ['api', 'sub_solution /s/:slug', 'sub_solution_standalone'],
     },
   });
 });

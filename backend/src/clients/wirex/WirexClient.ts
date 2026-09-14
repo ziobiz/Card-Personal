@@ -40,8 +40,10 @@ export class WirexClient {
   private token: string | null = null;
   private expiresAt = 0;
 
+  constructor(private readonly resolveCfg: () => ReturnType<typeof getWirexBaaSConfig> = getWirexBaaSConfig) {}
+
   private cfg() {
-    return getWirexBaaSConfig();
+    return this.resolveCfg();
   }
 
   isConfigured(): boolean {

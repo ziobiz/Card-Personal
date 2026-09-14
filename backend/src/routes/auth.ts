@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createHash } from 'crypto';
 import { config } from '../config.js';
 import { store } from '../data/store.js';
+import { partnerStore } from '../data/partnerStore.js';
 import { wirexService } from '../services/wirex/wirexService.js';
 import { generateOtpSecret, otpAuthUrl, verifyTotp } from '../lib/totp.js';
 import { getSecuritySettings, maskEmail } from '../lib/otpPolicy.js';
@@ -31,6 +32,15 @@ function verifyEnroll(token: string): string | null {
   } catch {
     return null;
   }
+}
+
+function tenantFromRequest(req: { headers: { [k: string]: string | string[] | undefined }; body?: unknown }) {
+  const body = req.body && typeof req.body === 'object' ? (req.body as { slug?: unknown }) : {};
+  const raw = req.headers['x-ico-tenant-slug'];
+  const slug = String((Array.isArray(raw) ? raw[0] : raw) || body.slug || '').trim();
+  if (!slug) return { slug: '', partner: undefined };
+  const partner = partnerStore.getBySlug(slug);
+  return { slug, partner };
 }
 
 function readBearerUser(req: { headers: { authorization?: string } }): { userId: string; otpPending?: boolean } | null {
@@ -61,6 +71,11 @@ router.post('/register', async (req, res) => {
       return res.status(409).json({ error: 'Email already registered' });
     }
 
+    const tenant = tenantFromRequest(req);
+    if (tenant.slug && !tenant.partner) {
+      return res.status(400).json({ error: 'tenant_not_found' });
+    }
+
     const walletAddress = typeof wallet_address === 'string' ? wallet_address.trim() : undefined;
     const residence = typeof country === 'string' ? country : 'GB';
     const id = uuidv4();
@@ -84,7 +99,8 @@ router.post('/register', async (req, res) => {
       wirexUserId,
       walletAddress: storedWallet,
       country: residence,
-      source: 'direct' as const,
+      source: tenant.partner ? ('partner' as const) : ('direct' as const),
+      partnerId: tenant.partner?.id,
       otpSecret: undefined as string | undefined,
       otpEnabled: false,
       onboardingStatus: (config.useMockWirex ? 'ready' : 'none') as 'ready' | 'none',
@@ -135,6 +151,19 @@ router.post('/login', (req, res) => {
   }
   if (user.status === 'suspended') {
     return res.status(403).json({ error: 'Account suspended' });
+  }
+
+  const tenant = tenantFromRequest(req);
+  if (tenant.slug && !tenant.partner) {
+    return res.status(400).json({ error: 'tenant_not_found' });
+  }
+  if (tenant.partner) {
+    if (user.partnerId && user.partnerId !== tenant.partner.id) {
+      return res.status(403).json({ error: 'tenant_mismatch' });
+    }
+    if (!user.partnerId) store.setPartnerId(user.id, tenant.partner.id);
+  } else if (user.partnerId) {
+    return res.status(403).json({ error: 'tenant_mismatch' });
   }
 
   const sec = getSecuritySettings();

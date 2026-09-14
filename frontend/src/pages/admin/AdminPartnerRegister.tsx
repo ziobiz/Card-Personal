@@ -47,10 +47,14 @@ export default function AdminPartnerRegister() {
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deliveryMode, setDeliveryMode] = useState<'api' | 'sub_solution'>('api');
+  const [deliveryMode, setDeliveryMode] = useState<'api' | 'sub_solution' | 'sub_solution_standalone'>('api');
+  const [walletPolicySource, setWalletPolicySource] = useState<'follow_hq' | 'custom'>('follow_hq');
   const [walletEmbedded, setWalletEmbedded] = useState(true);
   const [walletExternal, setWalletExternal] = useState(true);
   const [walletBridge, setWalletBridge] = useState(true);
+  const [wirexClientId, setWirexClientId] = useState('');
+  const [wirexClientSecret, setWirexClientSecret] = useState('');
+  const [wirexPartnerId, setWirexPartnerId] = useState('');
   const [solutionName, setSolutionName] = useState('');
   const [webhookUrl, setWebhookUrl] = useState('');
   const [bridgeDebitUrl, setBridgeDebitUrl] = useState('');
@@ -110,9 +114,13 @@ export default function AdminPartnerRegister() {
           feePolicyId: isCustom ? '' : feePolicyId,
           fees: isCustom ? customFees : undefined,
           deliveryMode,
+          walletPolicySource,
           walletEmbedded,
           walletExternal,
           walletBridge,
+          wirexClientId,
+          wirexClientSecret,
+          wirexPartnerId,
           solutionName: solutionName || payload.name,
           webhookUrl,
           bridgeDebitUrl,
@@ -270,9 +278,10 @@ export default function AdminPartnerRegister() {
         <div className="hq-form-grid">
           <label>
             <span>{t('admin.deliveryMode')}</span>
-            <select className="input" value={deliveryMode} onChange={(e) => setDeliveryMode(e.target.value as 'api' | 'sub_solution')}>
+            <select className="input" value={deliveryMode} onChange={(e) => setDeliveryMode(e.target.value as typeof deliveryMode)}>
               <option value="api">{t('admin.deliveryApi')}</option>
               <option value="sub_solution">{t('admin.deliverySub')}</option>
+              <option value="sub_solution_standalone">{t('admin.deliveryStandalone')}</option>
             </select>
           </label>
           <label>
@@ -290,15 +299,47 @@ export default function AdminPartnerRegister() {
         </div>
         <div className="hq-form-grid" style={{ marginTop: 10 }}>
           <label>
-            <input type="checkbox" checked={walletEmbedded} onChange={(e) => setWalletEmbedded(e.target.checked)} /> {t('walletMode.embedded')}
-          </label>
-          <label>
-            <input type="checkbox" checked={walletExternal} onChange={(e) => setWalletExternal(e.target.checked)} /> {t('walletMode.external')}
-          </label>
-          <label>
-            <input type="checkbox" checked={walletBridge} onChange={(e) => setWalletBridge(e.target.checked)} /> {t('walletMode.bridge')}
+            <span>{t('admin.walletPolicy')}</span>
+            <select className="input" value={walletPolicySource} onChange={(e) => setWalletPolicySource(e.target.value as 'follow_hq' | 'custom')}>
+              <option value="follow_hq">{t('admin.walletFollowHq')}</option>
+              <option value="custom">{t('admin.walletCustom')}</option>
+            </select>
           </label>
         </div>
+        {walletPolicySource === 'custom' ? (
+          <div className="hq-form-grid" style={{ marginTop: 10 }}>
+            <label>
+              <input type="checkbox" checked={walletEmbedded} onChange={(e) => setWalletEmbedded(e.target.checked)} /> {t('walletMode.embedded')}
+            </label>
+            <label>
+              <input type="checkbox" checked={walletExternal} onChange={(e) => setWalletExternal(e.target.checked)} /> {t('walletMode.external')}
+            </label>
+            <label>
+              <input type="checkbox" checked={walletBridge} onChange={(e) => setWalletBridge(e.target.checked)} /> {t('walletMode.bridge')}
+            </label>
+          </div>
+        ) : (
+          <p className="hq-card-hint">{t('admin.walletFollowHqHint')}</p>
+        )}
+        {deliveryMode === 'sub_solution_standalone' ? (
+          <div className="hq-form-grid" style={{ marginTop: 10 }}>
+            <p className="hq-card-hint">{t('admin.deliveryStandaloneHint')}</p>
+            <label>
+              <span>Wirex Client ID</span>
+              <input className="input" value={wirexClientId} onChange={(e) => setWirexClientId(e.target.value)} />
+            </label>
+            <label>
+              <span>Wirex Client Secret</span>
+              <input className="input" type="password" value={wirexClientSecret} onChange={(e) => setWirexClientSecret(e.target.value)} />
+            </label>
+            <label>
+              <span>Wirex Partner ID</span>
+              <input className="input" value={wirexPartnerId} onChange={(e) => setWirexPartnerId(e.target.value)} />
+            </label>
+          </div>
+        ) : (
+          <p className="hq-card-hint">{t('admin.isolationHqHint')}</p>
+        )}
       </div>
 
       {message ? <p className="auth-error">{message}</p> : null}

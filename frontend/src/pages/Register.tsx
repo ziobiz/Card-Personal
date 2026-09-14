@@ -55,7 +55,8 @@ export default function Register() {
       if (r.token) setToken(r.token);
       navigate(go('/'));
     } catch (err) {
-      setError((err as Error).message);
+      const msg = (err as Error).message;
+      setError(msg === 'tenant_mismatch' ? t('auth.tenantMismatch') : msg === 'tenant_not_found' ? t('auth.tenantNotFound') : msg);
     } finally {
       setLoading(false);
     }

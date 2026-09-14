@@ -43,6 +43,8 @@
     "adminLink": "관리자",
     "loginHint": "이메일과 비밀번호를 입력하세요.",
     "registerHint": "이메일과 비밀번호로 ICOCARD 계정을 만듭니다. 가입 후 회원 페이지에서 가상/실물 카드를 발급할 수 있습니다.",
+    "tenantMismatch": "이 솔루션 테넌트에서 사용할 수 없는 계정입니다.",
+    "tenantNotFound": "솔루션을 찾을 수 없습니다.",
     "submit": "확인",
     "agreePrefix": "로그인하면 다음에 동의합니다:",
     "terms": "이용약관",
@@ -156,7 +158,8 @@
     "bridgeDesc": "연결 버튼이 없는 자산은 파트너 원장에서 차감한 뒤 우리 Smart Wallet으로 입금합니다.",
     "amount": "입금 금액",
     "bridgeTopup": "브리지 입금 요청",
-    "bridgeDone": "브리지 입금이 기록되었습니다."
+    "bridgeDone": "브리지 입금이 기록되었습니다.",
+    "noneEnabled": "이 가맹점에는 허용된 지갑 방식이 없습니다. 본사에 문의하세요."
   },
   "cards": {
     "title": "카드 관리",
@@ -279,10 +282,21 @@
     "kitSave": "MID·API Key·Secret·HMAC을 지금 저장하세요. Wirex 키가 아닙니다.",
     "ourKeysNotWirex": "본사가 발급한 ICOCARD 키만 사용합니다. Wirex 키를 넘기지 않습니다.",
     "sectionDelivery": "연동·배포 방식",
-    "deliveryHint": "API 연동 또는 서브 솔루션(/s/슬러그) 패키지. 키는 모두 본사 발급입니다.",
+    "deliveryHint": "API, 서브 솔루션(본사 키), 서브 솔루션 단독형(업체 Wirex 계약) 중 하나를 고릅니다.",
     "deliveryMode": "배포 방식",
     "deliveryApi": "API 연동",
     "deliverySub": "서브 솔루션",
+    "deliveryStandalone": "서브 솔루션 단독형",
+    "deliveryStandaloneHint": "업체가 Wirex와 직접 계약한 키로 운영만 합니다. ICOCARD 재판매 키는 발급하지 않습니다.",
+    "walletPolicy": "지갑 방식 정책",
+    "walletFollowHq": "본사설정 따름",
+    "walletFollowHqHint": "본사 환경설정의 기본 지갑 3방식을 따릅니다.",
+    "walletCustom": "별도",
+    "walletHqDefault": "본사 기본 지갑 방식",
+    "walletHqHint": "가맹점이 「본사설정 따름」이면 이 값이 적용됩니다. 보안상 허용하지 않은 방식은 회원·API에서 차단됩니다.",
+    "isolationHqHint": "이 방식은 Wirex에 ICOCARD 운영으로만 보입니다. 파트너는 Wirex 키를 받지 않습니다.",
+    "standaloneWirexSaved": "단독형 Wirex 키를 암호화해 저장했습니다.",
+    "opsOnly": "운영 전용",
     "solutionName": "솔루션 브랜드명",
     "webhookUrl": "웹훅 URL",
     "bridgeDebitUrl": "브리지 차감 URL",
@@ -588,6 +602,9 @@
     "manual3": "이 포털에서 API·수수료·매뉴얼을 확인합니다.",
     "manual4": "자사 사이트에서 X-API-Key 와 X-Partner-User-Id 로 회원의 카드를 발급합니다.",
     "manual5": "지갑은 임베디드 / 외부 EOA 연결 / 브리지 세 가지입니다. 카드 결제는 우리 Smart Wallet만 사용합니다.",
-    "manual6": "서브 솔루션은 /s/{슬러그} 회원앱입니다. 키는 본사 발급이며 Wirex 키를 받지 않습니다."
+    "manual6": "서브 솔루션은 /s/{슬러그} 회원앱입니다. 키는 본사 발급이며 Wirex 키를 받지 않습니다.",
+    "manual7": "서브 솔루션 단독형은 업체의 Wirex 계약 키로 운영만 합니다. 재판매 키 발급이 없고, Wirex에는 해당 업체로 보입니다.",
+    "standaloneHint": "단독형: 운영만 가능합니다. ICOCARD 파트너 API 키는 없습니다. Wirex 계약 키는 본사가 암호화 보관합니다.",
+    "noReseller": "단독형은 재판매 API가 비활성입니다. 회원앱으로만 운영합니다."
   }
 }

@@ -31,6 +31,17 @@ export function requirePartnerAuth(req: Request, res: Response, next: NextFuncti
     res.status(401).json({ error: 'Invalid or inactive API key' });
     return;
   }
+  if (partner.deliveryMode === 'sub_solution_standalone') {
+    const path = (req.originalUrl || req.path || '').split('?')[0];
+    const envOnly = req.method === 'GET' && /\/environment$/.test(path);
+    if (!envOnly) {
+      res.status(403).json({
+        error: 'Standalone solution is operations-only',
+        hint: 'Reseller Partner API is disabled. Use the member app /s/:slug',
+      });
+      return;
+    }
+  }
   const midHdr = String(req.headers['x-ico-mid'] || '');
   if (midHdr && partner.mid && midHdr !== partner.mid) {
     res.status(401).json({ error: 'MID mismatch' });

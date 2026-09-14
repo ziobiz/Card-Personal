@@ -29,9 +29,20 @@ export default function PartnerHome() {
       {data.credentials ? (
         <>
           <p>MID: <code>{data.credentials.mid}</code></p>
-          <p>{t('admin.deliveryMode')}: {data.credentials.deliveryMode === 'sub_solution' ? t('admin.deliverySub') : t('admin.deliveryApi')}</p>
+          <p>
+            {t('admin.deliveryMode')}:{' '}
+            {data.credentials.deliveryMode === 'sub_solution_standalone'
+              ? t('admin.deliveryStandalone')
+              : data.credentials.deliveryMode === 'sub_solution'
+                ? t('admin.deliverySub')
+                : t('admin.deliveryApi')}
+          </p>
           {data.credentials.solutionUrl ? <p>URL: <a href={data.credentials.solutionUrl}>{data.credentials.solutionUrl}</a></p> : null}
-          <p className="muted-text">{t('partner.ourKeysNotWirex')}</p>
+          {data.credentials.deliveryMode === 'sub_solution_standalone' ? (
+            <p className="muted-text">{t('partner.standaloneHint')}</p>
+          ) : (
+            <p className="muted-text">{t('partner.ourKeysNotWirex')}</p>
+          )}
         </>
       ) : null}
     </div>

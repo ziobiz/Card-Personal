@@ -1,6 +1,7 @@
 /**
  * Map partner_user_id → our user, creating an embedded Wirex rail if needed.
- * Partners never receive Wirex keys; onboarding uses HQ credentials.
+ * API / sub-solution: HQ Wirex rail only. Standalone: tenant Wirex keys.
+ * Partners never receive Wirex keys on modes 1–2.
  */
 
 import { v4 as uuidv4 } from 'uuid';

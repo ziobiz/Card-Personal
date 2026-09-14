@@ -62,10 +62,15 @@ router.get('/environment', (req, res) => {
   res.json({
     tenantId: req.partner!.id,
     issuer: 'ICOCARD',
-    note: 'Authenticate with ICOCARD MID / API Key / Secret. Do not use Wirex keys.',
+    note:
+      req.partner!.deliveryMode === 'sub_solution_standalone'
+        ? 'Standalone operations. Tenant Wirex contract. No ICOCARD reseller keys.'
+        : 'Authenticate with ICOCARD MID / API Key / Secret. Wirex sees ICOCARD only.',
     mid: req.partner!.mid || '',
     deliveryMode: req.partner!.deliveryMode || 'api',
-    walletModes: req.partner!.walletModes ?? { embedded: true, externalEoa: true, bridge: true },
+    walletModes: partnerStore.publicCredentialView(req.partner!).walletModes,
+    walletPolicySource: partnerStore.publicCredentialView(req.partner!).walletPolicySource,
+    isolation: partnerStore.publicCredentialView(req.partner!).isolation,
     apiBase: '/api/partner/v1',
     credentials: partnerStore.publicCredentialView(req.partner!),
   });

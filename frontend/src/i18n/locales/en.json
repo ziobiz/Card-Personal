@@ -43,6 +43,8 @@
     "adminLink": "Admin",
     "loginHint": "Enter your email and password to continue.",
     "registerHint": "Create an ICOCARD account with email and password. After sign-up you can issue virtual and physical cards on the member pages.",
+    "tenantMismatch": "This account cannot be used on this solution tenant.",
+    "tenantNotFound": "Solution not found.",
     "submit": "Submit",
     "agreePrefix": "By logging in I agree to the",
     "terms": "Terms",
@@ -148,7 +150,8 @@
     "bridgeDesc": "Non-connectable assets are debited on the partner ledger and credited to our Smart Wallet.",
     "amount": "Amount",
     "bridgeTopup": "Request bridge credit",
-    "bridgeDone": "Bridge credit recorded."
+    "bridgeDone": "Bridge credit recorded.",
+    "noneEnabled": "No wallet mode is enabled for this merchant. Contact HQ."
   },
   "cards": {
     "title": "Cards",
@@ -271,10 +274,21 @@
     "kitSave": "Save MID, API Key, Secret, and HMAC now. These are ICOCARD keys, not Wirex.",
     "ourKeysNotWirex": "Use ICOCARD keys issued by HQ only. Never use Wirex keys.",
     "sectionDelivery": "Integration & delivery",
-    "deliveryHint": "API integration or a sub-solution package at /s/{slug}. All keys are issued by HQ.",
+    "deliveryHint": "Choose API, sub-solution (HQ keys), or standalone sub-solution (merchant Wirex contract).",
     "deliveryMode": "Delivery",
     "deliveryApi": "API",
     "deliverySub": "Sub-solution",
+    "deliveryStandalone": "Standalone sub-solution",
+    "deliveryStandaloneHint": "The merchant operates with their own Wirex contract keys. ICOCARD does not issue reseller keys.",
+    "walletPolicy": "Wallet policy",
+    "walletFollowHq": "Follow HQ",
+    "walletFollowHqHint": "Uses the HQ default wallet modes.",
+    "walletCustom": "Custom",
+    "walletHqDefault": "HQ default wallet modes",
+    "walletHqHint": "Merchants set to Follow HQ use these modes. Disabled modes are blocked in the member app and Partner API.",
+    "isolationHqHint": "Wirex sees ICOCARD only. Partners never receive Wirex keys.",
+    "standaloneWirexSaved": "Standalone Wirex keys stored encrypted.",
+    "opsOnly": "Operations only",
     "solutionName": "Solution brand name",
     "webhookUrl": "Webhook URL",
     "bridgeDebitUrl": "Bridge debit URL",
@@ -581,6 +595,9 @@
     "manual3": "Review API, fees, and this manual in the portal.",
     "manual4": "Issue cards on your site with X-API-Key and X-Partner-User-Id.",
     "manual5": "Wallets: embedded, external EOA connect, or bridge. Card spend uses our Smart Wallet only.",
-    "manual6": "A sub-solution is the member app at /s/{slug}. Keys are issued by HQ, never Wirex."
+    "manual6": "A sub-solution is the member app at /s/{slug}. Keys are issued by HQ, never Wirex.",
+    "manual7": "Standalone sub-solution uses the merchant Wirex contract for operations only. No reseller keys. Wirex sees that merchant.",
+    "standaloneHint": "Standalone: operations only. No ICOCARD Partner API keys. Tenant Wirex keys are stored encrypted by HQ.",
+    "noReseller": "Standalone disables the reseller API. Operate via the member app only."
   }
 }

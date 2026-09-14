@@ -30,11 +30,19 @@ export interface SecuritySettings {
   otpRequiredOrg?: boolean;
 }
 
+export interface WalletPolicySettings {
+  embedded?: boolean;
+  externalEoa?: boolean;
+  bridge?: boolean;
+}
+
 export interface AdminSettings {
   wirex?: WirexSettings;
   useMockWirex?: boolean;
   feePolicy?: FeePolicySettings;
   security?: SecuritySettings;
+  /** HQ default wallet modes when merchant chooses 본사설정 따름 */
+  walletPolicy?: WalletPolicySettings;
   updatedAt?: string;
 }
 
@@ -62,6 +70,11 @@ const DEFAULTS: AdminSettings = {
     otpRequiredMember: true,
     otpRequiredOrg: true,
   },
+  walletPolicy: {
+    embedded: true,
+    externalEoa: true,
+    bridge: true,
+  },
 };
 
 function loadFromFile(): AdminSettings {
@@ -75,6 +88,7 @@ function loadFromFile(): AdminSettings {
       wirex: { ...DEFAULTS.wirex, ...parsed.wirex },
       feePolicy: { ...DEFAULTS.feePolicy, ...parsed.feePolicy },
       security: { ...DEFAULTS.security, ...parsed.security },
+      walletPolicy: { ...DEFAULTS.walletPolicy, ...parsed.walletPolicy },
     };
   } catch {
     return { ...DEFAULTS };
@@ -103,6 +117,7 @@ export const settingsStore = {
       wirex: { ...cached.wirex, ...partial.wirex },
       feePolicy: { ...cached.feePolicy, ...partial.feePolicy },
       security: { ...cached.security, ...partial.security },
+      walletPolicy: { ...cached.walletPolicy, ...partial.walletPolicy },
       updatedAt: new Date().toISOString(),
     };
     saveToFile(cached);

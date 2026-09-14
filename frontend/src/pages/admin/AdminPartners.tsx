@@ -18,7 +18,11 @@ type Partner = {
   companyName?: string;
   apiKeyPrefix: string;
   mid?: string;
-  deliveryMode?: 'api' | 'sub_solution';
+  deliveryMode?: 'api' | 'sub_solution' | 'sub_solution_standalone';
+  walletPolicySource?: 'follow_hq' | 'custom';
+  walletModes?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
+  canRedistributeKeys?: boolean;
+  wirexConfigured?: boolean;
   solutionSlug?: string;
   solutionUrl?: string;
   status: string;
@@ -325,13 +329,53 @@ export default function AdminPartners() {
                       className="input"
                       value={p.deliveryMode || 'api'}
                       onChange={async (e) => {
-                        await api.admin.updatePartner(p.id, { deliveryMode: e.target.value as 'api' | 'sub_solution' });
+                        await api.admin.updatePartner(p.id, { deliveryMode: e.target.value as 'api' | 'sub_solution' | 'sub_solution_standalone' });
                         fetchPartners();
                       }}
                     >
                       <option value="api">{t('admin.deliveryApi')}</option>
                       <option value="sub_solution">{t('admin.deliverySub')}</option>
+                      <option value="sub_solution_standalone">{t('admin.deliveryStandalone')}</option>
                     </select>
+                    <select
+                      className="input"
+                      value={p.walletPolicySource || 'follow_hq'}
+                      onChange={async (e) => {
+                        const src = e.target.value as 'follow_hq' | 'custom';
+                        await api.admin.updatePartner(p.id, {
+                          walletPolicySource: src,
+                          ...(src === 'custom'
+                            ? { walletModes: p.walletModes || { embedded: true, externalEoa: true, bridge: true } }
+                            : {}),
+                        });
+                        fetchPartners();
+                      }}
+                    >
+                      <option value="follow_hq">{t('admin.walletFollowHq')}</option>
+                      <option value="custom">{t('admin.walletCustom')}</option>
+                    </select>
+                    {p.walletPolicySource === 'custom' ? (
+                      <div className="muted-text">
+                        {(['embedded', 'externalEoa', 'bridge'] as const).map((key) => (
+                          <label key={key} style={{ display: 'block' }}>
+                            <input
+                              type="checkbox"
+                              checked={Boolean(p.walletModes?.[key])}
+                              onChange={async (e) => {
+                                await api.admin.updatePartner(p.id, {
+                                  walletPolicySource: 'custom',
+                                  walletModes: { ...p.walletModes, [key]: e.target.checked },
+                                });
+                                fetchPartners();
+                              }}
+                            />{' '}
+                            {key === 'embedded' ? t('walletMode.embedded') : key === 'externalEoa' ? t('walletMode.external') : t('walletMode.bridge')}
+                          </label>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="muted-text">{t('admin.walletFollowHq')}</div>
+                    )}
                     {p.solutionUrl ? <div className="muted-text"><code>{p.solutionUrl}</code></div> : null}
                   </td>
                   <td>{(p as { orgParentName?: string }).orgParentName || '-'}</td>
@@ -415,12 +459,34 @@ export default function AdminPartners() {
                     >
                       {t('admin.editFees')}
                     </button>
-                    <button
-                      onClick={() => handleRegenerate(p.id)}
-                      className="btn-outline btn-compact"
-                    >
-                      Key
-                    </button>
+                    {p.deliveryMode === 'sub_solution_standalone' ? (
+                      <button
+                        onClick={async () => {
+                          const clientId = prompt('Wirex Client ID');
+                          const clientSecret = clientId ? prompt('Wirex Client Secret') : null;
+                          if (!clientId || !clientSecret) return;
+                          try {
+                            await api.admin.setStandaloneWirex(p.id, { clientId, clientSecret });
+                            setMessage(t('admin.standaloneWirexSaved'));
+                            setMessageOk(true);
+                            fetchPartners();
+                          } catch (err) {
+                            setMessage((err as Error).message);
+                            setMessageOk(false);
+                          }
+                        }}
+                        className="btn-outline btn-compact"
+                      >
+                        Wirex
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleRegenerate(p.id)}
+                        className="btn-outline btn-compact"
+                      >
+                        Key
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

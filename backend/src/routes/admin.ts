@@ -10,6 +10,8 @@ import { store } from '../data/store.js';
 import { config } from '../config.js';
 import { settingsStore } from '../data/settingsStore.js';
 import { partnerStore, type PartnerFeePolicy, type Partner, parseCardIssuePolicy, issuePolicyFromPartner, flagsFromIssuePolicy } from '../data/partnerStore.js';
+import { parseDeliveryMode } from '../lib/partnerCredentials.js';
+import { invalidateWirexClient } from '../clients/wirex/wirexClients.js';
 import { feeSettings } from '../data/feeSettings.js';
 import { wirexService } from '../services/wirex/wirexService.js';
 import { webhookStore } from '../data/webhookStore.js';
@@ -537,6 +539,7 @@ router.get('/settings', (_, res) => {
     feePolicy: s.feePolicy ?? {},
     security: sec,
     useMockWirex: s.useMockWirex ?? true,
+    walletPolicy: s.walletPolicy ?? { embedded: true, externalEoa: true, bridge: true },
     updatedAt: s.updatedAt,
     _masked: {
       clientSecret: (s.wirex?.clientSecret?.length ?? 0) > 0 ? '********' : '',
@@ -576,11 +579,17 @@ router.put('/settings', (req, res) => {
   if (typeof securityBody.otpRequiredAdmin === 'boolean') securityUpdate.otpRequiredAdmin = securityBody.otpRequiredAdmin;
   if (typeof securityBody.otpRequiredMember === 'boolean') securityUpdate.otpRequiredMember = securityBody.otpRequiredMember;
   if (typeof securityBody.otpRequiredOrg === 'boolean') securityUpdate.otpRequiredOrg = securityBody.otpRequiredOrg;
+  const wp = body.walletPolicy ?? {};
+  const walletPolicyUpdate: { embedded?: boolean; externalEoa?: boolean; bridge?: boolean } = {};
+  if (typeof wp.embedded === 'boolean') walletPolicyUpdate.embedded = wp.embedded;
+  if (typeof wp.externalEoa === 'boolean') walletPolicyUpdate.externalEoa = wp.externalEoa;
+  if (typeof wp.bridge === 'boolean') walletPolicyUpdate.bridge = wp.bridge;
   settingsStore.update({
     wirex: wirexUpdate,
     useMockWirex,
     feePolicy: feePolicyUpdate,
     ...(Object.keys(securityUpdate).length ? { security: securityUpdate } : {}),
+    ...(Object.keys(walletPolicyUpdate).length ? { walletPolicy: walletPolicyUpdate } : {}),
   });
   const s = settingsStore.get();
   res.json({
@@ -588,6 +597,7 @@ router.put('/settings', (req, res) => {
     feePolicy: s.feePolicy ?? {},
     security: getSecuritySettings(),
     useMockWirex: s.useMockWirex ?? true,
+    walletPolicy: s.walletPolicy ?? { embedded: true, externalEoa: true, bridge: true },
     updatedAt: s.updatedAt,
   });
 });
@@ -609,7 +619,11 @@ router.get('/partners', (_, res) => {
     apiKeyPrefix: p.apiKeyPrefix + '...',
     mid: p.mid || '',
     deliveryMode: p.deliveryMode || 'api',
-    walletModes: p.walletModes ?? { embedded: true, externalEoa: true, bridge: true },
+    walletPolicySource: p.walletPolicySource === 'custom' ? 'custom' : 'follow_hq',
+    walletModes: partnerStore.publicCredentialView(p).walletModes,
+    canRedistributeKeys: partnerStore.publicCredentialView(p).canRedistributeKeys,
+    wirexConfigured: partnerStore.publicCredentialView(p).wirexConfigured,
+    isolation: partnerStore.publicCredentialView(p).isolation,
     solutionSlug: p.solutionSlug || '',
     solutionUrl: partnerStore.publicCredentialView(p).solutionUrl,
     credentials: partnerStore.publicCredentialView(p),
@@ -657,7 +671,8 @@ router.post('/partners', (req, res) => {
       allowVirtual: body.allowVirtual !== false,
       allowPlastic: body.allowPlastic === true,
     }),
-    deliveryMode: body.deliveryMode === 'sub_solution' ? 'sub_solution' : 'api',
+    deliveryMode: parseDeliveryMode(body.deliveryMode),
+    walletPolicySource: body.walletPolicySource === 'custom' ? 'custom' : 'follow_hq',
     walletModes: {
       embedded: body.walletEmbedded !== false,
       externalEoa: body.walletExternal !== false,
@@ -666,6 +681,9 @@ router.post('/partners', (req, res) => {
     webhookUrl: typeof body.webhookUrl === 'string' ? body.webhookUrl : undefined,
     solutionName: typeof body.solutionName === 'string' ? body.solutionName : undefined,
     bridgeDebitUrl: typeof body.bridgeDebitUrl === 'string' ? body.bridgeDebitUrl : undefined,
+    wirexClientId: typeof body.wirexClientId === 'string' ? body.wirexClientId : undefined,
+    wirexClientSecret: typeof body.wirexClientSecret === 'string' ? body.wirexClientSecret : undefined,
+    wirexPartnerId: typeof body.wirexPartnerId === 'string' ? body.wirexPartnerId : undefined,
     feePolicyId: typeof body.feePolicyId === 'string' ? body.feePolicyId : undefined,
     distribution: body.distribution && typeof body.distribution === 'object' ? (body.distribution as Partner['distribution']) : undefined,
   });
@@ -692,12 +710,14 @@ router.post('/partners', (req, res) => {
     kit,
     loginId,
     orgCode,
-    warning: 'API Key is shown only once. Save it securely. Share login ID/password with the company.',
+    warning: kit
+      ? 'ICOCARD keys are shown only once. Never share Wirex keys. Share login ID/password with the company.'
+      : 'Standalone operator: operations login only. No ICOCARD reseller keys. Configure the merchant Wirex contract keys.',
   });
 });
 
 router.put('/partners/:id', (req, res) => {
-  const { name, companyName, status, billingWalletAddress, fees, resetFees, businessNo, ceoName, phone, orgParentId, allowVirtual, allowPlastic, cardIssuePolicy, distribution, distributionApplyStart, feePolicyId, deliveryMode, walletModes, webhookUrl, solutionSlug, solutionName, bridgeDebitUrl, allowedIps } = req.body ?? {};
+  const { name, companyName, status, billingWalletAddress, fees, resetFees, businessNo, ceoName, phone, orgParentId, allowVirtual, allowPlastic, cardIssuePolicy, distribution, distributionApplyStart, feePolicyId, deliveryMode, walletModes, walletPolicySource, webhookUrl, solutionSlug, solutionName, bridgeDebitUrl, allowedIps } = req.body ?? {};
   const feeUpdate = resetFees === true ? {} : parsePartnerFees(fees);
   const issuePolicy = parseCardIssuePolicy(cardIssuePolicy);
   const updated = partnerStore.update(req.params.id, {
@@ -722,7 +742,8 @@ router.put('/partners/:id', (req, res) => {
     ...(issuePolicy ? { cardIssuePolicy: issuePolicy } : { allowVirtual, allowPlastic }),
     ...(distribution !== undefined ? { distribution } : {}),
     ...(typeof distributionApplyStart === 'string' ? { distributionApplyStart } : {}),
-    ...(deliveryMode === 'api' || deliveryMode === 'sub_solution' ? { deliveryMode } : {}),
+    ...(deliveryMode === 'api' || deliveryMode === 'sub_solution' || deliveryMode === 'sub_solution_standalone' ? { deliveryMode } : {}),
+    ...(walletPolicySource === 'follow_hq' || walletPolicySource === 'custom' ? { walletPolicySource } : {}),
     ...(walletModes && typeof walletModes === 'object' ? { walletModes } : {}),
     ...(typeof webhookUrl === 'string' ? { webhookUrl } : {}),
     ...(typeof solutionSlug === 'string' ? { solutionSlug } : {}),
@@ -807,6 +828,11 @@ router.post('/partners/run-billing', async (req, res) => {
 });
 
 router.post('/partners/:id/regenerate-key', (req, res) => {
+  const existing = partnerStore.getById(req.params.id);
+  if (!existing) return res.status(404).json({ error: 'Partner not found' });
+  if (existing.deliveryMode === 'sub_solution_standalone') {
+    return res.status(400).json({ error: 'Standalone operators do not receive ICOCARD reseller keys' });
+  }
   const result = partnerStore.regenerateApiKey(req.params.id);
   if (!result) return res.status(404).json({ error: 'Partner not found' });
   res.json({
@@ -814,6 +840,26 @@ router.post('/partners/:id/regenerate-key', (req, res) => {
     apiKey: result.apiKey,
     kit: result.kit,
     warning: 'Previous credentials are invalidated. MID / API Key / Secret / HMAC shown only once. Never use Wirex keys.',
+  });
+});
+
+router.post('/partners/:id/standalone-wirex', (req, res) => {
+  const p = partnerStore.getById(req.params.id);
+  if (!p) return res.status(404).json({ error: 'Partner not found' });
+  if (p.deliveryMode !== 'sub_solution_standalone') {
+    return res.status(400).json({ error: 'Wirex contract keys are only stored for standalone operators' });
+  }
+  const clientId = String(req.body?.clientId || req.body?.wirexClientId || '');
+  const clientSecret = String(req.body?.clientSecret || req.body?.wirexClientSecret || '');
+  const partnerId = typeof req.body?.wirexPartnerId === 'string' ? req.body.wirexPartnerId : undefined;
+  if (!clientId || !clientSecret) return res.status(400).json({ error: 'clientId and clientSecret required' });
+  const updated = partnerStore.setStandaloneWirexKeys(req.params.id, clientId, clientSecret);
+  if (partnerId) partnerStore.update(req.params.id, { wirexPartnerId: partnerId });
+  invalidateWirexClient(req.params.id);
+  res.json({
+    id: updated?.id,
+    wirexConfigured: true,
+    warning: 'Tenant Wirex keys stored encrypted. ICOCARD HQ keys are not used for this operator.',
   });
 });
 

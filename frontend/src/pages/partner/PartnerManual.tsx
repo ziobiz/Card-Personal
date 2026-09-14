@@ -11,6 +11,7 @@ export default function PartnerManual() {
         <li>{t('partner.manual3')}</li>
         <li>{t('partner.manual5')}</li>
         <li>{t('partner.manual6')}</li>
+        <li>{t('partner.manual7')}</li>
       </ol>
     </div>
   );

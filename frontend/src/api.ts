@@ -25,6 +25,14 @@ async function request<T>(
     ...(options.headers as Record<string, string>),
   };
   if (token && !headers.Authorization) headers['Authorization'] = `Bearer ${token}`;
+  try {
+    const slug = typeof window !== 'undefined'
+      ? window.location.pathname.match(/^\/s\/([^/]+)/)?.[1]
+      : '';
+    if (slug) headers['X-ICO-Tenant-Slug'] = decodeURIComponent(slug);
+  } catch {
+    /* ignore */
+  }
 
   const base = API || '';
   const url = base ? `${base}/api${path}` : `/api${path}`;
@@ -275,6 +283,8 @@ export const api = {
         wirexUserId?: string | null;
         kycStatus?: string;
         walletMode?: 'embedded' | 'external_eoa' | 'bridge';
+        allowedWalletModes?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
+        walletPolicySource?: 'follow_hq' | 'custom';
         mock?: boolean;
       }>('/user/onboarding'),
     onboard: (data?: { issueCard?: boolean }) =>
@@ -413,6 +423,7 @@ export const api = {
           otpRequiredOrg?: boolean;
         };
         useMockWirex: boolean;
+        walletPolicy?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
         updatedAt?: string;
         _masked?: { clientSecret: string };
       }>('/admin/settings'),
@@ -424,8 +435,11 @@ export const api = {
           companyName?: string;
           apiKeyPrefix: string;
           mid?: string;
-          deliveryMode?: 'api' | 'sub_solution';
+          deliveryMode?: 'api' | 'sub_solution' | 'sub_solution_standalone';
+          walletPolicySource?: 'follow_hq' | 'custom';
           walletModes?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
+          canRedistributeKeys?: boolean;
+          wirexConfigured?: boolean;
           solutionSlug?: string;
           solutionUrl?: string;
           credentials?: Record<string, unknown>;
@@ -468,7 +482,8 @@ export const api = {
       allowPlastic?: boolean;
       distribution?: Record<string, number>;
       distributionApplyStart?: string;
-      deliveryMode?: 'api' | 'sub_solution';
+      deliveryMode?: 'api' | 'sub_solution' | 'sub_solution_standalone';
+      walletPolicySource?: 'follow_hq' | 'custom';
       walletModes?: { embedded?: boolean; externalEoa?: boolean; bridge?: boolean };
       webhookUrl?: string;
       solutionSlug?: string;
@@ -494,6 +509,11 @@ export const api = {
     regeneratePartnerKey: (id: string) =>
       request<{ partner: { id: string; name: string; status: string }; apiKey: string; kit?: CredentialKit; warning: string }>(`/admin/partners/${id}/regenerate-key`, {
         method: 'POST',
+      }),
+    setStandaloneWirex: (id: string, data: { clientId: string; clientSecret: string; wirexPartnerId?: string }) =>
+      request<{ id?: string; wirexConfigured: boolean; warning: string }>(`/admin/partners/${id}/standalone-wirex`, {
+        method: 'POST',
+        body: JSON.stringify(data),
       }),
     getOrg: (level?: string) =>
       request<{ items: Array<{ id: string; orgLevel: string; parentId?: string; parentName?: string; code: string; name: string; status: string; partnerId?: string; loginId?: string }>; total: number }>(
@@ -579,6 +599,7 @@ export const api = {
         otpRequiredOrg?: boolean;
       };
       useMockWirex?: boolean;
+      walletPolicy?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
     }) =>
       request<{
         wirex: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string };
@@ -690,7 +711,9 @@ export const api = {
         credentials?: {
           mid?: string;
           deliveryMode?: string;
+          walletPolicySource?: 'follow_hq' | 'custom';
           walletModes?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
+          canRedistributeKeys?: boolean;
           apiKeyPrefix?: string;
           hasApiSecret?: boolean;
           hasHmac?: boolean;

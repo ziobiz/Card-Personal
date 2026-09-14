@@ -21,11 +21,23 @@ export default function PartnerApi() {
       {c ? (
         <>
           <p>MID: <code>{c.mid}</code></p>
-          <p>{t('admin.deliveryMode')}: {c.deliveryMode === 'sub_solution' ? t('admin.deliverySub') : t('admin.deliveryApi')}</p>
+          <p>
+            {t('admin.deliveryMode')}:{' '}
+            {c.deliveryMode === 'sub_solution_standalone'
+              ? t('admin.deliveryStandalone')
+              : c.deliveryMode === 'sub_solution'
+                ? t('admin.deliverySub')
+                : t('admin.deliveryApi')}
+          </p>
+          {c.deliveryMode === 'sub_solution_standalone' ? <p className="muted-text">{t('partner.noReseller')}</p> : null}
           {c.solutionUrl ? <p>URL: <code>{c.solutionUrl}</code></p> : null}
-          <p>{t('admin.colApiKey')}: <code>{c.apiKeyPrefix}</code></p>
+          {c.deliveryMode === 'sub_solution_standalone' ? null : (
+            <p>{t('admin.colApiKey')}: <code>{c.apiKeyPrefix}</code></p>
+          )}
         </>
       ) : null}
+      {c?.deliveryMode === 'sub_solution_standalone' ? null : (
+      <>
       <h2>Headers</h2>
       <pre>{`X-API-Key: <ICOCARD api_key>
 X-API-Secret: <ICOCARD api_secret>
@@ -55,6 +67,8 @@ POST /api/partner/v1/bridge/debit-request`}</pre>
         <li>{t('walletMode.externalDesc')}</li>
         <li>{t('walletMode.bridgeDesc')}</li>
       </ol>
+      </>
+      )}
     </div>
   );
 }

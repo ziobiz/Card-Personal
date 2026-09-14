@@ -182,6 +182,15 @@ export const store = {
     return user;
   },
 
+  setPartnerId(id: string, partnerId: string): AppUser | undefined {
+    const user = users.get(id);
+    if (!user) return undefined;
+    user.partnerId = partnerId;
+    user.source = 'partner';
+    saveToFile(Array.from(users.values()));
+    return user;
+  },
+
   updatePassword(id: string, passwordHash: string): AppUser | undefined {
     const user = users.get(id);
     if (!user) return undefined;
