@@ -63,25 +63,41 @@ router.post('/register', async (req, res) => {
 
     const walletAddress = typeof wallet_address === 'string' ? wallet_address.trim() : undefined;
     const residence = typeof country === 'string' ? country : 'GB';
-    const wirexUser = await wirexService.createUser({
-      email,
-      wallet_address: walletAddress,
-      country: residence,
-    });
     const id = uuidv4();
+
+    let wirexUserId: string | undefined;
+    let storedWallet = walletAddress;
+    if (config.useMockWirex) {
+      const wirexUser = await wirexService.createUser({
+        email,
+        wallet_address: walletAddress,
+        country: residence,
+      });
+      wirexUserId = wirexUser.id;
+      storedWallet = walletAddress ?? wirexUser.primaryWalletAddress;
+    }
+
     const appUser = {
       id,
       email,
       passwordHash: hashPassword(password),
-      wirexUserId: wirexUser.id,
-      walletAddress: walletAddress ?? wirexUser.primaryWalletAddress,
+      wirexUserId,
+      walletAddress: storedWallet,
       country: residence,
       source: 'direct' as const,
       otpSecret: undefined as string | undefined,
       otpEnabled: false,
+      onboardingStatus: (config.useMockWirex ? 'ready' : 'none') as 'ready' | 'none',
       createdAt: new Date().toISOString(),
     };
     store.addUser(appUser);
+
+    if (!config.useMockWirex) {
+      const { onboardingService } = await import('../services/onboardingService.js');
+      void onboardingService.run(id).catch((err) => {
+        console.warn('[onboard] register', (err as Error).message);
+      });
+    }
 
     const sec = getSecuritySettings();
     if (sec.otpRequiredMember) {
@@ -89,12 +105,12 @@ router.post('/register', async (req, res) => {
         mustSetupOtp: true,
         enrollToken: signEnroll(id),
         maskedEmail: maskEmail(email),
-        user: { id, email, wirexUserId: wirexUser.id, walletAddress: appUser.walletAddress },
+        user: { id, email, wirexUserId: wirexUserId, walletAddress: appUser.walletAddress },
       });
     }
 
     const token = signMember(id, email);
-    res.json({ token, user: { id, email, wirexUserId: wirexUser.id, walletAddress: appUser.walletAddress } });
+    res.json({ token, user: { id, email, wirexUserId, walletAddress: appUser.walletAddress } });
   } catch (e) {
     res.status(500).json({ error: (e as Error).message });
   }

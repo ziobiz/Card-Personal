@@ -47,6 +47,20 @@
     "kycNeeded": "Identity verification is required.",
     "kycCta": "Verify KYC"
   },
+  "onboard": {
+    "title": "Persiapan penerbitan kartu",
+    "lead": "Kami membuat wallet on-chain, mendaftarkan Anda di Wirex, menyelesaikan KYC, lalu menerbitkan kartu.",
+    "continue": "Lanjutkan",
+    "running": "Memproses...",
+    "failed": "Onboarding gagal.",
+    "step": {
+      "wallet": "Wallet tertanam",
+      "onchain": "Smart Wallet on-chain",
+      "registered": "Pengguna Wirex",
+      "kyc": "KYC",
+      "ready": "Penerbitan kartu"
+    }
+  },
   "cards": {
     "title": "Manajemen Kartu",
     "issueVirtual": "Terbitkan kartu virtual",

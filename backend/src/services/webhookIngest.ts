@@ -100,6 +100,9 @@ export async function ingestWebhook(path: string, payload: unknown): Promise<voi
           ? (merged.capabilities as Array<{ name?: string }>).map((c) => c.name ?? String(c))
           : undefined,
       });
+      if (verified && user.onboardingStatus && user.onboardingStatus !== 'ready') {
+        store.updateOnboarding(user.id, { onboardingStatus: 'kyc', kycStatus: 'verified' });
+      }
     }
     ledgerStore.add({
       kind: 'kyc',

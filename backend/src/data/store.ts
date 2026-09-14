@@ -14,6 +14,19 @@ export interface AppUser {
   wirexUserId?: string;
   /** 사용자 EOA — Wirex 표준 헤더 X-User-Address */
   walletAddress?: string;
+  /** Kernel AA Smart Wallet 주소 */
+  smartWalletAddress?: string;
+  /** AES-GCM 암호화된 EOA 개인키 (임베디드 월렛, ASP 테넌트별 WALLET_ENC_KEY) */
+  eoaKeyEnc?: string;
+  onboardingStatus?:
+    | 'none'
+    | 'wallet'
+    | 'onchain'
+    | 'registered'
+    | 'kyc'
+    | 'ready'
+    | 'error';
+  onboardingError?: string;
   country?: string;
   /** 표시 이름 (카드/계정 프로필) */
   displayName?: string;
@@ -172,6 +185,32 @@ export const store = {
     const user = users.get(id);
     if (!user) return undefined;
     user.passwordHash = passwordHash;
+    saveToFile(Array.from(users.values()));
+    return user;
+  },
+
+  updateOnboarding(
+    id: string,
+    data: {
+      walletAddress?: string;
+      smartWalletAddress?: string;
+      eoaKeyEnc?: string;
+      wirexUserId?: string;
+      kycStatus?: AppUser['kycStatus'];
+      onboardingStatus?: AppUser['onboardingStatus'];
+      onboardingError?: string | null;
+    }
+  ): AppUser | undefined {
+    const user = users.get(id);
+    if (!user) return undefined;
+    if (data.walletAddress !== undefined) user.walletAddress = data.walletAddress;
+    if (data.smartWalletAddress !== undefined) user.smartWalletAddress = data.smartWalletAddress;
+    if (data.eoaKeyEnc !== undefined) user.eoaKeyEnc = data.eoaKeyEnc;
+    if (data.wirexUserId !== undefined) user.wirexUserId = data.wirexUserId;
+    if (data.kycStatus !== undefined) user.kycStatus = data.kycStatus;
+    if (data.onboardingStatus !== undefined) user.onboardingStatus = data.onboardingStatus;
+    if (data.onboardingError === null) delete user.onboardingError;
+    else if (data.onboardingError !== undefined) user.onboardingError = data.onboardingError.slice(0, 500);
     saveToFile(Array.from(users.values()));
     return user;
   },

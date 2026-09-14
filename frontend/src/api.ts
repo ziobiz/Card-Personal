@@ -16,7 +16,8 @@ const REQUEST_TIMEOUT = 15000;
 
 async function request<T>(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  timeoutMs = REQUEST_TIMEOUT
 ): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
@@ -29,7 +30,7 @@ async function request<T>(
   const url = base ? `${base}/api${path}` : `/api${path}`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const res = await fetch(url, { ...options, headers, signal: controller.signal });
@@ -65,6 +66,12 @@ export interface MemberProfile {
   wirexUserId?: string | null;
   walletAddress?: string;
   kycStatus?: string;
+  onboarding?: {
+    status?: string;
+    error?: string | null;
+    eoa?: string;
+    smartWallet?: string;
+  };
   source?: string;
   status?: string;
   createdAt?: string;
@@ -234,6 +241,25 @@ export const api = {
         body: JSON.stringify({ currentPassword, newPassword }),
       }),
     clearBiometric: () => request<{ ok: boolean }>('/user/biometric', { method: 'DELETE' }),
+    onboarding: () =>
+      request<{
+        ok: boolean;
+        status: string;
+        error: string | null;
+        eoa: string;
+        smartWallet: string;
+        wirexUserId?: string | null;
+        kycStatus?: string;
+        mock?: boolean;
+      }>('/user/onboarding'),
+    onboard: (data?: { issueCard?: boolean }) =>
+      request<{
+        ok: boolean;
+        steps: { step: string; ok: boolean; detail?: unknown }[];
+        kycUrl?: string | null;
+        card?: unknown;
+        onboarding: { status: string; error: string | null; eoa: string; smartWallet: string };
+      }>('/user/onboard', { method: 'POST', body: JSON.stringify(data ?? {}) }, 180000),
   },
   cards: {
     list: (page = 1, size = 10) =>
@@ -470,14 +496,17 @@ export const api = {
         enabledLocales?: string[];
         note?: string;
       }>('/admin/sandbox/status'),
-    sandboxSmoke: (data: { walletAddress: string; email?: string; country?: string }) =>
+    sandboxSmoke: (data?: { email?: string }) =>
       request<{
         ok?: boolean;
         error?: string;
         steps: { step: string; ok: boolean; detail?: unknown }[];
         card?: unknown;
         userId?: string;
-      }>('/admin/sandbox/smoke', { method: 'POST', body: JSON.stringify(data) }),
+        wallet?: string;
+        kycUrl?: string | null;
+        onboarding?: { status?: string; error?: string | null; eoa?: string; smartWallet?: string };
+      }>('/admin/sandbox/smoke', { method: 'POST', body: JSON.stringify(data ?? {}) }, 180000),
     updateSettings: (data: {
       wirex?: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string; environment?: 'sandbox' | 'production' };
       feePolicy?: { treasuryWalletAddress?: string; cardIssuanceFee?: number; cardTopUpFeePercent?: number; cardUsageFeePerTransaction?: number; cardMonthlyFee?: number; partnerMonthlyFee?: number };

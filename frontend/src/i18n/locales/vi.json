@@ -47,6 +47,20 @@
     "kycNeeded": "Identity verification is required.",
     "kycCta": "Verify KYC"
   },
+  "onboard": {
+    "title": "Chuẩn bị phát hành thẻ",
+    "lead": "Tạo ví on-chain, đăng ký Wirex, hoàn tất KYC rồi phát hành thẻ.",
+    "continue": "Tiếp tục",
+    "running": "Đang xử lý...",
+    "failed": "Onboarding thất bại.",
+    "step": {
+      "wallet": "Ví nhúng",
+      "onchain": "Smart Wallet on-chain",
+      "registered": "Đăng ký người dùng Wirex",
+      "kyc": "KYC",
+      "ready": "Phát hành thẻ"
+    }
+  },
   "cards": {
     "title": "Quản lý thẻ",
     "issueVirtual": "Phát hành thẻ ảo",

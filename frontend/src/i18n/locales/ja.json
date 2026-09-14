@@ -114,6 +114,20 @@
     "kycNeeded": "本人確認が必要です。",
     "kycCta": "KYCを開始"
   },
+  "onboard": {
+    "title": "カード発行準備",
+    "lead": "オンチェーンウォレットを作成し、Wirex登録・KYC・カード発行まで進めます。",
+    "continue": "続ける",
+    "running": "処理中...",
+    "failed": "オンボーディングに失敗しました。",
+    "step": {
+      "wallet": "埋め込みウォレット",
+      "onchain": "オンチェーン Smart Wallet",
+      "registered": "Wirexユーザー登録",
+      "kyc": "KYC",
+      "ready": "カード発行"
+    }
+  },
   "cards": {
     "title": "カード管理",
     "issueVirtual": "仮想カード発行",
@@ -426,8 +440,8 @@
     "sandboxTokenOk": "トークン正常",
     "sandboxTokenFail": "トークン失敗",
     "sandboxWebhook": "Webhook Base",
-    "sandboxSmokeTitle": "ライブスモーク（オンチェーンEOA）",
-    "sandboxSmokeHint": "Wirex Accounts登録済みEOAが必要です。未登録ウォレットはregisterUserで失敗します。",
+    "sandboxSmokeTitle": "ライブスモーク（自動ウォレット）",
+    "sandboxSmokeHint": "埋め込みEOAを作成し Kernel AAをデプロイ、ユーザー登録・KYC・WUSDミント・バーチャルカード発行まで進めます。ウォレットの貼り付けは不要です。",
     "sandboxWallet": "ウォレットアドレス（EOA）",
     "sandboxEmail": "テストメール",
     "sandboxRun": "スモーク実行",

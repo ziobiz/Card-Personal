@@ -92,4 +92,6 @@ export const config = {
   webauthnRpId: process.env.WEBAUTHN_RP_ID || 'localhost',
   webauthnRpName: process.env.WEBAUTHN_RP_NAME || 'ICOCARD',
   webauthnOrigin: process.env.WEBAUTHN_ORIGIN || 'http://localhost:3000',
+  /** 임베디드 EOA 암호화 키 — ASP 테넌트마다 다르게 설정 */
+  walletEncKey: process.env.WALLET_ENC_KEY || process.env.JWT_SECRET || 'dev-wallet-enc-change-me',
 };

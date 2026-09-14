@@ -117,6 +117,20 @@
     "kycNeeded": "需要身份验证。",
     "kycCta": "开始 KYC"
   },
+  "onboard": {
+    "title": "开卡准备",
+    "lead": "将创建链上钱包，完成 Wirex 注册、KYC，然后发卡。",
+    "continue": "继续",
+    "running": "进行中...",
+    "failed": "开通失败。",
+    "step": {
+      "wallet": "内置钱包",
+      "onchain": "链上 Smart Wallet",
+      "registered": "Wirex 用户注册",
+      "kyc": "KYC",
+      "ready": "发卡"
+    }
+  },
   "cards": {
     "title": "卡片",
     "issueVirtual": "发行虚拟卡",
@@ -425,8 +439,8 @@
     "sandboxTokenOk": "Token 正常",
     "sandboxTokenFail": "Token 失败",
     "sandboxWebhook": "Webhook Base",
-    "sandboxSmokeTitle": "线上冒烟（链上 EOA）",
-    "sandboxSmokeHint": "需要已在 Wirex Accounts 注册的 EOA。未注册钱包会在 registerUser 失败。",
+    "sandboxSmokeTitle": "联调冒烟（自动钱包）",
+    "sandboxSmokeHint": "自动创建内置 EOA、部署 Kernel AA，并完成用户注册、KYC、WUSD 铸造和虚拟卡发行。无需粘贴钱包地址。",
     "sandboxWallet": "钱包地址（EOA）",
     "sandboxEmail": "测试邮箱",
     "sandboxRun": "执行冒烟",

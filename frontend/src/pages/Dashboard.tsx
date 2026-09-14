@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api, type Card, type TokenBalance } from '../api';
+import OnboardingPanel from './OnboardingPanel';
 
 export default function Dashboard() {
   const [kycUrl, setKycUrl] = useState<string | null>(null);
@@ -47,6 +48,7 @@ export default function Dashboard() {
 
   return (
     <div className="app-container wx-home">
+      <OnboardingPanel />
       {kycUrl && (
         <div className="card-surface wx-kyc">
           <span>{t('dashboard.kycNeeded')}</span>

@@ -47,6 +47,20 @@
     "kycNeeded": "Identity verification is required.",
     "kycCta": "Verify KYC"
   },
+  "onboard": {
+    "title": "ការរៀបចំកាត",
+    "lead": "បង្កើតកាបូប on-chain ចុះឈ្មោះ Wirex បញ្ចប់ KYC រួចចេញកាត។",
+    "continue": "បន្ត",
+    "running": "កំពុងដំណើរការ...",
+    "failed": "ការចុះឈ្មោះបរាជ័យ។",
+    "step": {
+      "wallet": "កាបូបបង្កប់",
+      "onchain": "Smart Wallet លើខ្សែ",
+      "registered": "អ្នកប្រើ Wirex",
+      "kyc": "KYC",
+      "ready": "ចេញកាត"
+    }
+  },
   "cards": {
     "title": "ការគ្រប់គ្រងកាត",
     "issueVirtual": "ចេញផ្សាយកាតវ៉ាក់ស៊ីន",

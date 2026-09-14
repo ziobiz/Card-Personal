@@ -72,6 +72,9 @@ router.get('/status', async (req, res) => {
           kycStatus: verified ? 'verified' : 'pending',
           capabilities: names.filter(Boolean) as string[],
         });
+        if (verified && user.onboardingStatus && user.onboardingStatus !== 'ready') {
+          store.updateOnboarding(user.id, { onboardingStatus: 'kyc', kycStatus: 'verified' });
+        }
         return res.json({
           kycStatus: verified ? 'verified' : user.kycStatus ?? 'pending',
           profile,

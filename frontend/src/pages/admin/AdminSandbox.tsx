@@ -10,7 +10,6 @@ export default function AdminSandbox() {
   const { t } = useTranslation();
   const [status, setStatus] = useState<Status | null>(null);
   const [loading, setLoading] = useState(true);
-  const [wallet, setWallet] = useState('');
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<SmokeResult | null>(null);
@@ -39,11 +38,10 @@ export default function AdminSandbox() {
     setResult(null);
     try {
       const r = await api.admin.sandboxSmoke({
-        walletAddress: wallet.trim(),
         email: email.trim() || undefined,
-        country: 'GB',
       });
       setResult(r);
+      if (!r.ok) setError(r.onboarding?.error || t('onboard.failed'));
     } catch (err) {
       const msg = (err as Error).message;
       setError(msg);
@@ -113,23 +111,13 @@ export default function AdminSandbox() {
         <p className="muted-text">{t('admin.sandboxSmokeHint')}</p>
         <form className="hq-sandbox-form" onSubmit={runSmoke}>
           <label>
-            {t('admin.sandboxWallet')}
-            <input
-              className="input hq-mono"
-              value={wallet}
-              onChange={(e) => setWallet(e.target.value)}
-              placeholder="0x…"
-              required
-            />
-          </label>
-          <label>
             {t('admin.sandboxEmail')}
             <input
               className="input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="sandbox+test@icocard.net"
+              placeholder="sandbox.ops@icocard.net"
             />
           </label>
           <button type="submit" className="btn-primary" disabled={busy || status?.mock}>

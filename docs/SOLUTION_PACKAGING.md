@@ -140,7 +140,9 @@ Wirex 클라이언트·카드·웹훅 코어는 **브랜드와 분리**되어 �
 ### Sandbox 스모크
 
 1. Admin → Sandbox 연동 → 토큰 상태 확인  
-2. Wirex Accounts에 등록된 EOA 입력 후 스모크 실행  
-3. 순서: token → registerUser → mint → issueVirtualCard  
+2. **지갑 붙여넣기 없이** 스모크 실행 (임베디드 EOA 자동 생성)  
+3. 순서: Smart Wallet/EOA → `POST /api/v2/user` → KYC → mint → virtual card  
+4. 회원 가입 시에도 백그라운드로 동일 온보딩이 시작됩니다.
 
-ZeroDev AA 자동배포 SDK는 별도 모듈로 확장 예정입니다. 현재는 등록된 EOA를 입력받아 검증합니다.
+임베디드 EOA는 `WALLET_ENC_KEY`(테넌트별)로 AES-256-GCM 암호화 저장합니다.  
+Wirex 공식 SDK(`@wirexapp/wpay-baas-sdk`, sandbox=`dev`)로 Kernel AA + Accounts 등록을 수행합니다.

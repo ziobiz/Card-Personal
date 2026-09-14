@@ -6,15 +6,18 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test:flow": "tsx src/scripts/test-flow.ts"
+    "test:flow": "tsx src/scripts/test-flow.ts",
+    "smoke:onboard": "tsx src/scripts/smoke-onboard.ts"
   },
   "dependencies": {
     "@simplewebauthn/server": "^14.0.0",
+    "@wirexapp/wpay-baas-sdk": "^0.1.12",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "jsonwebtoken": "^9.0.2",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "viem": "^2.56.5"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

@@ -47,6 +47,20 @@
     "kycNeeded": "Identity verification is required.",
     "kycCta": "Verify KYC"
   },
+  "onboard": {
+    "title": "Paghahanda sa card",
+    "lead": "Gagawa kami ng on-chain wallet, irerehistro sa Wirex, tapusin ang KYC, tapos mag-iisyu ng card.",
+    "continue": "Magpatuloy",
+    "running": "Pinoproseso...",
+    "failed": "Nabigo ang onboarding.",
+    "step": {
+      "wallet": "Embedded wallet",
+      "onchain": "On-chain Smart Wallet",
+      "registered": "Wirex user",
+      "kyc": "KYC",
+      "ready": "Pag-isyu ng card"
+    }
+  },
   "cards": {
     "title": "Pamamahala ng Card",
     "issueVirtual": "Mag-isyu ng virtual card",

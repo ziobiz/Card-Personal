@@ -117,6 +117,20 @@
     "kycNeeded": "Identity verification is required.",
     "kycCta": "Verify KYC"
   },
+  "onboard": {
+    "title": "Card setup",
+    "lead": "We create an on-chain wallet, register you with Wirex, complete KYC, then issue a card.",
+    "continue": "Continue",
+    "running": "Working...",
+    "failed": "Onboarding failed.",
+    "step": {
+      "wallet": "Embedded wallet",
+      "onchain": "On-chain Smart Wallet",
+      "registered": "Wirex user",
+      "kyc": "KYC",
+      "ready": "Card issue"
+    }
+  },
   "cards": {
     "title": "Cards",
     "issueVirtual": "Issue virtual card",
@@ -454,8 +468,8 @@
     "sandboxTokenOk": "Token OK",
     "sandboxTokenFail": "Token failed",
     "sandboxWebhook": "Webhook base",
-    "sandboxSmokeTitle": "Live smoke (on-chain EOA)",
-    "sandboxSmokeHint": "Requires an EOA registered on Wirex Accounts. Unregistered wallets fail at registerUser.",
+    "sandboxSmokeTitle": "Live smoke (auto wallet)",
+    "sandboxSmokeHint": "Creates an embedded EOA, deploys Kernel AA, registers the user, opens KYC, mints WUSD, and issues a virtual card. No wallet paste required.",
     "sandboxWallet": "Wallet address (EOA)",
     "sandboxEmail": "Test email",
     "sandboxRun": "Run smoke",

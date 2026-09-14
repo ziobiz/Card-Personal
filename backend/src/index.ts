@@ -95,9 +95,12 @@ app.use('/api/sandbox', sandboxRoutes);
 app.use('/v2/webhooks', webhookRoutes);
 app.use('/webhook', webhookRoutes);
 
-app.listen(config.port, config.host, () => {
+const server = app.listen(config.port, config.host, () => {
   store.loadUsers();
   console.log(`Server running at http://${config.host}:${config.port}`);
   console.log(`Wirex: ${config.useMockWirex ? 'MOCK' : 'LIVE'} env=${getWirexBaaSConfig().environment}`);
   console.log(`Users loaded: ${store.users.size}`);
 });
+server.timeout = 180000;
+server.keepAliveTimeout = 185000;
+server.headersTimeout = 190000;

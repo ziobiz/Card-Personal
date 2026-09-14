@@ -47,6 +47,20 @@
     "kycNeeded": "Identity verification is required.",
     "kycCta": "Verify KYC"
   },
+  "onboard": {
+    "title": "ကတ်ထုတ်ရန် ပြင်ဆင်ခြင်း",
+    "lead": "On-chain wallet ဖန်တီးပြီး Wirex မှတ်ပုံတင်၊ KYC၊ ကတ်ထုတ်ခြင်းအထိ ဆက်လုပ်သည်။",
+    "continue": "ဆက်လုပ်ရန်",
+    "running": "လုပ်ဆောင်နေသည်...",
+    "failed": "Onboarding မအောင်မြင်ပါ။",
+    "step": {
+      "wallet": "Embedded wallet",
+      "onchain": "On-chain Smart Wallet",
+      "registered": "Wirex အသုံးပြုသူ",
+      "kyc": "KYC",
+      "ready": "ကတ်ထုတ်ခြင်း"
+    }
+  },
   "cards": {
     "title": "ကတ်ပြားစီမံခန့်ခွဲမှု",
     "issueVirtual": "Virtual ကတ်ပြားထုတ်မည်",

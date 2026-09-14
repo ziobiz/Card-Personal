@@ -4,6 +4,7 @@
 
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 import { requireAdmin } from '../middleware/auth.js';
 import { store } from '../data/store.js';
 import { config } from '../config.js';
@@ -17,7 +18,6 @@ import { createOrgLogin } from '../data/orgLogin.js';
 import { brandStore } from '../data/brandStore.js';
 import { packageManifest } from '../data/packageManifest.js';
 import { wirexClient } from '../clients/wirex/WirexClient.js';
-import { sandboxHelper } from '../clients/wirex/SandboxHelperClient.js';
 import { getWirexBaaSConfig } from '../config.js';
 import { resolvePartnerPolicy } from '../data/feePolicyTemplateStore.js';
 import { operatorStore } from '../data/operatorStore.js';
@@ -494,61 +494,38 @@ router.get('/sandbox/status', async (_req, res) => {
 });
 
 router.post('/sandbox/smoke', async (req, res) => {
+  req.setTimeout(180000);
+  res.setTimeout(180000);
   if (config.useMockWirex) {
     return res.status(400).json({ error: 'Disable mock mode before live smoke test' });
   }
-  const wallet = String(req.body?.walletAddress || '').trim();
-  const email = String(req.body?.email || `sandbox+${Date.now()}@icocard.net`).trim().toLowerCase();
-  const country = String(req.body?.country || 'GB').trim().toUpperCase() || 'GB';
-  if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
-    return res.status(400).json({
-      error: 'Valid on-chain EOA walletAddress required (0x + 40 hex)',
-      hint: 'Deploy Smart Wallet / register EOA on Wirex Accounts contract first',
-    });
-  }
-  const steps: { step: string; ok: boolean; detail?: unknown }[] = [];
   try {
-    await wirexClient.getAccessToken();
-    steps.push({ step: 'token', ok: true });
-  } catch (e) {
-    return res.status(401).json({ error: (e as Error).message, steps: [{ step: 'token', ok: false, detail: (e as Error).message }] });
-  }
-
-  let userId = '';
-  try {
-    const created = await wirexClient.registerUser({ wallet_address: wallet, email, country });
-    userId = created.id;
-    steps.push({ step: 'registerUser', ok: true, detail: { userId } });
-  } catch (e) {
-    steps.push({ step: 'registerUser', ok: false, detail: (e as Error).message });
-    try {
-      const existing = await wirexClient.getUser({ walletAddress: wallet, email });
-      userId = String((existing as { id?: string; user_id?: string }).id || (existing as { user_id?: string }).user_id || '');
-      steps.push({ step: 'getUser', ok: true, detail: existing });
-    } catch (e2) {
-      steps.push({ step: 'getUser', ok: false, detail: (e2 as Error).message });
-      return res.status(400).json({
-        error: 'User register failed — wallet may not be on-chain registered yet',
-        steps,
+    const email = String(req.body?.email || 'sandbox.ops@icocard.net').trim().toLowerCase();
+    store.loadUsers();
+    let user = store.getUserByEmail(email);
+    if (!user) {
+      store.addUser({
+        id: uuidv4(),
+        email,
+        passwordHash: '[smoke]',
+        country: 'GB',
+        source: 'direct',
+        onboardingStatus: 'none',
+        createdAt: new Date().toISOString(),
       });
+      user = store.getUserByEmail(email);
     }
-  }
-
-  const ctx = { walletAddress: wallet, email, userId: userId || undefined };
-  try {
-    const mint = await sandboxHelper.mintWusd(wallet, 10);
-    steps.push({ step: 'mintWusd', ok: true, detail: mint });
+    if (!user) return res.status(500).json({ error: 'Failed to create smoke user' });
+    const { onboardingService } = await import('../services/onboardingService.js');
+    const result = await onboardingService.run(user.id, { issueCard: true, mint: true });
+    res.json({
+      ...result,
+      email,
+      userId: user.id,
+      wallet: result.onboarding.eoa,
+    });
   } catch (e) {
-    steps.push({ step: 'mintWusd', ok: false, detail: (e as Error).message });
-  }
-
-  try {
-    const card = await wirexClient.issueVirtualCard(ctx, { card_name: 'ASP Smoke', name_on_card: 'SANDBOX' });
-    steps.push({ step: 'issueVirtualCard', ok: true, detail: card });
-    return res.json({ ok: true, userId, wallet, email, steps, card });
-  } catch (e) {
-    steps.push({ step: 'issueVirtualCard', ok: false, detail: (e as Error).message });
-    return res.status(400).json({ ok: false, userId, wallet, email, steps, error: (e as Error).message });
+    res.status(500).json({ error: (e as Error).message });
   }
 });
 

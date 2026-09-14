@@ -113,6 +113,20 @@
     "kycNeeded": "ต้องยืนยันตัวตน",
     "kycCta": "เริ่ม KYC"
   },
+  "onboard": {
+    "title": "เตรียมออกบัตร",
+    "lead": "สร้างกระเป๋าบนเชน ลงทะเบียน Wirex ทำ KYC แล้วออกบัตร",
+    "continue": "ดำเนินการต่อ",
+    "running": "กำลังดำเนินการ...",
+    "failed": "การเปิดบัญชีล้มเหลว",
+    "step": {
+      "wallet": "กระเป๋าในตัว",
+      "onchain": "Smart Wallet บนเชน",
+      "registered": "ลงทะเบียนผู้ใช้ Wirex",
+      "kyc": "KYC",
+      "ready": "ออกบัตร"
+    }
+  },
   "cards": {
     "title": "จัดการบัตร",
     "issueVirtual": "ออกบัตรเสมือน",
@@ -425,8 +439,8 @@
     "sandboxTokenOk": "โทเค็นปกติ",
     "sandboxTokenFail": "โทเค็นล้มเหลว",
     "sandboxWebhook": "Webhook Base",
-    "sandboxSmokeTitle": "Smoke ไลฟ์ (EOA ออนเชน)",
-    "sandboxSmokeHint": "ต้องมี EOA ที่ลงทะเบียนใน Wirex Accounts แล้ว",
+    "sandboxSmokeTitle": "ทดสอบไลฟ์ (กระเป๋าอัตโนมัติ)",
+    "sandboxSmokeHint": "สร้าง EOA ในตัว ติดตั้ง Kernel AA ลงทะเบียนผู้ใช้ เปิด KYC มิ้นท์ WUSD และออกบัตรเสมือน ไม่ต้องวางที่อยู่กระเป๋า",
     "sandboxWallet": "ที่อยู่กระเป๋า (EOA)",
     "sandboxEmail": "อีเมลทดสอบ",
     "sandboxRun": "รัน smoke",

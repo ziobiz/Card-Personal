@@ -41,11 +41,27 @@ router.get('/:cardId', async (req, res) => {
 });
 
 router.post('/virtual', async (req, res) => {
+  req.setTimeout(180000);
+  res.setTimeout(180000);
   try {
     const userId = req.auth!.userId;
-    const user = store.getUserById(userId);
-    if (!user?.wirexUserId) {
-      return res.status(400).json({ error: 'Wirex user not found' });
+    let user = store.getUserById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user.wirexUserId) {
+      const { config } = await import('../config.js');
+      if (config.useMockWirex) {
+        return res.status(400).json({ error: 'Wirex user not found' });
+      }
+      const { onboardingService } = await import('../services/onboardingService.js');
+      const onboarded = await onboardingService.run(userId, { issueCard: false, mint: true });
+      user = store.getUserById(userId);
+      if (!user?.wirexUserId) {
+        return res.status(400).json({
+          error: 'Complete onboarding first',
+          onboarding: onboarded.onboarding,
+          steps: onboarded.steps,
+        });
+      }
     }
     const issue = partnerIssueCheck(user.partnerId, 'virtual');
     if (!issue.ok) {
@@ -64,11 +80,27 @@ router.post('/virtual', async (req, res) => {
 });
 
 router.post('/plastic', async (req, res) => {
+  req.setTimeout(180000);
+  res.setTimeout(180000);
   try {
     const userId = req.auth!.userId;
-    const user = store.getUserById(userId);
-    if (!user?.wirexUserId) {
-      return res.status(400).json({ error: 'Wirex user not found' });
+    let user = store.getUserById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user.wirexUserId) {
+      const { config } = await import('../config.js');
+      if (config.useMockWirex) {
+        return res.status(400).json({ error: 'Wirex user not found' });
+      }
+      const { onboardingService } = await import('../services/onboardingService.js');
+      const onboarded = await onboardingService.run(userId, { issueCard: false, mint: true });
+      user = store.getUserById(userId);
+      if (!user?.wirexUserId) {
+        return res.status(400).json({
+          error: 'Complete onboarding first',
+          onboarding: onboarded.onboarding,
+          steps: onboarded.steps,
+        });
+      }
     }
     const issue = partnerIssueCheck(user.partnerId, 'plastic');
     if (!issue.ok) {

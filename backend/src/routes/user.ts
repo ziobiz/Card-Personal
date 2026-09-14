@@ -24,6 +24,12 @@ function publicProfile(user: NonNullable<ReturnType<typeof store.getUserById>>, 
     wirexUserId: user.wirexUserId || null,
     walletAddress: user.walletAddress || '',
     kycStatus: user.kycStatus || 'pending',
+    onboarding: {
+      status: user.onboardingStatus || 'none',
+      error: user.onboardingError || null,
+      eoa: user.walletAddress || '',
+      smartWallet: user.smartWalletAddress || '',
+    },
     source: user.source || 'direct',
     status: user.status || 'active',
     createdAt: user.createdAt,
@@ -56,6 +62,26 @@ router.get('/', async (req, res) => {
         mock: config.useMockWirex,
       })
     );
+  } catch (e) {
+    res.status(500).json({ error: (e as Error).message });
+  }
+});
+
+router.get('/onboarding', (req, res) => {
+  const user = store.getUserById(req.auth!.userId);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  res.json({ ok: true, ...publicProfile(user).onboarding, wirexUserId: user.wirexUserId || null, kycStatus: user.kycStatus || 'pending', mock: config.useMockWirex });
+});
+
+/** 온체인 지갑 → Wirex 유저 → KYC 링크 (공식 순서) */
+router.post('/onboard', async (req, res) => {
+  req.setTimeout(180000);
+  res.setTimeout(180000);
+  try {
+    const issueCard = req.body?.issueCard !== false;
+    const { onboardingService } = await import('../services/onboardingService.js');
+    const result = await onboardingService.run(req.auth!.userId, { issueCard, mint: true });
+    res.json(result);
   } catch (e) {
     res.status(500).json({ error: (e as Error).message });
   }

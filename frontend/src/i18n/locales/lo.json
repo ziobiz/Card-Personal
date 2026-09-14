@@ -47,6 +47,20 @@
     "kycNeeded": "Identity verification is required.",
     "kycCta": "Verify KYC"
   },
+  "onboard": {
+    "title": "ກຽມອອກບັດ",
+    "lead": "ສ້າງກະເປົາ on-chain, ລົງທະບຽນ Wirex, ເຮັດ KYC ແລ້ວອອກບັດ.",
+    "continue": "ສືບຕໍ່",
+    "running": "ກຳລັງດຳເນີນ...",
+    "failed": "ການເປີດບັນຊີລົ້ມເຫລວ.",
+    "step": {
+      "wallet": "ກະເປົາຝັງໃນ",
+      "onchain": "Smart Wallet บนเชน",
+      "registered": "ຜູ້ໃຊ້ Wirex",
+      "kyc": "KYC",
+      "ready": "ອອກບັດ"
+    }
+  },
   "cards": {
     "title": "ຈັດການບັດ",
     "issueVirtual": "ອອກບັດສະມັກວ",
