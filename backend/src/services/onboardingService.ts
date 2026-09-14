@@ -191,6 +191,24 @@ export const onboardingService = {
         steps.push({ step: 'kycLink', ok: false, detail: (e as Error).message });
       }
 
+      try {
+        const profile = (await wirexClient.getUser({
+          walletAddress: eoa,
+          userId: wirexUserId,
+          email: user0.email,
+        })) as Record<string, unknown>;
+        steps.push({
+          step: 'getUser',
+          ok: true,
+          detail: {
+            verification: profile.verification ?? profile.verification_status,
+            capabilities: profile.capabilities,
+          },
+        });
+      } catch (e) {
+        steps.push({ step: 'getUser', ok: false, detail: (e as Error).message });
+      }
+
       if (opts?.mint !== false) {
         try {
           const mint = await sandboxHelper.mintWusd(eoa, 20);
@@ -235,7 +253,14 @@ export const onboardingService = {
       const latest = store.getUserById(userId)!;
       const registered = steps.some((s) => s.step === 'registerUser' && s.ok);
       const cardOk = !opts?.issueCard || steps.some((s) => s.step === 'issueVirtualCard' && s.ok);
-      return { ok: registered && cardOk, steps, kycUrl, card, onboarding: publicOnboarding(latest) };
+      const kycReady = Boolean(kycUrl) || latest.kycStatus === 'verified';
+      return {
+        ok: registered && (cardOk || kycReady),
+        steps,
+        kycUrl,
+        card,
+        onboarding: publicOnboarding(latest),
+      };
     } catch (e) {
       const msg = (e as Error).message;
       store.updateOnboarding(userId, { onboardingStatus: 'error', onboardingError: msg });

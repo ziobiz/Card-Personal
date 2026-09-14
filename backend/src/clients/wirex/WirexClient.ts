@@ -125,20 +125,36 @@ export class WirexClient {
 
   /**
    * KYC 호스팅 링크.
-   * OpenAPI: POST /api/v1/user/verification-link
+   * OpenAPI: POST/GET /api/v1/user/verification-link
+   * 응답은 url 또는 redirect_uri.
    */
   async getVerificationLink(user: UserContext): Promise<string | null> {
-    try {
-      const out = await this.request<{ url?: string }>('POST', '/api/v1/user/verification-link', user, {});
-      return out.url ?? null;
-    } catch (first) {
+    const pick = (out: { url?: string; redirect_uri?: string }) => out.url || out.redirect_uri || null;
+    const bodies: unknown[] = [{ verification_level: 'SDD' }, {}];
+    let lastErr: Error | null = null;
+    for (const body of bodies) {
       try {
-        const out = await this.request<{ url?: string }>('GET', '/api/v1/user/verification-link', user);
-        return out.url ?? null;
-      } catch (second) {
-        throw second instanceof Error ? second : first;
+        const out = await this.request<{ url?: string; redirect_uri?: string }>(
+          'POST',
+          '/api/v1/user/verification-link',
+          user,
+          body
+        );
+        const url = pick(out);
+        if (url) return url;
+      } catch (e) {
+        lastErr = e as Error;
       }
     }
+    try {
+      const out = await this.request<{ url?: string; redirect_uri?: string }>('GET', '/api/v1/user/verification-link', user);
+      const url = pick(out);
+      if (url) return url;
+    } catch (e) {
+      lastErr = e as Error;
+    }
+    if (lastErr) throw lastErr;
+    return null;
   }
 
   async getCards(user: UserContext, page = 1, size = 10): Promise<{ items: CardDto[]; total: number }> {
