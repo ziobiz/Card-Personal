@@ -97,6 +97,7 @@ export default function AdminLayout() {
       icon: 'gear',
       items: [
         { to: '/admin/brand', labelKey: 'admin.navBrand' },
+        { to: '/admin/sandbox', labelKey: 'admin.navSandbox' },
         { to: '/admin/settings', labelKey: 'admin.navSettings' },
       ],
     },
@@ -151,6 +152,7 @@ export default function AdminLayout() {
       '/admin/fee-policy': ['admin.menuMerchant', 'admin.navFeePolicy'],
       '/admin/settings': ['admin.menuHq', 'admin.navSettings'],
       '/admin/brand': ['admin.menuHq', 'admin.navBrand'],
+      '/admin/sandbox': ['admin.menuHq', 'admin.navSandbox'],
       '/admin/operators': ['admin.menuUsers', 'admin.navHqOperators'],
       '/admin/operators/partner': ['admin.menuUsers', 'admin.navPartnerOperators'],
       '/admin/members': ['admin.menuMembers', 'admin.navDirectMembers'],

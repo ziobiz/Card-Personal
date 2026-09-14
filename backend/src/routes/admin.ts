@@ -16,6 +16,9 @@ import { orgStore, parseOrgProfile } from '../data/orgStore.js';
 import { createOrgLogin } from '../data/orgLogin.js';
 import { brandStore } from '../data/brandStore.js';
 import { packageManifest } from '../data/packageManifest.js';
+import { wirexClient } from '../clients/wirex/WirexClient.js';
+import { sandboxHelper } from '../clients/wirex/SandboxHelperClient.js';
+import { getWirexBaaSConfig } from '../config.js';
 import { resolvePartnerPolicy } from '../data/feePolicyTemplateStore.js';
 import { operatorStore } from '../data/operatorStore.js';
 import adminSales from './adminSales.js';
@@ -453,6 +456,100 @@ router.get('/package', (_, res) => {
 router.put('/package', (req, res) => {
   packageManifest.update(req.body ?? {});
   res.json(packageManifest.publicView());
+});
+
+/** ASP / Sandbox ops — connection + optional live smoke (requires on-chain EOA) */
+router.get('/sandbox/status', async (_req, res) => {
+  const w = getWirexBaaSConfig();
+  const out: Record<string, unknown> = {
+    environment: w.environment,
+    mock: config.useMockWirex,
+    apiBase: w.apiBase,
+    chainId: w.chainId,
+    clientIdSet: Boolean(w.clientId),
+    partnerId: w.partnerId,
+    webhookBaseUrl: packageManifest.get().webhookBaseUrl,
+    brand: brandStore.get().productName,
+    enabledLocales: brandStore.get().enabledLocales,
+  };
+  if (config.useMockWirex) {
+    out.tokenOk = false;
+    out.note = 'Mock mode — set USE_MOCK_WIREX=false with Sandbox keys for live calls';
+    return res.json(out);
+  }
+  try {
+    const token = await wirexClient.getAccessToken();
+    out.tokenOk = true;
+    out.tokenPreview = `${token.slice(0, 18)}…`;
+    try {
+      out.validationRules = await wirexClient.getValidationRules();
+    } catch (e) {
+      out.validationRulesError = (e as Error).message;
+    }
+  } catch (e) {
+    out.tokenOk = false;
+    out.tokenError = (e as Error).message;
+  }
+  res.json(out);
+});
+
+router.post('/sandbox/smoke', async (req, res) => {
+  if (config.useMockWirex) {
+    return res.status(400).json({ error: 'Disable mock mode before live smoke test' });
+  }
+  const wallet = String(req.body?.walletAddress || '').trim();
+  const email = String(req.body?.email || `sandbox+${Date.now()}@icocard.net`).trim().toLowerCase();
+  const country = String(req.body?.country || 'GB').trim().toUpperCase() || 'GB';
+  if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
+    return res.status(400).json({
+      error: 'Valid on-chain EOA walletAddress required (0x + 40 hex)',
+      hint: 'Deploy Smart Wallet / register EOA on Wirex Accounts contract first',
+    });
+  }
+  const steps: { step: string; ok: boolean; detail?: unknown }[] = [];
+  try {
+    await wirexClient.getAccessToken();
+    steps.push({ step: 'token', ok: true });
+  } catch (e) {
+    return res.status(401).json({ error: (e as Error).message, steps: [{ step: 'token', ok: false, detail: (e as Error).message }] });
+  }
+
+  let userId = '';
+  try {
+    const created = await wirexClient.registerUser({ wallet_address: wallet, email, country });
+    userId = created.id;
+    steps.push({ step: 'registerUser', ok: true, detail: { userId } });
+  } catch (e) {
+    steps.push({ step: 'registerUser', ok: false, detail: (e as Error).message });
+    try {
+      const existing = await wirexClient.getUser({ walletAddress: wallet, email });
+      userId = String((existing as { id?: string; user_id?: string }).id || (existing as { user_id?: string }).user_id || '');
+      steps.push({ step: 'getUser', ok: true, detail: existing });
+    } catch (e2) {
+      steps.push({ step: 'getUser', ok: false, detail: (e2 as Error).message });
+      return res.status(400).json({
+        error: 'User register failed — wallet may not be on-chain registered yet',
+        steps,
+      });
+    }
+  }
+
+  const ctx = { walletAddress: wallet, email, userId: userId || undefined };
+  try {
+    const mint = await sandboxHelper.mintWusd(wallet, 10);
+    steps.push({ step: 'mintWusd', ok: true, detail: mint });
+  } catch (e) {
+    steps.push({ step: 'mintWusd', ok: false, detail: (e as Error).message });
+  }
+
+  try {
+    const card = await wirexClient.issueVirtualCard(ctx, { card_name: 'ASP Smoke', name_on_card: 'SANDBOX' });
+    steps.push({ step: 'issueVirtualCard', ok: true, detail: card });
+    return res.json({ ok: true, userId, wallet, email, steps, card });
+  } catch (e) {
+    steps.push({ step: 'issueVirtualCard', ok: false, detail: (e as Error).message });
+    return res.status(400).json({ ok: false, userId, wallet, email, steps, error: (e as Error).message });
+  }
 });
 
 router.get('/settings', (_, res) => {

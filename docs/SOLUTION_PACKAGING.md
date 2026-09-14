@@ -118,3 +118,29 @@ Wirex 클라이언트·카드·웹훅 코어는 **브랜드와 분리**되어 �
 - Partner: `https://partner.icocard.net`
 - API / Webhook base: `https://api.icocard.net`
 - Product code: `ICOCARD-BAAS-PACK`
+
+## 10. ASP / 제3자 임대·납품
+
+본 패키지는 **직접 운영(SaaS HQ)** 과 **ASP 임대/화이트라벨 납품**을 동시에 고려합니다.
+
+| 구성 요소 | 분리 단위 | 비고 |
+|-----------|-----------|------|
+| 브랜드·로고·색 | `brandStore` | 테넌트별 Admin → Brand |
+| **활성 언어** | `brand.enabledLocales` | 번역은 전체 유지, 서비스 노출만 선택 |
+| Wirex 키·Webhook | 배포 인스턴스 `.env` | 구매사/테넌트별 분리 |
+| 파트너 API·수수료 | Partner / Fee modules | 모듈 유지 |
+| Sandbox 점검 | Admin → Sandbox | `GET/POST /api/admin/sandbox/*` |
+
+### 언어 활성화 (본사 설정)
+
+1. Admin → 브랜드/플랫폼 → **서비스 언어** 칩 선택  
+2. 기본 언어 지정  
+3. 회원/파트너 `LanguageSwitcher`는 활성 언어만 표시  
+
+### Sandbox 스모크
+
+1. Admin → Sandbox 연동 → 토큰 상태 확인  
+2. Wirex Accounts에 등록된 EOA 입력 후 스모크 실행  
+3. 순서: token → registerUser → mint → issueVirtualCard  
+
+ZeroDev AA 자동배포 SDK는 별도 모듈로 확장 예정입니다. 현재는 등록된 EOA를 입력받아 검증합니다.

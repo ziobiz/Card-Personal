@@ -44,6 +44,8 @@ export interface PackageManifest {
     feePolicy: boolean;
     orgHierarchy: boolean;
     whiteLabelBrand: boolean;
+    localeActivation: boolean;
+    sandboxOps: boolean;
   };
   /** Commercial notes (not secrets) */
   notes?: string;
@@ -75,8 +77,10 @@ const DEFAULTS: PackageManifest = {
     feePolicy: true,
     orgHierarchy: true,
     whiteLabelBrand: true,
+    localeActivation: true,
+    sandboxOps: true,
   },
-  notes: 'Sellable card issuance package on Wirex BaaS. Brand via Admin → Brand. Wirex keys per deployment after Sandbox issuance.',
+  notes: 'ASP / white-label card issuance on Wirex BaaS. Per-tenant brand + enabled locales. Wirex keys per deployment.',
 };
 
 function load(): PackageManifest {
@@ -155,6 +159,8 @@ export const packageManifest = {
         productName: brand.productName,
         operatorName: brand.operatorName,
         cardBrandName: brand.cardBrandName,
+        enabledLocales: brand.enabledLocales,
+        defaultLocale: brand.defaultLocale,
       },
       domains: pkg.domains,
       webhookBaseUrl: pkg.webhookBaseUrl,

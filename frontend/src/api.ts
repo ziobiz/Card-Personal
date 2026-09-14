@@ -140,6 +140,8 @@ export interface BrandConfig {
   logoAdmin: string;
   logoLogin: string;
   favicon: string;
+  enabledLocales?: string[];
+  defaultLocale?: string;
   updatedAt?: string;
 }
 
@@ -156,6 +158,8 @@ export const DEFAULT_BRAND: BrandConfig = {
   logoAdmin: '',
   logoLogin: '',
   favicon: '',
+  enabledLocales: ['ko', 'en', 'ja', 'zh', 'th'],
+  defaultLocale: 'en',
 };
 
 export async function fetchPublicBrand(): Promise<BrandConfig> {
@@ -452,6 +456,28 @@ export const api = {
     getBrand: () => request<BrandConfig>('/admin/brand'),
     updateBrand: (data: Partial<BrandConfig>) =>
       request<BrandConfig>('/admin/brand', { method: 'PUT', body: JSON.stringify(data) }),
+    sandboxStatus: () =>
+      request<{
+        environment: string;
+        mock: boolean;
+        apiBase: string;
+        chainId: number;
+        tokenOk?: boolean;
+        tokenError?: string;
+        clientIdSet?: boolean;
+        partnerId?: string;
+        webhookBaseUrl?: string;
+        enabledLocales?: string[];
+        note?: string;
+      }>('/admin/sandbox/status'),
+    sandboxSmoke: (data: { walletAddress: string; email?: string; country?: string }) =>
+      request<{
+        ok?: boolean;
+        error?: string;
+        steps: { step: string; ok: boolean; detail?: unknown }[];
+        card?: unknown;
+        userId?: string;
+      }>('/admin/sandbox/smoke', { method: 'POST', body: JSON.stringify(data) }),
     updateSettings: (data: {
       wirex?: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string; environment?: 'sandbox' | 'production' };
       feePolicy?: { treasuryWalletAddress?: string; cardIssuanceFee?: number; cardTopUpFeePercent?: number; cardUsageFeePerTransaction?: number; cardMonthlyFee?: number; partnerMonthlyFee?: number };

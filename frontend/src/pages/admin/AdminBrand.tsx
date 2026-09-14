@@ -3,6 +3,22 @@ import { useTranslation } from 'react-i18next';
 import { api, type BrandConfig } from '../../api';
 import { useBrand } from '../../brand/BrandContext';
 
+const LOCALE_OPTIONS = [
+  { code: 'ko', label: '한국어' },
+  { code: 'en', label: 'English' },
+  { code: 'ja', label: '日本語' },
+  { code: 'zh', label: '中文' },
+  { code: 'th', label: 'ไทย' },
+  { code: 'id', label: 'Bahasa Indonesia' },
+  { code: 'vi', label: 'Tiếng Việt' },
+  { code: 'ms', label: 'Bahasa Melayu' },
+  { code: 'fil', label: 'Filipino' },
+  { code: 'hi', label: 'हिन्दी' },
+  { code: 'my', label: 'မြန်မာ' },
+  { code: 'km', label: 'ខ្មែរ' },
+  { code: 'lo', label: 'ລາວ' },
+] as const;
+
 function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     if (file.size > 350_000) {
@@ -25,7 +41,13 @@ export default function AdminBrand() {
   const [ok, setOk] = useState(false);
 
   useEffect(() => {
-    api.admin.getBrand().then(setForm).catch(() => setForm(null));
+    api.admin.getBrand().then((b) =>
+      setForm({
+        ...b,
+        enabledLocales: b.enabledLocales?.length ? b.enabledLocales : ['ko', 'en', 'ja', 'zh', 'th'],
+        defaultLocale: b.defaultLocale || 'en',
+      })
+    ).catch(() => setForm(null));
   }, []);
 
   const set = (k: keyof BrandConfig, v: string) => {
@@ -50,7 +72,11 @@ export default function AdminBrand() {
     setMsg('');
     try {
       const next = await api.admin.updateBrand(form);
-      setForm(next);
+      setForm({
+        ...next,
+        enabledLocales: next.enabledLocales?.length ? next.enabledLocales : form.enabledLocales,
+        defaultLocale: next.defaultLocale || form.defaultLocale,
+      });
       reload();
       setOk(true);
       setMsg(t('admin.brandSaved'));
@@ -118,6 +144,57 @@ export default function AdminBrand() {
             </label>
           ))}
         </div>
+      </section>
+
+      <section className="card-surface hq-brand-card">
+        <h3>{t('admin.brandLocales')}</h3>
+        <p className="muted-text hq-brand-locale-hint">{t('admin.brandLocalesHint')}</p>
+        <div className="hq-locale-grid">
+          {LOCALE_OPTIONS.map(({ code, label }) => {
+            const on = (form.enabledLocales || []).includes(code);
+            return (
+              <button
+                key={code}
+                type="button"
+                className={`hq-locale-chip${on ? ' on' : ''}`}
+                onClick={() => {
+                  setForm((s) => {
+                    if (!s) return s;
+                    const cur = new Set(s.enabledLocales || []);
+                    if (cur.has(code)) {
+                      if (cur.size <= 1) return s;
+                      cur.delete(code);
+                    } else cur.add(code);
+                    const enabledLocales: string[] = LOCALE_OPTIONS.map((o) => o.code).filter((c) => cur.has(c));
+                    const prev = s.defaultLocale || enabledLocales[0];
+                    const defaultLocale = enabledLocales.includes(prev) ? prev : enabledLocales[0];
+                    return { ...s, enabledLocales, defaultLocale };
+                  });
+                }}
+              >
+                <span className="hq-locale-code">{code.toUpperCase()}</span>
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </div>
+        <label className="hq-brand-default-locale">
+          {t('admin.brandDefaultLocale')}
+          <select
+            className="input"
+            value={form.defaultLocale || 'en'}
+            onChange={(e) => set('defaultLocale', e.target.value)}
+          >
+            {(form.enabledLocales || []).map((code) => {
+              const opt = LOCALE_OPTIONS.find((o) => o.code === code);
+              return (
+                <option key={code} value={code}>
+                  {opt?.label || code}
+                </option>
+              );
+            })}
+          </select>
+        </label>
       </section>
 
       <section className="card-surface hq-brand-card">

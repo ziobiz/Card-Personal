@@ -22,6 +22,7 @@ import AdminOrg from './pages/admin/AdminOrg';
 import AdminFeePolicy from './pages/admin/AdminFeePolicy';
 import AdminBrand from './pages/admin/AdminBrand';
 import AdminMyInfo from './pages/admin/AdminMyInfo';
+import AdminSandbox from './pages/admin/AdminSandbox';
 import PartnerLayout from './components/PartnerLayout';
 import PartnerLogin from './pages/partner/PartnerLogin';
 import PartnerPassword from './pages/partner/PartnerPassword';
@@ -110,6 +111,7 @@ export default function App() {
           <Route path="fee-list" element={<AdminFeePolicy view="list" />} />
           <Route path="fee-policy" element={<AdminFeePolicy view="manage" />} />
         <Route path="brand" element={<AdminBrand />} />
+        <Route path="sandbox" element={<AdminSandbox />} />
         <Route path="me" element={<AdminMyInfo />} />
         <Route path="settings" element={<AdminSettings />} />
         </Route>

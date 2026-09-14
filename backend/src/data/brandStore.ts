@@ -1,11 +1,30 @@
 /**
- * White-label brand (TINPASS / PG HQ policy platform 과 동일 개념)
- * Wirex 연동 설정과 분리 — 배포 시 브랜드만 교체 가능
+ * White-label brand (ASP / 제3자 납품용)
+ * Wirex 연동과 분리 — 브랜드·활성 언어만 교체해 배포 가능
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+
+/** Catalog of locales the product can ship (HQ activates a subset per tenant) */
+export const LOCALE_CATALOG = [
+  'ko',
+  'en',
+  'ja',
+  'zh',
+  'th',
+  'id',
+  'vi',
+  'ms',
+  'fil',
+  'hi',
+  'my',
+  'km',
+  'lo',
+] as const;
+
+export type LocaleCode = (typeof LOCALE_CATALOG)[number];
 
 export interface BrandConfig {
   productName: string;
@@ -20,6 +39,10 @@ export interface BrandConfig {
   logoAdmin: string;
   logoLogin: string;
   favicon: string;
+  /** Member/partner UI languages activated for this ASP tenant */
+  enabledLocales: LocaleCode[];
+  /** Fallback when browser lang is not enabled */
+  defaultLocale: LocaleCode;
   updatedAt?: string;
 }
 
@@ -39,15 +62,37 @@ export const DEFAULT_BRAND: BrandConfig = {
   logoAdmin: '',
   logoLogin: '',
   favicon: '',
+  enabledLocales: ['ko', 'en', 'ja', 'zh', 'th'],
+  defaultLocale: 'en',
 };
 
+function normalizeLocales(raw: unknown, fallback: LocaleCode[]): LocaleCode[] {
+  if (!Array.isArray(raw)) return [...fallback];
+  const set = new Set<LocaleCode>();
+  for (const item of raw) {
+    if (typeof item === 'string' && (LOCALE_CATALOG as readonly string[]).includes(item)) {
+      set.add(item as LocaleCode);
+    }
+  }
+  const list = [...set];
+  return list.length ? list : [...fallback];
+}
+
 function load(): BrandConfig {
-  if (!existsSync(FILE)) return { ...DEFAULT_BRAND };
+  if (!existsSync(FILE)) return { ...DEFAULT_BRAND, enabledLocales: [...DEFAULT_BRAND.enabledLocales] };
   try {
     const parsed = JSON.parse(readFileSync(FILE, 'utf-8')) as Partial<BrandConfig>;
-    return { ...DEFAULT_BRAND, ...parsed };
+    const enabledLocales = normalizeLocales(parsed.enabledLocales, DEFAULT_BRAND.enabledLocales);
+    let defaultLocale = (parsed.defaultLocale as LocaleCode) || DEFAULT_BRAND.defaultLocale;
+    if (!enabledLocales.includes(defaultLocale)) defaultLocale = enabledLocales[0];
+    return {
+      ...DEFAULT_BRAND,
+      ...parsed,
+      enabledLocales,
+      defaultLocale,
+    };
   } catch {
-    return { ...DEFAULT_BRAND };
+    return { ...DEFAULT_BRAND, enabledLocales: [...DEFAULT_BRAND.enabledLocales] };
   }
 }
 
@@ -79,15 +124,21 @@ function clipDataUrl(v: unknown, maxChars = 700_000): string | undefined {
 
 export const brandStore = {
   get(): BrandConfig {
-    return { ...cached };
+    return {
+      ...cached,
+      enabledLocales: [...cached.enabledLocales],
+    };
   },
 
-  publicView(): Omit<BrandConfig, never> {
+  publicView(): BrandConfig {
     return this.get();
   },
 
   update(partial: Partial<BrandConfig>): BrandConfig {
-    const next: BrandConfig = { ...cached };
+    const next: BrandConfig = {
+      ...cached,
+      enabledLocales: [...cached.enabledLocales],
+    };
     const name = clipText(partial.productName, 40);
     if (name != null) next.productName = name || DEFAULT_BRAND.productName;
     const op = clipText(partial.operatorName, 80);
@@ -106,6 +157,18 @@ export const brandStore = {
       if (partial[key] === undefined) continue;
       const img = clipDataUrl(partial[key]);
       if (img !== undefined) next[key] = img;
+    }
+    if (partial.enabledLocales !== undefined) {
+      next.enabledLocales = normalizeLocales(partial.enabledLocales, DEFAULT_BRAND.enabledLocales);
+    }
+    if (partial.defaultLocale !== undefined) {
+      const d = String(partial.defaultLocale);
+      if ((LOCALE_CATALOG as readonly string[]).includes(d)) {
+        next.defaultLocale = d as LocaleCode;
+      }
+    }
+    if (!next.enabledLocales.includes(next.defaultLocale)) {
+      next.defaultLocale = next.enabledLocales[0];
     }
     next.updatedAt = new Date().toISOString();
     cached = next;
