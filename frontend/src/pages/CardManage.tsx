@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { TLink } from '../components/TenantLink';
 import { api, type Card } from '../api';
 import CardVisual from '../components/CardVisual';
 import CardActionSheet from '../components/CardActionSheet';
@@ -104,9 +104,9 @@ export default function CardManage() {
       ) : cards.length === 0 ? (
         <div className="card-surface">
           <p className="muted-text">{t('cards.noCardsManage')}</p>
-          <Link to="/cards/issue" className="btn-primary" style={{ display: 'inline-flex', width: 'auto', marginTop: 12 }}>
+          <TLink to="/cards/issue" className="btn-primary" style={{ display: 'inline-flex', width: 'auto', marginTop: 12 }}>
             {t('cards.goIssue')}
-          </Link>
+          </TLink>
         </div>
       ) : (
         <div className="cards-wirex-layout">
@@ -194,9 +194,9 @@ export default function CardManage() {
               </div>
             ))}
           </div>
-          <Link to="/cards/issue" className="wx-ghost" style={{ display: 'inline-block', marginTop: 12 }}>
+          <TLink to="/cards/issue" className="wx-ghost" style={{ display: 'inline-block', marginTop: 12 }}>
             {t('cards.goIssue')}
-          </Link>
+          </TLink>
         </div>
       )}
 

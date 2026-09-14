@@ -24,7 +24,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(() => {
     localStorage.removeItem('token');
     setTokenState(null);
-    window.location.href = '/login';
   }, []);
 
   const value = useMemo(() => ({ token, setToken, logout }), [token, setToken, logout]);

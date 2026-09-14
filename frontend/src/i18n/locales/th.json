@@ -476,7 +476,18 @@
     "otpRequiredOrg": "บังคับ OTP สำหรับพาร์ทเนอร์/องค์กร",
     "resetOtpBtn": "รีเซ็ต OTP",
     "resetOtpConfirm": "รีเซ็ต Google OTP ของ {email}?\\n(ต้องลงทะเบียนใหม่ในการเข้าสู่ระบบครั้งถัดไป)",
-    "otpResetDone": "รีเซ็ต OTP ของ {email} แล้ว"
+    "otpResetDone": "รีเซ็ต OTP ของ {email} แล้ว",
+    "kitOnce": "ชุดคีย์ร้านค้า (แสดงครั้งเดียว)",
+    "kitSave": "บันทึก MID, API Key, Secret และ HMAC ทันที ไม่ใช่คีย์ Wirex",
+    "ourKeysNotWirex": "ใช้เฉพาะคีย์ ICOCARD ที่สำนักงานใหญ่จ่าย ไม่ส่งคีย์ Wirex",
+    "sectionDelivery": "การเชื่อมต่อและการส่งมอบ",
+    "deliveryHint": "API หรือแพ็กเกจย่อยที่ /s/{slug} คีย์ทั้งหมดออกโดยสำนักงานใหญ่",
+    "deliveryMode": "รูปแบบส่งมอบ",
+    "deliveryApi": "API",
+    "deliverySub": "โซลูชันย่อย",
+    "solutionName": "ชื่อแบรนด์โซลูชัน",
+    "webhookUrl": "Webhook URL",
+    "bridgeDebitUrl": "URL หักบริดจ์"
   },
   "earn": {
     "title": "รับรางวัล",
@@ -518,6 +529,29 @@
     "manual1": "สำนักงานใหญ่ลงทะเบียนร้านและส่ง API Key",
     "manual2": "สร้างผู้ใช้พาร์ทเนอร์ในเมนูผู้ใช้",
     "manual3": "ดู API ค่าธรรมเนียม และคู่มือในพอร์ทัล",
-    "manual4": "ออกบัตรบนเว็บร้านด้วย X-API-Key และ X-Partner-User-Id"
+    "manual4": "ออกบัตรบนเว็บร้านด้วย X-API-Key และ X-Partner-User-Id",
+    "ourKeysNotWirex": "ยืนยันด้วย MID / API Key / Secret จากเรา ห้ามใช้คีย์ Wirex",
+    "hmacHint": "HMAC payload: timestamp.METHOD.path.sha256(body) path คือ /api/partner/v1/...",
+    "manual5": "วอลเล็ตมี 3 แบบ: ฝังตัว / EOA ภายนอก / บริดจ์ การใช้บัตรใช้ Smart Wallet ของเราเท่านั้น",
+    "manual6": "โซลูชันย่อยคือแอปสมาชิกที่ /s/{slug} คีย์ออกโดยเรา ไม่ได้รับคีย์ Wirex"
+  },
+  "walletMode": {
+    "title": "การเชื่อมวอลเล็ต",
+    "lead": "การใช้บัตรจ่ายจาก Smart Wallet ของเรา (WUSD/WEUR) เสมอ วอลเล็ตที่เชื่อมใช้สำหรับลงนามและยืนยันตัวตน",
+    "spendNote": "ที่ร้านจะไม่เปิด MetaMask BTC/Solana/แต้มใช้บริดจ์เข้าสู่รางของเรา",
+    "embedded": "วอลเล็ตของเรา",
+    "embeddedDesc": "แอปออกและเก็บ EOA กับ Wirex Smart Wallet",
+    "useEmbedded": "ใช้วอลเล็ตของเรา",
+    "embeddedDone": "วอลเล็ตฝังตัวพร้อมแล้ว",
+    "external": "วอลเล็ตที่เชื่อมได้",
+    "externalDesc": "เชื่อม MetaMask หรือ EVM อื่นด้วยลายเซ็น ยอดบัตรอยู่ที่ Smart Wallet ของเรา",
+    "connectWallet": "เชื่อมวอลเล็ต",
+    "externalDone": "เชื่อมวอลเล็ตภายนอกแล้ว",
+    "needMetamask": "ต้องมีวอลเล็ตเบราว์เซอร์ เช่น MetaMask",
+    "bridge": "บริดจ์ (BTC / Solana / พอยต์)",
+    "bridgeDesc": "สินทรัพย์ที่เชื่อมปุ่มไม่ได้จะหักจากบัญชีพาร์ทเนอร์แล้วเครดิตเข้า Smart Wallet ของเรา",
+    "amount": "จำนวน",
+    "bridgeTopup": "ขอเครดิตบริดจ์",
+    "bridgeDone": "บันทึกบริดจ์แล้ว"
   }
 }

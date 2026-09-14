@@ -4,39 +4,14 @@
  */
 
 import { Router } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import { requirePartnerAuth } from '../../middleware/partnerAuth.js';
 import { store } from '../../data/store.js';
 import { partnerStore, canIssueCard } from '../../data/partnerStore.js';
 import { wirexService } from '../../services/wirex/wirexService.js';
+import { resolvePartnerUser } from './resolveUser.js';
 
 const router = Router();
 router.use(requirePartnerAuth);
-
-async function resolvePartnerUser(partnerId: string, partnerUserId: string, email?: string): Promise<string> {
-  let ourUserId = partnerStore.getOurUserId(partnerId, partnerUserId);
-  if (ourUserId) {
-    const user = store.getUserById(ourUserId);
-    if (user) return ourUserId;
-  }
-  store.loadUsers();
-  const syntheticEmail = email || `${partnerUserId}@partner.${partnerId}`;
-  if (!ourUserId) {
-    const wirexUser = await wirexService.createUser({ email: syntheticEmail });
-    ourUserId = uuidv4();
-    store.addPartnerUser({
-      id: ourUserId,
-      email: syntheticEmail,
-      passwordHash: '[partner]',
-      wirexUserId: wirexUser.id,
-      source: 'partner',
-      partnerId,
-      createdAt: new Date().toISOString(),
-    });
-    partnerStore.createMapping(partnerId, partnerUserId, ourUserId, email);
-  }
-  return ourUserId;
-}
 
 router.get('/', async (req, res) => {
   try {

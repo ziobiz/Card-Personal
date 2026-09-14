@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { TLink } from '../components/TenantLink';
 import { api } from '../api';
 import IssueCardTile from '../components/IssueCardTile';
 
@@ -66,9 +66,9 @@ export default function CardIssue() {
         <p className="muted-text" style={{ margin: 0 }}>
           {t('cards.ownedCount', { count })}
         </p>
-        <Link to="/cards/manage" className="wx-ghost" style={{ display: 'inline-block', marginTop: 10 }}>
+        <TLink to="/cards/manage" className="wx-ghost" style={{ display: 'inline-block', marginTop: 10 }}>
           {t('cards.goManage')}
-        </Link>
+        </TLink>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { TLink } from '../components/TenantLink';
 
 export default function Earn() {
   const { t } = useTranslation();
@@ -33,27 +33,27 @@ export default function Earn() {
             <h3>{t('earn.cardSpend')}</h3>
             <p>{t('earn.cardSpendDesc')}</p>
           </div>
-          <Link to="/cards/issue" className="wx-ghost">
+          <TLink to="/cards/issue" className="wx-ghost">
             {t('nav.cards')}
-          </Link>
+          </TLink>
         </div>
         <div className="wx-product">
           <div>
             <h3>{t('earn.walletHold')}</h3>
             <p>{t('earn.walletHoldDesc')}</p>
           </div>
-          <Link to="/" className="wx-ghost">
+          <TLink to="/" className="wx-ghost">
             {t('nav.home')}
-          </Link>
+          </TLink>
         </div>
         <div className="wx-product">
           <div>
             <h3>{t('earn.physical')}</h3>
             <p>{t('earn.physicalDesc')}</p>
           </div>
-          <Link to="/cards/issue" className="wx-ghost">
+          <TLink to="/cards/issue" className="wx-ghost">
             {t('cards.issuePlasticShort')}
-          </Link>
+          </TLink>
         </div>
       </div>
     </div>

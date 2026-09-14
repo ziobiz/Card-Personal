@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { api } from '../../api';
+import { api, type CredentialKit } from '../../api';
+import CredentialKitCard from '../../components/CredentialKitCard';
 
 type PartnerFees = {
   cardIssuanceFee?: number;
@@ -16,6 +17,10 @@ type Partner = {
   name: string;
   companyName?: string;
   apiKeyPrefix: string;
+  mid?: string;
+  deliveryMode?: 'api' | 'sub_solution';
+  solutionSlug?: string;
+  solutionUrl?: string;
   status: string;
   billingWalletAddress?: string;
   billingWarnings?: number;
@@ -35,6 +40,7 @@ export default function AdminPartners() {
   const [loading, setLoading] = useState(true);
   const [templates, setTemplates] = useState<Array<{ id: string; name: string; isHqDefault: boolean }>>([]);
   const [newApiKey, setNewApiKey] = useState<string | null>(null);
+  const [kit, setKit] = useState<CredentialKit | null>(null);
   const [message, setMessage] = useState('');
   const [messageOk, setMessageOk] = useState(false);
   const [feePartner, setFeePartner] = useState<Partner | null>(null);
@@ -72,6 +78,7 @@ export default function AdminPartners() {
     try {
       const r = await api.admin.regeneratePartnerKey(id);
       setNewApiKey(r.apiKey);
+      setKit(r.kit || null);
       setMessage(t('admin.newApiKey') + r.apiKey);
       setMessageOk(true);
       fetchPartners();
@@ -195,7 +202,18 @@ export default function AdminPartners() {
         </form>
       )}
 
-      {newApiKey && (
+      {kit ? (
+        <CredentialKitCard
+          kit={kit}
+          title={t('admin.kitOnce')}
+          hint={t('admin.kitSave')}
+          closeLabel={t('common.confirm')}
+          onClose={() => {
+            setKit(null);
+            setNewApiKey(null);
+          }}
+        />
+      ) : newApiKey ? (
         <div className="card-surface admin-api-key-modal">
           <h3>{t('admin.apiKeyOnce')}</h3>
           <code className="admin-api-key-value">{newApiKey}</code>
@@ -204,7 +222,7 @@ export default function AdminPartners() {
             {t('common.confirm')}
           </button>
         </div>
-      )}
+      ) : null}
 
       {message && (
         <div className={messageOk ? 'admin-settings-success' : 'auth-error'}>{message}</div>
@@ -266,7 +284,9 @@ export default function AdminPartners() {
           </div>
         </div>
         <p className="admin-api-auth">
-          <strong>{t('admin.authLabel')}</strong> <code>X-API-Key: &lt;api_key&gt;</code> or <code>Authorization: Bearer &lt;api_key&gt;</code>
+          <strong>{t('admin.authLabel')}</strong> <code>X-API-Key</code> + <code>X-API-Secret</code> ({t('admin.ourKeysNotWirex')})
+          <br />
+          HMAC: <code>X-ICO-Timestamp</code> <code>X-ICO-Signature</code> <code>X-ICO-Mid</code>
           <br />
           <strong>{t('admin.userIdLabel')}</strong> <code>X-Partner-User-Id</code>
         </p>
@@ -281,6 +301,8 @@ export default function AdminPartners() {
               <tr>
                 <th>{t('admin.colPartner')}</th>
                 <th>{t('admin.colCompany')}</th>
+                <th>MID</th>
+                <th>{t('admin.deliveryMode')}</th>
                 <th>{t('admin.orgParent')}</th>
                 <th>{t('admin.colCards')}</th>
                 <th>{t('admin.colBillingWallet')}</th>
@@ -297,6 +319,21 @@ export default function AdminPartners() {
                 <tr key={p.id}>
                   <td>{p.name}</td>
                   <td>{p.companyName || '-'}</td>
+                  <td className="mono">{p.mid || '-'}</td>
+                  <td>
+                    <select
+                      className="input"
+                      value={p.deliveryMode || 'api'}
+                      onChange={async (e) => {
+                        await api.admin.updatePartner(p.id, { deliveryMode: e.target.value as 'api' | 'sub_solution' });
+                        fetchPartners();
+                      }}
+                    >
+                      <option value="api">{t('admin.deliveryApi')}</option>
+                      <option value="sub_solution">{t('admin.deliverySub')}</option>
+                    </select>
+                    {p.solutionUrl ? <div className="muted-text"><code>{p.solutionUrl}</code></div> : null}
+                  </td>
                   <td>{(p as { orgParentName?: string }).orgParentName || '-'}</td>
                   <td>
                     <select

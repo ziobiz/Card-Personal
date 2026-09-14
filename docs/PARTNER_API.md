@@ -15,8 +15,17 @@
 
 | Header | 설명 |
 |--------|------|
-| `X-API-Key` | 관리자에서 발급받은 API Key |
+| `X-API-Key` | 본사(HQ)가 발급한 ICOCARD API Key (`pk_test_` / `pk_live_`) |
+| `X-API-Secret` | 본사 발급 Secret (`sk_test_` / `sk_live_`) — 신규 가맹점 필수 |
+| `X-ICO-Mid` | 본사 발급 MID |
+| `X-ICO-Timestamp` | HMAC용 unix ms (선택, 서명 보낼 때 필수) |
+| `X-ICO-Signature` | HMAC-SHA256 hex (선택) |
 | `Authorization` | `Bearer <api_key>` (대안) |
+
+**Wirex 키를 파트너에게 배포하지 않습니다.** 키트는 관리자 업체등록/재발급 시 한 번만 표시됩니다.
+
+HMAC 페이로드: `{timestamp}.{METHOD}.{path}.{sha256(rawBody)}`  
+예: `1710000000000.POST./api/partner/v1/cards/virtual.<bodyHash>`
 
 ## 사용자 식별
 
@@ -152,3 +161,27 @@ Content-Type: application/json
 4. 파트너사에게 API Key 및 Base URL 전달
 
 파트너는 **가맹점**입니다. 가상/실물 카드 허용 여부는 업체 등록 시 지정합니다. 실물: `POST /api/partner/v1/cards/plastic`.
+
+---
+
+## 3. 지갑 3방식
+
+카드 결제는 항상 **우리 Wirex Smart Wallet Unified Balance** 에서만 나갑니다.
+
+| 방식 | 설명 | API |
+|------|------|-----|
+| 임베디드 (우리 지갑) | HQ가 EOA + Smart Wallet 발급 | `POST /api/partner/v1/wallet/embedded` |
+| 연결 가능 EOA | MetaMask 등 `personal_sign` 바인딩 | `GET /wallet/challenge` + `POST /wallet/connect` |
+| 브리지 | BTC/Solana/포인트 등 비연결 자산 | `POST /api/partner/v1/bridge/credit` |
+
+외부 EOA는 서버에 개인키가 없으므로 Kernel AA는 해당 서명자가 이미 온체인 등록된 경우만 이어집니다. 아니면 임베디드 지갑을 사용합니다.
+
+## 4. 연동 배포 2방식
+
+| 방식 | 설명 |
+|------|------|
+| API | 파트너가 자체 앱에서 `/api/partner/v1/*` 호출 |
+| 서브 솔루션 | 브랜드 회원앱 `https://{member}/s/{slug}` — 키는 여전히 본사 발급 |
+
+관리자에서 업체 등록 시 **배포 방식**을 고르고, 키트(MID/API Key/Secret/HMAC)를 1회 표시합니다.
+

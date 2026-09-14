@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api, type Card, type TokenBalance } from '../api';
 import OnboardingPanel from './OnboardingPanel';
+import { TLink } from '../components/TenantLink';
 
 export default function Dashboard() {
   const [kycUrl, setKycUrl] = useState<string | null>(null);
@@ -61,12 +61,12 @@ export default function Dashboard() {
         <p className="wx-kicker">{t('dashboard.totalBalance')}</p>
         <h1 className="wx-balance">${loading ? '—' : totalUsd.toLocaleString()}</h1>
         <div className="wx-actions">
-          <Link to="/cards/manage" className="btn-primary">
+          <TLink to="/cards/manage" className="btn-primary">
             {t('dashboard.addFunds')}
-          </Link>
-          <Link to="/earn" className="wx-ghost">
+          </TLink>
+          <TLink to="/earn" className="wx-ghost">
             {t('nav.earn')}
-          </Link>
+          </TLink>
         </div>
       </div>
 
@@ -78,9 +78,9 @@ export default function Dashboard() {
               <div className="stat-label">{t('wallet.primaryWallet')}</div>
               <div className="wallet-tokens">
                 {walletBalance.primary.map((tok) => (
-                  <Link key={tok.symbol} to="/cards/manage" className="wallet-token-chip">
+                  <TLink key={tok.symbol} to="/cards/manage" className="wallet-token-chip">
                     {tok.symbol}: {tok.balance.toLocaleString()}
-                  </Link>
+                  </TLink>
                 ))}
               </div>
             </>
@@ -92,12 +92,12 @@ export default function Dashboard() {
           <h3 className="section-title">{t('dashboard.linkedCards')}</h3>
           {walletBalance?.cardSummaries.length ? (
             walletBalance.cardSummaries.map((c) => (
-              <Link key={c.cardId} to="/cards/manage" className="wx-list-row">
+              <TLink key={c.cardId} to="/cards/manage" className="wx-list-row">
                 <span>Visa ···· {c.panLast4}</span>
                 <span className="muted-text">
                   {c.balance.toLocaleString()} {c.currency}
                 </span>
-              </Link>
+              </TLink>
             ))
           ) : (
             <p className="muted-text">{t('dashboard.noCards')}</p>
@@ -108,18 +108,18 @@ export default function Dashboard() {
       <div className="card-surface" style={{ marginTop: '0.85rem' }}>
         <div className="section-header">
           <h2 className="section-title">{t('dashboard.recentActivity')}</h2>
-          <Link to="/activity" className="section-link">
+          <TLink to="/activity" className="section-link">
             {t('dashboard.viewAll')}
-          </Link>
+          </TLink>
         </div>
         {loading ? (
           <p className="muted-text">{t('common.loading')}</p>
         ) : cards.length === 0 ? (
           <p className="muted-text">
             {t('dashboard.noActivity')}{' '}
-            <Link to="/cards/manage" className="primary-link">
+            <TLink to="/cards/manage" className="primary-link">
               {t('dashboard.issueCard')}
-            </Link>
+            </TLink>
           </p>
         ) : (
           cards.slice(0, 5).map((card) => (

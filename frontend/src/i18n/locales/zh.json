@@ -476,7 +476,18 @@
     "otpRequiredOrg": "合作伙伴/组织登录必须 OTP",
     "resetOtpBtn": "重置 OTP",
     "resetOtpConfirm": "确定重置 {email} 的 Google OTP 吗？\\n（下次登录需重新绑定）",
-    "otpResetDone": "已重置 {email} 的 OTP。"
+    "otpResetDone": "已重置 {email} 的 OTP。",
+    "kitOnce": "商户密钥套件（仅显示一次）",
+    "kitSave": "请立即保存 MID、API Key、Secret 和 HMAC。这不是 Wirex 密钥。",
+    "ourKeysNotWirex": "仅使用总部签发的 ICOCARD 密钥，不向合作方提供 Wirex 密钥。",
+    "sectionDelivery": "对接与交付方式",
+    "deliveryHint": "API 对接或 /s/{slug} 子方案。密钥均由总部签发。",
+    "deliveryMode": "交付方式",
+    "deliveryApi": "API 对接",
+    "deliverySub": "子方案",
+    "solutionName": "方案品牌名",
+    "webhookUrl": "Webhook URL",
+    "bridgeDebitUrl": "桥接扣款 URL"
   },
   "earn": {
     "title": "收益",
@@ -518,6 +529,29 @@
     "manual1": "总部完成商家注册并交付 API Key。",
     "manual2": "在用户管理中登记合作方用户。",
     "manual3": "在门户查看 API、费率和手册。",
-    "manual4": "在自有站点用 X-API-Key 与 X-Partner-User-Id 发卡。"
+    "manual4": "在自有站点用 X-API-Key 与 X-Partner-User-Id 发卡。",
+    "ourKeysNotWirex": "请使用总部签发的 MID / API Key / Secret，不要使用 Wirex 密钥。",
+    "hmacHint": "HMAC 载荷：timestamp.METHOD.path.sha256(body)。path 为 /api/partner/v1/...",
+    "manual5": "钱包有内置、外部 EOA 连接、桥接三种。刷卡只使用我们的 Smart Wallet。",
+    "manual6": "子方案是 /s/{slug} 会员应用。密钥由总部签发，不会收到 Wirex 密钥。"
+  },
+  "walletMode": {
+    "title": "钱包连接方式",
+    "lead": "刷卡始终从我们的 Smart Wallet（WUSD/WEUR）出账。已连接钱包仅用于签名和身份。",
+    "spendNote": "门店支付不会弹出 MetaMask。BTC、Solana 和积分通过桥接到我们的轨道。",
+    "embedded": "我们的钱包",
+    "embeddedDesc": "应用签发并保管 EOA 与 Wirex Smart Wallet。",
+    "useEmbedded": "使用我们的钱包",
+    "embeddedDone": "内置钱包已就绪。",
+    "external": "可连接钱包",
+    "externalDesc": "通过签名绑定 MetaMask 等 EVM 钱包。卡余额仍在我们的 Smart Wallet。",
+    "connectWallet": "连接钱包",
+    "externalDone": "外部钱包已连接。",
+    "needMetamask": "需要 MetaMask 等浏览器钱包。",
+    "bridge": "桥接（BTC / Solana / 积分）",
+    "bridgeDesc": "无法一键连接的资产从合作方账本扣减后，记入我们的 Smart Wallet。",
+    "amount": "金额",
+    "bridgeTopup": "申请桥接入金",
+    "bridgeDone": "已记录桥接入金。"
   }
 }

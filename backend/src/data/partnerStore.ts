@@ -6,6 +6,17 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { randomBytes, createHash } from 'crypto';
+import {
+  encryptSecret,
+  hashSecret,
+  newApiKey,
+  newApiSecret,
+  newHmacSecret,
+  newMid,
+  slugify,
+} from '../lib/partnerCredentials.js';
+import { getWirexEnvironment } from '../config.js';
+import { packageManifest } from './packageManifest.js';
 
 export interface PartnerFeePolicy {
   cardIssuanceFee?: number;
@@ -68,6 +79,14 @@ export function canIssueCard(
   return { ok: true };
 }
 
+export type DeliveryMode = 'api' | 'sub_solution';
+
+export interface PartnerWalletModes {
+  embedded: boolean;
+  externalEoa: boolean;
+  bridge: boolean;
+}
+
 export interface Partner {
   id: string;
   name: string;
@@ -80,6 +99,18 @@ export interface Partner {
   cardIssuePolicy: CardIssuePolicy;
   allowVirtual: boolean;
   allowPlastic: boolean;
+  /** HQ-issued merchant id (PG MID). Partners never receive Wirex keys. */
+  mid?: string;
+  deliveryMode?: DeliveryMode;
+  walletModes?: PartnerWalletModes;
+  apiSecretHash?: string;
+  hmacSecretHash?: string;
+  hmacSecretEnc?: string;
+  webhookUrl?: string;
+  allowedIps?: string[];
+  solutionSlug?: string;
+  solutionName?: string;
+  bridgeDebitUrl?: string;
   apiKeyHash: string;
   apiKeyPrefix: string;
   status: 'active' | 'suspended';
@@ -148,6 +179,70 @@ function hashApiKey(key: string): string {
   return createHash('sha256').update(key).digest('hex');
 }
 
+export type CredentialKit = {
+  issuer: 'ICOCARD';
+  warning: string;
+  mid: string;
+  environment: 'sandbox' | 'live';
+  deliveryMode: DeliveryMode;
+  solutionSlug?: string;
+  solutionUrl?: string;
+  apiKey: string;
+  apiSecret: string;
+  hmacSecret: string;
+  auth: {
+    apiKeyHeader: 'X-API-Key';
+    secretHeader: 'X-API-Secret';
+    hmac: { timestamp: 'X-ICO-Timestamp'; signature: 'X-ICO-Signature'; mid: 'X-ICO-Mid' };
+    user: 'X-Partner-User-Id';
+  };
+  endpoints: Record<string, string>;
+};
+
+function publicApiBase(): string {
+  const d = packageManifest.get().domains;
+  return `${d.api.replace(/\/$/, '')}/api/partner/v1`;
+}
+
+function memberBase(): string {
+  return packageManifest.get().domains.member.replace(/\/$/, '');
+}
+
+function buildKit(
+  partner: Partner,
+  secrets: { apiKey: string; apiSecret: string; hmacSecret: string; live: boolean }
+): CredentialKit {
+  const base = publicApiBase();
+  const member = memberBase();
+  return {
+    issuer: 'ICOCARD',
+    warning: 'Secrets are shown once. Partners use these ICOCARD keys only — never Wirex keys.',
+    mid: partner.mid || '',
+    environment: secrets.live ? 'live' : 'sandbox',
+    deliveryMode: partner.deliveryMode || 'api',
+    solutionSlug: partner.solutionSlug,
+    solutionUrl: partner.solutionSlug ? `${member}/s/${partner.solutionSlug}` : undefined,
+    apiKey: secrets.apiKey,
+    apiSecret: secrets.apiSecret,
+    hmacSecret: secrets.hmacSecret,
+    auth: {
+      apiKeyHeader: 'X-API-Key',
+      secretHeader: 'X-API-Secret',
+      hmac: { timestamp: 'X-ICO-Timestamp', signature: 'X-ICO-Signature', mid: 'X-ICO-Mid' },
+      user: 'X-Partner-User-Id',
+    },
+    endpoints: {
+      base,
+      cards: `${base}/cards`,
+      wallet: `${base}/wallet`,
+      bridgeCredit: `${base}/bridge/credit`,
+      bridgeDebit: `${base}/bridge/debit-request`,
+      kyc: `${base}/kyc/status`,
+      catalog: `${base}/catalog`,
+    },
+  };
+}
+
 const partners = new Map<string, Partner>();
 const apiKeyToPartner = new Map<string, string>();
 const mappings = new Map<string, PartnerUserMapping>();
@@ -189,6 +284,32 @@ export const partnerStore = {
     return hash === p.apiKeyHash ? p : undefined;
   },
 
+  getBySlug(slug: string): Partner | undefined {
+    return Array.from(partners.values()).find((p) => p.solutionSlug === slug && p.status === 'active');
+  },
+
+  getByMid(mid: string): Partner | undefined {
+    return Array.from(partners.values()).find((p) => p.mid === mid && p.status === 'active');
+  },
+
+  publicCredentialView(p: Partner) {
+    return {
+      mid: p.mid || '',
+      deliveryMode: p.deliveryMode || 'api',
+      walletModes: p.walletModes ?? { embedded: true, externalEoa: true, bridge: true },
+      apiKeyPrefix: (p.apiKeyPrefix || '') + '...',
+      hasApiSecret: Boolean(p.apiSecretHash),
+      hasHmac: Boolean(p.hmacSecretHash),
+      webhookUrl: p.webhookUrl || '',
+      allowedIps: p.allowedIps || [],
+      solutionSlug: p.solutionSlug || '',
+      solutionName: p.solutionName || p.companyName || p.name,
+      solutionUrl: p.solutionSlug ? `${memberBase()}/s/${p.solutionSlug}` : '',
+      bridgeDebitUrl: p.bridgeDebitUrl || '',
+      endpoints: buildKit(p, { apiKey: '', apiSecret: '', hmacSecret: '', live: getWirexEnvironment() === 'production' }).endpoints,
+    };
+  },
+
   create(data: {
     name: string;
     companyName?: string;
@@ -202,13 +323,29 @@ export const partnerStore = {
     fees?: PartnerFeePolicy;
     feePolicyId?: string;
     distribution?: Partner['distribution'];
-  }): { partner: Partner; apiKey: string } {
+    deliveryMode?: DeliveryMode;
+    walletModes?: PartnerWalletModes;
+    webhookUrl?: string;
+    solutionName?: string;
+    bridgeDebitUrl?: string;
+  }): { partner: Partner; apiKey: string; kit: CredentialKit } {
     const id = 'ptr_' + randomBytes(8).toString('hex');
-    const apiKey = 'pk_' + randomBytes(24).toString('hex');
+    const live = getWirexEnvironment() === 'production';
+    const apiKey = newApiKey(live);
+    const apiSecret = newApiSecret(live);
+    const hmacSecret = newHmacSecret();
     const prefix = apiKey.slice(0, 12);
     const cardIssuePolicy = data.cardIssuePolicy
       ?? issuePolicyFromPartner({ allowVirtual: data.allowVirtual, allowPlastic: data.allowPlastic });
     const flags = flagsFromIssuePolicy(cardIssuePolicy);
+    const deliveryMode = data.deliveryMode === 'sub_solution' ? 'sub_solution' : 'api';
+    const mid = newMid();
+    const slugBase = slugify(data.companyName || data.name);
+    let solutionSlug = slugBase;
+    let n = 1;
+    while ([...partners.values()].some((x) => x.solutionSlug === solutionSlug)) {
+      solutionSlug = `${slugBase}${n++}`;
+    }
     const partner: Partner = {
       id,
       name: data.name,
@@ -220,6 +357,16 @@ export const partnerStore = {
       cardIssuePolicy,
       allowVirtual: flags.allowVirtual,
       allowPlastic: flags.allowPlastic,
+      mid,
+      deliveryMode,
+      walletModes: data.walletModes ?? { embedded: true, externalEoa: true, bridge: true },
+      apiSecretHash: hashSecret(apiSecret),
+      hmacSecretHash: hashSecret(hmacSecret),
+      hmacSecretEnc: encryptSecret(hmacSecret),
+      webhookUrl: data.webhookUrl,
+      solutionSlug: deliveryMode === 'sub_solution' ? solutionSlug : undefined,
+      solutionName: data.solutionName || data.companyName || data.name,
+      bridgeDebitUrl: data.bridgeDebitUrl,
       apiKeyHash: hashApiKey(apiKey),
       apiKeyPrefix: prefix,
       status: 'active',
@@ -233,10 +380,11 @@ export const partnerStore = {
     partners.set(id, partner);
     apiKeyToPartner.set(prefix, id);
     savePartners(Array.from(partners.values()));
-    return { partner, apiKey };
+    const kit = buildKit(partner, { apiKey, apiSecret, hmacSecret, live });
+    return { partner, apiKey, kit };
   },
 
-  update(id: string, data: Partial<Pick<Partner, 'name' | 'companyName' | 'status' | 'billingWalletAddress' | 'billingWarnings' | 'lastBillingMonth' | 'suspendedAt' | 'fees' | 'feePolicyId' | 'feeOverride' | 'businessNo' | 'ceoName' | 'phone' | 'orgUnitId' | 'orgParentId' | 'cardIssuePolicy' | 'allowVirtual' | 'allowPlastic' | 'distribution' | 'distributionApplyStart'>>): Partner | undefined {
+  update(id: string, data: Partial<Pick<Partner, 'name' | 'companyName' | 'status' | 'billingWalletAddress' | 'billingWarnings' | 'lastBillingMonth' | 'suspendedAt' | 'fees' | 'feePolicyId' | 'feeOverride' | 'businessNo' | 'ceoName' | 'phone' | 'orgUnitId' | 'orgParentId' | 'cardIssuePolicy' | 'allowVirtual' | 'allowPlastic' | 'distribution' | 'distributionApplyStart' | 'deliveryMode' | 'walletModes' | 'webhookUrl' | 'allowedIps' | 'solutionSlug' | 'solutionName' | 'bridgeDebitUrl'>>): Partner | undefined {
     const p = partners.get(id);
     if (!p) return undefined;
     if (data.name != null) p.name = data.name;
@@ -266,6 +414,21 @@ export const partnerStore = {
     }
     if (data.distribution !== undefined) p.distribution = data.distribution;
     if (data.distributionApplyStart !== undefined) p.distributionApplyStart = data.distributionApplyStart;
+    if (data.deliveryMode === 'api' || data.deliveryMode === 'sub_solution') p.deliveryMode = data.deliveryMode;
+    if (data.walletModes) p.walletModes = data.walletModes;
+    if (data.webhookUrl !== undefined) p.webhookUrl = data.webhookUrl;
+    if (data.allowedIps !== undefined) p.allowedIps = data.allowedIps;
+    if (data.solutionName !== undefined) p.solutionName = data.solutionName;
+    if (data.bridgeDebitUrl !== undefined) p.bridgeDebitUrl = data.bridgeDebitUrl;
+    if (data.solutionSlug !== undefined) {
+      const slug = slugify(data.solutionSlug || p.companyName || p.name);
+      const clash = Array.from(partners.values()).find((x) => x.id !== p.id && x.solutionSlug === slug);
+      p.solutionSlug = clash ? `${slug}${randomBytes(2).toString('hex')}` : slug;
+    }
+    if (p.deliveryMode === 'sub_solution' && !p.solutionSlug) {
+      p.solutionSlug = slugify(p.companyName || p.name) + randomBytes(2).toString('hex');
+    }
+    if (!p.mid) p.mid = newMid();
     if (p.allowVirtual === undefined) p.allowVirtual = true;
     if (p.allowPlastic === undefined) p.allowPlastic = false;
     p.updatedAt = new Date().toISOString();
@@ -273,19 +436,26 @@ export const partnerStore = {
     return p;
   },
 
-  regenerateApiKey(id: string): { partner: Partner; apiKey: string } | undefined {
+  regenerateApiKey(id: string): { partner: Partner; apiKey: string; kit: CredentialKit } | undefined {
     const p = partners.get(id);
     if (!p) return undefined;
     apiKeyToPartner.delete(p.apiKeyPrefix);
-    const apiKey = 'pk_' + randomBytes(24).toString('hex');
+    const live = getWirexEnvironment() === 'production';
+    const apiKey = newApiKey(live);
+    const apiSecret = newApiSecret(live);
+    const hmacSecret = newHmacSecret();
     const prefix = apiKey.slice(0, 12);
+    if (!p.mid) p.mid = newMid();
     p.apiKeyHash = hashApiKey(apiKey);
     p.apiKeyPrefix = prefix;
+    p.apiSecretHash = hashSecret(apiSecret);
+    p.hmacSecretHash = hashSecret(hmacSecret);
+    p.hmacSecretEnc = encryptSecret(hmacSecret);
     p.updatedAt = new Date().toISOString();
     partners.set(id, p);
     apiKeyToPartner.set(prefix, id);
     savePartners(Array.from(partners.values()));
-    return { partner: p, apiKey };
+    return { partner: p, apiKey, kit: buildKit(p, { apiKey, apiSecret, hmacSecret, live }) };
   },
 
   getOurUserId(partnerId: string, partnerUserId: string): string | undefined {

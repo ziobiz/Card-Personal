@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api';
+import WalletModePanel from '../components/WalletModePanel';
+import { TLink } from '../components/TenantLink';
 
 type Onboard = {
   status: string;
@@ -10,6 +11,7 @@ type Onboard = {
   smartWallet: string;
   wirexUserId?: string | null;
   kycStatus?: string;
+  walletMode?: 'embedded' | 'external_eoa' | 'bridge';
   mock?: boolean;
 };
 
@@ -45,7 +47,7 @@ export default function OnboardingPanel() {
     return () => window.clearInterval(id);
   }, []);
 
-  if (!info || info.mock || info.status === 'ready') return null;
+  if (!info) return null;
 
   const idx = stepIndex(info.status);
 
@@ -81,6 +83,9 @@ export default function OnboardingPanel() {
   };
 
   return (
+    <>
+    <WalletModePanel current={info.walletMode || 'embedded'} onChanged={() => void load()} />
+    {info.mock || info.status === 'ready' ? null : (
     <section className="card-surface wx-onboard">
       <h3 className="section-title">{t('onboard.title')}</h3>
       <p className="muted-text wx-onboard-lead">{t('onboard.lead')}</p>
@@ -114,11 +119,13 @@ export default function OnboardingPanel() {
           </button>
         )}
         {info.status === 'kyc' || info.status === 'registered' ? (
-          <Link to="/cards/issue" className="wx-ghost">
+          <TLink to="/cards/issue" className="wx-ghost">
             {t('nav.cardsIssue')}
-          </Link>
+          </TLink>
         ) : null}
       </div>
     </section>
+    )}
+    </>
   );
 }

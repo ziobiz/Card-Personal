@@ -65,19 +65,24 @@ Wirex 클라이언트·카드·웹훅 코어는 **브랜드와 분리**되어 �
 - `env.package.example` → 구매사 `.env`
 - Webhook: `{API_DOMAIN}/v2/webhooks/*`
 - 관리자 최초 계정 / OTP 시크릿 전달 절차
-- 파트너 API 매뉴얼 (`docs/PARTNER_API.md`)
+- 파트너 API 매뉴얼 (`docs/PARTNER_API.md`) — 본사 발급 키트, 지갑 3방식, API/서브솔루션 2방식
 - 본 문서 + `GET /api/package` 상태 확인
 
 ## 5. Wirex 키 정책 (중요)
 
+| 대상 | 키 |
+|------|----|
+| HQ 배포 인스턴스 `.env` | Wirex client id/secret (운영사만) |
+| 화이트라벨 / 서브 솔루션 / 파트너 API | **ICOCARD MID + API Key + Secret + HMAC** (본사 발급) |
+
+파트너·화이트라벨 구매사는 **Wirex 키를 받지 않습니다.** PG(ziobiz/PG)와 같이 본사가 가맹점 키를 발급·재발급(1회 표시, 재발급 시 폐기)합니다.
+
 | 단계 | 상태 |
 |------|------|
-| 지금 | Mock 유지, webhook URL만 Wirex에 제공 |
-| Sandbox key 수령 후 | 해당 **배포 인스턴스**에 key 주입, `USE_MOCK_WIREX=false` |
-| Production | 별도 production key + chain 8453 |
+| Sandbox | HQ `.env`에 Wirex sandbox key, `USE_MOCK_WIREX=false` |
+| Production | HQ production key + chain 8453 |
 
-**원칙:** 구매사마다 Wirex 자격증명·webhook URL은 **배포 단위로 분리**.  
-한 인스턴스에 여러 Operator의 Wirex key를 섞지 않음 (초기 판매 모델).
+**원칙:** Wirex 자격증명은 **배포 인스턴스 단위**로만 주입. 파트너 포털/키트에는 노출하지 않음.
 
 향후 SaaS 단일 인스턴스 멀티 Operator가 필요하면 `operatorId → wirexCredentials` 맵을 추가한다 (로드맵).
 
@@ -97,7 +102,7 @@ Wirex 클라이언트·카드·웹훅 코어는 **브랜드와 분리**되어 �
 | GET | `/api/package` | 공개 패키지 프로필 |
 | GET | `/api/admin/package` | 관리자 패키지 조회 |
 | PUT | `/api/admin/package` | 모드/도메인/모듈 업데이트 |
-| GET | `/api/brand` | 화이트라벨 브랜드 |
+| GET | `/api/brand?slug=` | 서브 솔루션 브랜드 (슬러그) |
 | GET | `/api/catalog` | 기능 카탈로그 + package |
 
 ## 8. 판매 체크리스트 (납품)

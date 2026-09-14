@@ -12,6 +12,63 @@ import { wirexService } from '../../services/wirex/wirexService.js';
 const router = Router();
 router.use(requirePartnerAuth);
 
+router.get('/challenge', async (req, res) => {
+  try {
+    const pid = req.partnerUserId;
+    if (!pid) return res.status(400).json({ error: 'partner_user_id required' });
+    const { resolvePartnerUser } = await import('./resolveUser.js');
+    const { issueWalletChallenge } = await import('../../lib/walletBind.js');
+    const ourId = await resolvePartnerUser(req.partner!.id, pid, req.partnerUserEmail, 'external_eoa');
+    res.json({ ourUserId: ourId, ...issueWalletChallenge(ourId) });
+  } catch (e) {
+    res.status(500).json({ error: (e as Error).message });
+  }
+});
+
+router.post('/connect', async (req, res) => {
+  try {
+    const pid = req.partnerUserId || req.body?.partner_user_id;
+    if (!pid) return res.status(400).json({ error: 'partner_user_id required' });
+    const address = String(req.body?.address || '').trim() as `0x${string}`;
+    const signature = String(req.body?.signature || '').trim() as `0x${string}`;
+    if (!/^0x[a-fA-F0-9]{40}$/.test(address) || !signature.startsWith('0x')) {
+      return res.status(400).json({ error: 'address and signature required' });
+    }
+    const { resolvePartnerUser } = await import('./resolveUser.js');
+    const { verifyWalletBind } = await import('../../lib/walletBind.js');
+    const ourId = await resolvePartnerUser(req.partner!.id, pid, req.partnerUserEmail, 'external_eoa');
+    const checked = await verifyWalletBind({ userId: ourId, address, signature });
+    if (!checked.ok) return res.status(400).json({ error: checked.error });
+    store.updateOnboarding(ourId, {
+      walletAddress: address,
+      walletMode: 'external_eoa',
+      eoaKeyEnc: null,
+      onboardingStatus: 'wallet',
+      onboardingError: null,
+    });
+    const { onboardingService } = await import('../../services/onboardingService.js');
+    const result = await onboardingService.run(ourId, { issueCard: false, mint: false });
+    res.json({ ...result, mode: 'external_eoa', address });
+  } catch (e) {
+    res.status(500).json({ error: (e as Error).message });
+  }
+});
+
+router.post('/embedded', async (req, res) => {
+  try {
+    const pid = req.partnerUserId || req.body?.partner_user_id;
+    if (!pid) return res.status(400).json({ error: 'partner_user_id required' });
+    const { resolvePartnerUser } = await import('./resolveUser.js');
+    const ourId = await resolvePartnerUser(req.partner!.id, pid, req.partnerUserEmail, 'embedded');
+    store.updateOnboarding(ourId, { walletMode: 'embedded', onboardingStatus: 'none', onboardingError: null });
+    const { onboardingService } = await import('../../services/onboardingService.js');
+    const result = await onboardingService.run(ourId, { issueCard: false, mint: true });
+    res.json({ ...result, mode: 'embedded' });
+  } catch (e) {
+    res.status(500).json({ error: (e as Error).message });
+  }
+});
+
 router.get('/balance', async (req, res) => {
   try {
     const raw = req.partnerUserId || (Array.isArray(req.query.partner_user_id) ? req.query.partner_user_id[0] : req.query.partner_user_id);

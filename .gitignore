@@ -4,6 +4,7 @@ node_modules/
 backend/src/data/users.json
 backend/src/data/settings.json
 backend/src/data/partners.json
+backend/src/data/bridge_ledger.json
 backend/src/data/partner_user_mappings.json
 backend/src/data/transactions.json
 backend/src/data/webhooks.json
@@ -17,3 +18,8 @@ backend/src/data/org_units.json
 dist/
 build/
 .idea/
+_pg_ref/
+scripts/deploy-log.txt
+scripts/vps-apply-sandbox-keys.sh
+scripts/vps-apply-sandbox-keys-v2.sh
+scripts/vps-fix-sandbox-clientid.sh

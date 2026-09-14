@@ -18,6 +18,7 @@ import { store } from './data/store.js';
 import { getWirexBaaSConfig } from './config.js';
 import { brandStore } from './data/brandStore.js';
 import { packageManifest } from './data/packageManifest.js';
+import { partnerStore } from './data/partnerStore.js';
 
 const app = express();
 app.use(cors({ origin: true }));
@@ -52,8 +53,21 @@ app.get('/api/health', (_, res) => {
     packageMode: pkg.mode,
   });
 });
-app.get('/api/brand', (_, res) => {
-  res.json(brandStore.publicView());
+app.get('/api/brand', (req, res) => {
+  const base = brandStore.publicView();
+  const slug = typeof req.query.slug === 'string' ? req.query.slug.trim() : '';
+  if (!slug) return res.json(base);
+  const p = partnerStore.getBySlug(slug);
+  if (!p) return res.json(base);
+  const name = p.solutionName || p.companyName || p.name;
+  res.json({
+    ...base,
+    productName: name,
+    cardBrandName: name.slice(0, 24),
+    operatorName: p.companyName || p.name,
+    tenantSlug: p.solutionSlug,
+    deliveryMode: p.deliveryMode || 'sub_solution',
+  });
 });
 app.get('/api/package', (_, res) => {
   res.json(packageManifest.publicView());
@@ -76,6 +90,9 @@ app.get('/api/catalog', (_, res) => {
       multiTenant: ['/api/partner/v1/*'],
       sandboxProduction: ['WIREX_ENV=sandbox|production', 'GET /health'],
       packaging: ['GET /api/package', 'white_label | saas_hq | single_tenant'],
+      partnerKeys: ['ICOCARD MID + API Key + Secret (not Wirex)'],
+      wallets: ['embedded', 'external_eoa', 'bridge'],
+      delivery: ['api', 'sub_solution /s/:slug'],
     },
   });
 });

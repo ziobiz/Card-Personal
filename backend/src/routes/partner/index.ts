@@ -6,6 +6,7 @@ import { Router } from 'express';
 import partnerCards from './cards.js';
 import partnerWallet from './wallet.js';
 import partnerPlatform from './platform.js';
+import partnerBridge from './bridge.js';
 
 const router = Router();
 
@@ -23,8 +24,9 @@ router.get('/', (_, res) => {
       walletTokens: 'POST /cards/:cardId/wallet-tokens',
       environment: 'GET /environment',
       catalog: 'GET /catalog',
+      bridge: '/api/partner/v1/bridge',
     },
-    auth: 'X-API-Key or Authorization: Bearer <api_key>',
+    auth: 'ICOCARD X-API-Key + X-API-Secret (not Wirex). Optional HMAC: X-ICO-Timestamp + X-ICO-Signature + X-ICO-Mid',
     user_id: 'X-Partner-User-Id',
   });
 });
@@ -41,12 +43,16 @@ router.get('/catalog', (_, res) => {
       'webhooks',
       'settlement_iso_reporting',
       'sandbox_production',
+      'our_keys_not_wirex',
+      'wallet_embedded_external_bridge',
+      'sub_solution',
     ],
   });
 });
 
 router.use('/cards', partnerCards);
 router.use('/wallet', partnerWallet);
+router.use('/bridge', partnerBridge);
 router.use('/', partnerPlatform);
 
 export default router;

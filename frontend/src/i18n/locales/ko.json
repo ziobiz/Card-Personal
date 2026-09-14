@@ -139,6 +139,25 @@
       "ready": "카드 발급"
     }
   },
+  "walletMode": {
+    "title": "지갑 연결 방식",
+    "lead": "카드 결제는 항상 우리 Smart Wallet의 WUSD/WEUR로 나갑니다. 연결 지갑은 서명·신원용입니다.",
+    "spendNote": "매장 결제 시 MetaMask가 뜨지 않습니다. BTC·솔라나·포인트는 브리지로 우리 레일로 입금합니다.",
+    "embedded": "우리 지갑",
+    "embeddedDesc": "앱이 EOA와 Wirex Smart Wallet을 발급·보관합니다.",
+    "useEmbedded": "우리 지갑 사용",
+    "embeddedDone": "임베디드 지갑이 준비되었습니다.",
+    "external": "연결 가능 지갑",
+    "externalDesc": "MetaMask 등 EVM 지갑을 서명으로 연결합니다. 카드 잔액은 우리 Smart Wallet입니다.",
+    "connectWallet": "지갑 연결",
+    "externalDone": "외부 지갑이 연결되었습니다.",
+    "needMetamask": "브라우저 지갑(MetaMask 등)이 필요합니다.",
+    "bridge": "브리지 (BTC/솔라나/포인트)",
+    "bridgeDesc": "연결 버튼이 없는 자산은 파트너 원장에서 차감한 뒤 우리 Smart Wallet으로 입금합니다.",
+    "amount": "입금 금액",
+    "bridgeTopup": "브리지 입금 요청",
+    "bridgeDone": "브리지 입금이 기록되었습니다."
+  },
   "cards": {
     "title": "카드 관리",
     "issueVirtual": "가상 카드 발급",
@@ -256,6 +275,17 @@
     "confirmRegisterAgain": "한 번 더 확인합니다. 등록을 진행할까요?",
     "apiKeyOnce": "API Key (한 번만 표시됨)",
     "apiKeySave": "이 값을 안전하게 저장하세요. 다시 표시되지 않습니다.",
+    "kitOnce": "가맹점 키 키트 (한 번만 표시)",
+    "kitSave": "MID·API Key·Secret·HMAC을 지금 저장하세요. Wirex 키가 아닙니다.",
+    "ourKeysNotWirex": "본사가 발급한 ICOCARD 키만 사용합니다. Wirex 키를 넘기지 않습니다.",
+    "sectionDelivery": "연동·배포 방식",
+    "deliveryHint": "API 연동 또는 서브 솔루션(/s/슬러그) 패키지. 키는 모두 본사 발급입니다.",
+    "deliveryMode": "배포 방식",
+    "deliveryApi": "API 연동",
+    "deliverySub": "서브 솔루션",
+    "solutionName": "솔루션 브랜드명",
+    "webhookUrl": "웹훅 URL",
+    "bridgeDebitUrl": "브리지 차감 URL",
     "confirmRegen": "기존 API Key가 즉시 무효화됩니다. 새 Key를 발급할까요?",
     "newApiKey": "새 API Key: ",
     "billingDone": "청구 완료",
@@ -551,9 +581,13 @@
     "navFees": "수수료 안내",
     "navManual": "매뉴얼",
     "apiHint": "가맹점 사이트에서 헤더로 인증한 뒤 카드·지갑 API를 호출합니다.",
-    "manual1": "본사 관리자가 업체등록을 하고 API Key를 전달합니다.",
+    "ourKeysNotWirex": "인증은 본사가 발급한 MID/API Key/Secret입니다. Wirex 키를 사용하지 마세요.",
+    "hmacHint": "HMAC 페이로드: timestamp.METHOD.path.sha256(body). path는 /api/partner/v1/... 입니다.",
+    "manual1": "본사 관리자가 업체등록을 하고 MID·API Key·Secret을 전달합니다.",
     "manual2": "사용자관리에서 파트너 사용자를 등록합니다.",
     "manual3": "이 포털에서 API·수수료·매뉴얼을 확인합니다.",
-    "manual4": "자사 사이트에서 X-API-Key 와 X-Partner-User-Id 로 회원의 카드를 발급합니다."
+    "manual4": "자사 사이트에서 X-API-Key 와 X-Partner-User-Id 로 회원의 카드를 발급합니다.",
+    "manual5": "지갑은 임베디드 / 외부 EOA 연결 / 브리지 세 가지입니다. 카드 결제는 우리 Smart Wallet만 사용합니다.",
+    "manual6": "서브 솔루션은 /s/{슬러그} 회원앱입니다. 키는 본사 발급이며 Wirex 키를 받지 않습니다."
   }
 }

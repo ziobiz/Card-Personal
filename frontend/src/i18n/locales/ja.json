@@ -477,7 +477,18 @@
     "otpRequiredOrg": "パートナー/組織ログイン OTP 必須",
     "resetOtpBtn": "OTP 初期化",
     "resetOtpConfirm": "{email} の Google OTP を初期化しますか？\\n(次回ログインで再登録が必要です)",
-    "otpResetDone": "{email} の OTP を初期化しました。"
+    "otpResetDone": "{email} の OTP を初期化しました。",
+    "kitOnce": "加盟店キーキット（一度のみ表示）",
+    "kitSave": "MID・API Key・Secret・HMAC を保存してください。Wirex キーではありません。",
+    "ourKeysNotWirex": "本社が発行した ICOCARD キーのみ使用します。Wirex キーは渡しません。",
+    "sectionDelivery": "連携・提供方式",
+    "deliveryHint": "API 連携またはサブソリューション（/s/スラッグ）。キーはすべて本社発行です。",
+    "deliveryMode": "提供方式",
+    "deliveryApi": "API 連携",
+    "deliverySub": "サブソリューション",
+    "solutionName": "ソリューションブランド名",
+    "webhookUrl": "Webhook URL",
+    "bridgeDebitUrl": "ブリッジ引き落とし URL"
   },
   "earn": {
     "title": "リワード",
@@ -519,6 +530,29 @@
     "manual1": "本社が業者登録し API Key を共有します。",
     "manual2": "ユーザー管理でパートナーユーザーを登録します。",
     "manual3": "ポータルで API・手数料・マニュアルを確認します。",
-    "manual4": "自社サイトで X-API-Key と X-Partner-User-Id によりカードを発行します。"
+    "manual4": "自社サイトで X-API-Key と X-Partner-User-Id によりカードを発行します。",
+    "ourKeysNotWirex": "認証は本社発行の MID / API Key / Secret です。Wirex キーは使わないでください。",
+    "hmacHint": "HMAC ペイロード: timestamp.METHOD.path.sha256(body)。path は /api/partner/v1/... です。",
+    "manual5": "ウォレットは埋め込み / 外部 EOA 接続 / ブリッジの3方式です。カード決済は当社 Smart Wallet のみです。",
+    "manual6": "サブソリューションは /s/{slug} の会員アプリです。キーは本社発行で Wirex キーは受け取りません。"
+  },
+  "walletMode": {
+    "title": "ウォレット接続",
+    "lead": "カード決済は常に当社 Smart Wallet の WUSD/WEUR から出金されます。接続ウォレットは署名・本人確認用です。",
+    "spendNote": "店舗決済で MetaMask は開きません。BTC・Solana・ポイントはブリッジで当社レールに入金します。",
+    "embedded": "当社ウォレット",
+    "embeddedDesc": "アプリが EOA と Wirex Smart Wallet を発行・保管します。",
+    "useEmbedded": "当社ウォレットを使う",
+    "embeddedDone": "埋め込みウォレットの準備ができました。",
+    "external": "接続可能なウォレット",
+    "externalDesc": "MetaMask など EVM ウォレットを署名で接続します。カード残高は当社 Smart Wallet です。",
+    "connectWallet": "ウォレット接続",
+    "externalDone": "外部ウォレットを接続しました。",
+    "needMetamask": "MetaMask などのブラウザウォレットが必要です。",
+    "bridge": "ブリッジ（BTC / Solana / ポイント）",
+    "bridgeDesc": "接続できない資産はパートナー台帳で引き落とし、当社 Smart Wallet に入金します。",
+    "amount": "金額",
+    "bridgeTopup": "ブリッジ入金を依頼",
+    "bridgeDone": "ブリッジ入金を記録しました。"
   }
 }

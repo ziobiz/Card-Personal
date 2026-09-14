@@ -18,6 +18,7 @@ export interface AppUser {
   smartWalletAddress?: string;
   /** AES-GCM 암호화된 EOA 개인키 (임베디드 월렛, ASP 테넌트별 WALLET_ENC_KEY) */
   eoaKeyEnc?: string;
+  walletMode?: 'embedded' | 'external_eoa' | 'bridge';
   onboardingStatus?:
     | 'none'
     | 'wallet'
@@ -194,7 +195,8 @@ export const store = {
     data: {
       walletAddress?: string;
       smartWalletAddress?: string;
-      eoaKeyEnc?: string;
+      eoaKeyEnc?: string | null;
+      walletMode?: AppUser['walletMode'];
       wirexUserId?: string;
       kycStatus?: AppUser['kycStatus'];
       onboardingStatus?: AppUser['onboardingStatus'];
@@ -205,7 +207,9 @@ export const store = {
     if (!user) return undefined;
     if (data.walletAddress !== undefined) user.walletAddress = data.walletAddress;
     if (data.smartWalletAddress !== undefined) user.smartWalletAddress = data.smartWalletAddress;
-    if (data.eoaKeyEnc !== undefined) user.eoaKeyEnc = data.eoaKeyEnc;
+    if (data.eoaKeyEnc === null) delete user.eoaKeyEnc;
+    else if (data.eoaKeyEnc !== undefined) user.eoaKeyEnc = data.eoaKeyEnc;
+    if (data.walletMode !== undefined) user.walletMode = data.walletMode;
     if (data.wirexUserId !== undefined) user.wirexUserId = data.wirexUserId;
     if (data.kycStatus !== undefined) user.kycStatus = data.kycStatus;
     if (data.onboardingStatus !== undefined) user.onboardingStatus = data.onboardingStatus;

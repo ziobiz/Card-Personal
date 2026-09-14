@@ -11,6 +11,8 @@ import {
 } from './OrgProfileFields';
 import ParentOrgSearchModal, { type ParentOrg } from './ParentOrgSearchModal';
 import ConfirmRegisterModal from './ConfirmRegisterModal';
+import CredentialKitCard from '../../components/CredentialKitCard';
+import type { CredentialKit } from '../../api';
 
 const FEE_CUSTOM = '__custom';
 
@@ -39,11 +41,19 @@ export default function AdminPartnerRegister() {
   const [parentOpen, setParentOpen] = useState(false);
   const [searchLevel, setSearchLevel] = useState('MERCHANT');
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [kit, setKit] = useState<CredentialKit | null>(null);
   const [loginId, setLoginId] = useState('');
   const [orgCode, setOrgCode] = useState('');
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deliveryMode, setDeliveryMode] = useState<'api' | 'sub_solution'>('api');
+  const [walletEmbedded, setWalletEmbedded] = useState(true);
+  const [walletExternal, setWalletExternal] = useState(true);
+  const [walletBridge, setWalletBridge] = useState(true);
+  const [solutionName, setSolutionName] = useState('');
+  const [webhookUrl, setWebhookUrl] = useState('');
+  const [bridgeDebitUrl, setBridgeDebitUrl] = useState('');
 
   useEffect(() => {
     api.admin.getFeeTemplates().then((r) => {
@@ -99,8 +109,16 @@ export default function AdminPartnerRegister() {
           cardIssuePolicy,
           feePolicyId: isCustom ? '' : feePolicyId,
           fees: isCustom ? customFees : undefined,
+          deliveryMode,
+          walletEmbedded,
+          walletExternal,
+          walletBridge,
+          solutionName: solutionName || payload.name,
+          webhookUrl,
+          bridgeDebitUrl,
         });
         setApiKey(r.apiKey);
+        setKit(r.kit || null);
         setLoginId(r.loginId || payload.loginId);
         setOrgCode(r.orgCode || '');
       } else {
@@ -132,7 +150,9 @@ export default function AdminPartnerRegister() {
         <p>
           {t('admin.loginId')}: <code>{loginId}</code>
         </p>
-        {apiKey ? (
+        {kit ? (
+          <CredentialKitCard kit={kit} title={t('admin.kitOnce')} hint={t('admin.kitSave')} />
+        ) : apiKey ? (
           <>
             <code className="admin-api-key-value">{apiKey}</code>
             <p className="muted-text">{t('admin.apiKeySave')}</p>
@@ -242,6 +262,43 @@ export default function AdminPartnerRegister() {
         {cardIssuePolicy === 'STOPPED' ? (
           <p className="hq-card-hint">{t('admin.issueStoppedHint')}</p>
         ) : null}
+      </div>
+
+      <div className="card-surface reg-card">
+        <h3 className="section-title">{t('admin.sectionDelivery')}</h3>
+        <p className="hq-card-hint">{t('admin.deliveryHint')}</p>
+        <div className="hq-form-grid">
+          <label>
+            <span>{t('admin.deliveryMode')}</span>
+            <select className="input" value={deliveryMode} onChange={(e) => setDeliveryMode(e.target.value as 'api' | 'sub_solution')}>
+              <option value="api">{t('admin.deliveryApi')}</option>
+              <option value="sub_solution">{t('admin.deliverySub')}</option>
+            </select>
+          </label>
+          <label>
+            <span>{t('admin.solutionName')}</span>
+            <input className="input" value={solutionName} onChange={(e) => setSolutionName(e.target.value)} />
+          </label>
+          <label>
+            <span>{t('admin.webhookUrl')}</span>
+            <input className="input" value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} />
+          </label>
+          <label>
+            <span>{t('admin.bridgeDebitUrl')}</span>
+            <input className="input" value={bridgeDebitUrl} onChange={(e) => setBridgeDebitUrl(e.target.value)} />
+          </label>
+        </div>
+        <div className="hq-form-grid" style={{ marginTop: 10 }}>
+          <label>
+            <input type="checkbox" checked={walletEmbedded} onChange={(e) => setWalletEmbedded(e.target.checked)} /> {t('walletMode.embedded')}
+          </label>
+          <label>
+            <input type="checkbox" checked={walletExternal} onChange={(e) => setWalletExternal(e.target.checked)} /> {t('walletMode.external')}
+          </label>
+          <label>
+            <input type="checkbox" checked={walletBridge} onChange={(e) => setWalletBridge(e.target.checked)} /> {t('walletMode.bridge')}
+          </label>
+        </div>
       </div>
 
       {message ? <p className="auth-error">{message}</p> : null}

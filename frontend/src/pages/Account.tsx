@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { startRegistration } from '@simplewebauthn/browser';
 import { api, type MemberProfile } from '../api';
+import WalletModePanel from '../components/WalletModePanel';
 
 export default function Account() {
   const { t } = useTranslation();
@@ -135,6 +136,7 @@ export default function Account() {
       <p className="muted-text" style={{ marginTop: 0 }}>
         {t('account.intro')}
       </p>
+      <WalletModePanel current={profile?.onboarding?.walletMode || 'embedded'} />
 
       <section className="card-surface wx-account-card">
         <h2 className="section-title">{t('account.loginSection')}</h2>

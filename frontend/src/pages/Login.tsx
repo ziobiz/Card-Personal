@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useBrand } from '../brand/BrandContext';
 import { useAuth } from '../hooks/useAuth';
+import { useTenantNav, TLink } from '../components/TenantLink';
 import './Auth.css';
 
 function MailIcon({ light = false }: { light?: boolean }) {
@@ -26,6 +27,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [backendOk, setBackendOk] = useState<boolean | null>(null);
   const navigate = useNavigate();
+  const go = useTenantNav();
 
   useEffect(() => {
     const apiBase =
@@ -55,7 +57,7 @@ export default function Login() {
       if (r.mustSetupOtp && r.enrollToken) {
         sessionStorage.setItem('memberOtpEnroll', r.enrollToken);
         sessionStorage.removeItem('memberBiometricAvailable');
-        navigate('/otp');
+        navigate(go('/otp'));
         return;
       }
       if (r.token) setToken(r.token);
@@ -63,10 +65,10 @@ export default function Login() {
         sessionStorage.removeItem('memberOtpEnroll');
         if (r.biometricAvailable) sessionStorage.setItem('memberBiometricAvailable', '1');
         else sessionStorage.removeItem('memberBiometricAvailable');
-        navigate('/otp');
+        navigate(go('/otp'));
         return;
       }
-      navigate('/');
+      navigate(go('/'));
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -125,9 +127,9 @@ export default function Login() {
               </button>
             </div>
           </form>
-          <Link to="/register" className="wx-auth-alt">
+          <TLink to="/register" className="wx-auth-alt">
             {t('auth.goRegister')}
-          </Link>
+          </TLink>
           <p className="wx-legal">
             {t('auth.agreePrefix')}{' '}
             <a href="#terms">{t('auth.terms')}</a> &amp; <a href="#privacy">{t('auth.privacy')}</a>

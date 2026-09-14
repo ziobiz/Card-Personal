@@ -37,6 +37,7 @@ export function publicOnboarding(user: AppUser) {
     smartWallet: user.smartWalletAddress || '',
     wirexUserId: user.wirexUserId || null,
     kycStatus: user.kycStatus || 'pending',
+    walletMode: user.walletMode || 'embedded',
     mock: config.useMockWirex,
   };
 }
@@ -145,14 +146,24 @@ export const onboardingService = {
       const user0 = store.getUserById(userId);
       if (!user0) throw new Error('User not found');
 
-      const { pk, eoa } = await ensureKey(user0);
-      steps.push({ step: 'embeddedEoa', ok: true, detail: eoa });
+      let eoa: `0x${string}`;
+      let pk: `0x${string}` | null = null;
+      const external = user0.walletMode === 'external_eoa' && user0.walletAddress && !user0.eoaKeyEnc;
+      if (external) {
+        eoa = user0.walletAddress as `0x${string}`;
+        steps.push({ step: 'externalEoa', ok: true, detail: eoa });
+      } else {
+        const key = await ensureKey(user0);
+        pk = key.pk;
+        eoa = key.eoa;
+        steps.push({ step: 'embeddedEoa', ok: true, detail: eoa });
+      }
 
       const afterKey = store.getUserById(userId)!;
       let smart = (afterKey.smartWalletAddress || '') as `0x${string}` | '';
       const needChain =
-        !smart || ['none', 'wallet', 'error'].includes(afterKey.onboardingStatus || 'none');
-      if (needChain) {
+        !external && (!smart || ['none', 'wallet', 'error'].includes(afterKey.onboardingStatus || 'none'));
+      if (needChain && pk) {
         const deployed = await deployOnchain(pk);
         smart = deployed.smart;
         steps.push(...deployed.steps);
@@ -162,6 +173,13 @@ export const onboardingService = {
           onboardingStatus: 'onchain',
           onboardingError: null,
         });
+      } else if (external) {
+        steps.push({
+          step: 'onchainExternal',
+          ok: true,
+          detail: 'EOA bound — Kernel AA must already be registered for this signer',
+        });
+        store.updateOnboarding(userId, { walletAddress: eoa, onboardingStatus: 'onchain', onboardingError: null });
       } else {
         steps.push({ step: 'onchainReuse', ok: true, detail: smart });
       }
@@ -283,7 +301,7 @@ export const onboardingService = {
       return {
         ok: false,
         steps,
-        onboarding: latest ? publicOnboarding(latest) : { status: 'error', error: msg, eoa: '', smartWallet: '', wirexUserId: null, kycStatus: 'pending', mock: false },
+        onboarding: latest ? publicOnboarding(latest) : { status: 'error', error: msg, eoa: '', smartWallet: '', wirexUserId: null, kycStatus: 'pending', walletMode: 'embedded', mock: false },
       };
     } finally {
       running.delete(userId);

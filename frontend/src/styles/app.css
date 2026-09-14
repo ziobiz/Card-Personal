@@ -1092,6 +1092,22 @@
   word-break: break-all;
 }
 
+.kit-dl {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 0.35rem 0.75rem;
+  margin: 0.75rem 0;
+}
+
+.kit-json {
+  max-height: 280px;
+  overflow: auto;
+  font-size: 0.78rem;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.75rem;
+  border-radius: 8px;
+}
+
 .admin-api-docs {
   margin-bottom: 1.5rem;
   padding: 1.5rem;

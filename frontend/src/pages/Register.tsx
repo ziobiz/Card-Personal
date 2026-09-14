@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useBrand } from '../brand/BrandContext';
 import { useAuth } from '../hooks/useAuth';
+import { useTenantNav, TLink } from '../components/TenantLink';
 import './Auth.css';
 
 function MailIcon({ light = false }: { light?: boolean }) {
@@ -26,6 +27,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [backendOk, setBackendOk] = useState<boolean | null>(null);
   const navigate = useNavigate();
+  const go = useTenantNav();
 
   useEffect(() => {
     const apiBase =
@@ -47,11 +49,11 @@ export default function Register() {
       const r = await api.auth.register(email, password);
       if (r.mustSetupOtp && r.enrollToken) {
         sessionStorage.setItem('memberOtpEnroll', r.enrollToken);
-        navigate('/otp');
+        navigate(go('/otp'));
         return;
       }
       if (r.token) setToken(r.token);
-      navigate('/');
+      navigate(go('/'));
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -111,9 +113,9 @@ export default function Register() {
               </button>
             </div>
           </form>
-          <Link to="/login" className="wx-auth-alt">
+          <TLink to="/login" className="wx-auth-alt">
             {t('auth.goLogin')}
-          </Link>
+          </TLink>
           <p className="wx-legal">
             {t('auth.agreePrefix')}{' '}
             <a href="#terms">{t('auth.terms')}</a> &amp; <a href="#privacy">{t('auth.privacy')}</a>

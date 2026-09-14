@@ -607,6 +607,12 @@ router.get('/partners', (_, res) => {
     allowVirtual: flagsFromIssuePolicy(issuePolicyFromPartner(p)).allowVirtual,
     allowPlastic: flagsFromIssuePolicy(issuePolicyFromPartner(p)).allowPlastic,
     apiKeyPrefix: p.apiKeyPrefix + '...',
+    mid: p.mid || '',
+    deliveryMode: p.deliveryMode || 'api',
+    walletModes: p.walletModes ?? { embedded: true, externalEoa: true, bridge: true },
+    solutionSlug: p.solutionSlug || '',
+    solutionUrl: partnerStore.publicCredentialView(p).solutionUrl,
+    credentials: partnerStore.publicCredentialView(p),
     status: p.status,
     billingWalletAddress: p.billingWalletAddress,
     billingWarnings: p.billingWarnings ?? 0,
@@ -640,7 +646,7 @@ router.post('/partners', (req, res) => {
     return res.status(400).json({ error: 'Login ID already registered' });
   }
   const profile = parseOrgProfile(body);
-  const { partner, apiKey } = partnerStore.create({
+  const { partner, apiKey, kit } = partnerStore.create({
     name,
     companyName: typeof body.companyName === 'string' ? body.companyName : name,
     businessNo: profile.businessNo,
@@ -651,7 +657,15 @@ router.post('/partners', (req, res) => {
       allowVirtual: body.allowVirtual !== false,
       allowPlastic: body.allowPlastic === true,
     }),
-    fees: parsePartnerFees(body.fees),
+    deliveryMode: body.deliveryMode === 'sub_solution' ? 'sub_solution' : 'api',
+    walletModes: {
+      embedded: body.walletEmbedded !== false,
+      externalEoa: body.walletExternal !== false,
+      bridge: body.walletBridge !== false,
+    },
+    webhookUrl: typeof body.webhookUrl === 'string' ? body.webhookUrl : undefined,
+    solutionName: typeof body.solutionName === 'string' ? body.solutionName : undefined,
+    bridgeDebitUrl: typeof body.bridgeDebitUrl === 'string' ? body.bridgeDebitUrl : undefined,
     feePolicyId: typeof body.feePolicyId === 'string' ? body.feePolicyId : undefined,
     distribution: body.distribution && typeof body.distribution === 'object' ? (body.distribution as Partner['distribution']) : undefined,
   });
@@ -675,6 +689,7 @@ router.post('/partners', (req, res) => {
   res.status(201).json({
     partner: saved,
     apiKey,
+    kit,
     loginId,
     orgCode,
     warning: 'API Key is shown only once. Save it securely. Share login ID/password with the company.',
@@ -682,7 +697,7 @@ router.post('/partners', (req, res) => {
 });
 
 router.put('/partners/:id', (req, res) => {
-  const { name, companyName, status, billingWalletAddress, fees, resetFees, businessNo, ceoName, phone, orgParentId, allowVirtual, allowPlastic, cardIssuePolicy, distribution, distributionApplyStart, feePolicyId } = req.body ?? {};
+  const { name, companyName, status, billingWalletAddress, fees, resetFees, businessNo, ceoName, phone, orgParentId, allowVirtual, allowPlastic, cardIssuePolicy, distribution, distributionApplyStart, feePolicyId, deliveryMode, walletModes, webhookUrl, solutionSlug, solutionName, bridgeDebitUrl, allowedIps } = req.body ?? {};
   const feeUpdate = resetFees === true ? {} : parsePartnerFees(fees);
   const issuePolicy = parseCardIssuePolicy(cardIssuePolicy);
   const updated = partnerStore.update(req.params.id, {
@@ -707,6 +722,13 @@ router.put('/partners/:id', (req, res) => {
     ...(issuePolicy ? { cardIssuePolicy: issuePolicy } : { allowVirtual, allowPlastic }),
     ...(distribution !== undefined ? { distribution } : {}),
     ...(typeof distributionApplyStart === 'string' ? { distributionApplyStart } : {}),
+    ...(deliveryMode === 'api' || deliveryMode === 'sub_solution' ? { deliveryMode } : {}),
+    ...(walletModes && typeof walletModes === 'object' ? { walletModes } : {}),
+    ...(typeof webhookUrl === 'string' ? { webhookUrl } : {}),
+    ...(typeof solutionSlug === 'string' ? { solutionSlug } : {}),
+    ...(typeof solutionName === 'string' ? { solutionName } : {}),
+    ...(typeof bridgeDebitUrl === 'string' ? { bridgeDebitUrl } : {}),
+    ...(Array.isArray(allowedIps) ? { allowedIps: allowedIps.map(String) } : {}),
   });
   if (!updated) return res.status(404).json({ error: 'Partner not found' });
   res.json({
@@ -790,7 +812,8 @@ router.post('/partners/:id/regenerate-key', (req, res) => {
   res.json({
     partner: { id: result.partner.id, name: result.partner.name, status: result.partner.status },
     apiKey: result.apiKey,
-    warning: 'Previous API Key is invalidated. New key shown only once.',
+    kit: result.kit,
+    warning: 'Previous credentials are invalidated. MID / API Key / Secret / HMAC shown only once. Never use Wirex keys.',
   });
 });
 

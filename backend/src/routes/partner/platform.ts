@@ -9,7 +9,6 @@ import { store } from '../../data/store.js';
 import { partnerStore } from '../../data/partnerStore.js';
 import { ledgerStore } from '../../data/ledgerStore.js';
 import { travelRuleService } from '../../services/travelRuleService.js';
-import { getWirexBaaSConfig } from '../../config.js';
 
 const router = Router();
 router.use(requirePartnerAuth);
@@ -60,13 +59,15 @@ router.post('/travel-rule/validate', async (req, res) => {
 });
 
 router.get('/environment', (req, res) => {
-  const c = getWirexBaaSConfig();
   res.json({
     tenantId: req.partner!.id,
-    environment: c.environment,
-    chainId: c.chainId,
-    apiBase: c.apiBase,
-    helperAvailable: Boolean(c.helperBase),
+    issuer: 'ICOCARD',
+    note: 'Authenticate with ICOCARD MID / API Key / Secret. Do not use Wirex keys.',
+    mid: req.partner!.mid || '',
+    deliveryMode: req.partner!.deliveryMode || 'api',
+    walletModes: req.partner!.walletModes ?? { embedded: true, externalEoa: true, bridge: true },
+    apiBase: '/api/partner/v1',
+    credentials: partnerStore.publicCredentialView(req.partner!),
   });
 });
 

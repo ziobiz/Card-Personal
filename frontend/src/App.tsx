@@ -34,10 +34,12 @@ import PartnerManual from './pages/partner/PartnerManual';
 import MemberOtp from './pages/MemberOtp';
 import Account from './pages/Account';
 import { useAuth } from './hooks/useAuth';
+import { withTenant, solutionSlugFromPath } from './tenant';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth();
-  if (!token) return <Navigate to="/login" replace />;
+  const { pathname } = useLocation();
+  if (!token) return <Navigate to={withTenant('/login', solutionSlugFromPath(pathname))} replace />;
   return <>{children}</>;
 }
 
@@ -45,6 +47,20 @@ function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('token');
   if (!token) return <Navigate to="/admin/login" replace />;
   return <>{children}</>;
+}
+
+function MemberChildRoutes() {
+  return (
+    <>
+      <Route index element={<Dashboard />} />
+      <Route path="cards" element={<Navigate to="cards/issue" replace />} />
+      <Route path="cards/issue" element={<CardIssue />} />
+      <Route path="cards/manage" element={<CardManage />} />
+      <Route path="earn" element={<Earn />} />
+      <Route path="activity" element={<Activity />} />
+      <Route path="account" element={<Account />} />
+    </>
+  );
 }
 
 export default function App() {
@@ -61,6 +77,9 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/otp" element={<MemberOtp />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/s/:slug/login" element={<Login />} />
+        <Route path="/s/:slug/otp" element={<MemberOtp />} />
+        <Route path="/s/:slug/register" element={<Register />} />
         <Route path="/partner/login" element={<PartnerLogin />} />
         <Route path="/partner/password" element={<PartnerPassword />} />
         <Route path="/partner/otp" element={<PartnerOtp />} />
@@ -78,13 +97,17 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard />} />
-          <Route path="cards" element={<Navigate to="/cards/issue" replace />} />
-          <Route path="cards/issue" element={<CardIssue />} />
-          <Route path="cards/manage" element={<CardManage />} />
-          <Route path="earn" element={<Earn />} />
-          <Route path="activity" element={<Activity />} />
-          <Route path="account" element={<Account />} />
+          {MemberChildRoutes()}
+        </Route>
+        <Route
+          path="/s/:slug"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          {MemberChildRoutes()}
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/password" element={<AdminPassword />} />
@@ -110,10 +133,10 @@ export default function App() {
           <Route path="org" element={<AdminOrg />} />
           <Route path="fee-list" element={<AdminFeePolicy view="list" />} />
           <Route path="fee-policy" element={<AdminFeePolicy view="manage" />} />
-        <Route path="brand" element={<AdminBrand />} />
-        <Route path="sandbox" element={<AdminSandbox />} />
-        <Route path="me" element={<AdminMyInfo />} />
-        <Route path="settings" element={<AdminSettings />} />
+          <Route path="brand" element={<AdminBrand />} />
+          <Route path="sandbox" element={<AdminSandbox />} />
+          <Route path="me" element={<AdminMyInfo />} />
+          <Route path="settings" element={<AdminSettings />} />
         </Route>
       </Routes>
     </div>

@@ -26,6 +26,14 @@ export default function PartnerHome() {
       <p>
         API Base: <code>{data.apiBase}</code>
       </p>
+      {data.credentials ? (
+        <>
+          <p>MID: <code>{data.credentials.mid}</code></p>
+          <p>{t('admin.deliveryMode')}: {data.credentials.deliveryMode === 'sub_solution' ? t('admin.deliverySub') : t('admin.deliveryApi')}</p>
+          {data.credentials.solutionUrl ? <p>URL: <a href={data.credentials.solutionUrl}>{data.credentials.solutionUrl}</a></p> : null}
+          <p className="muted-text">{t('partner.ourKeysNotWirex')}</p>
+        </>
+      ) : null}
     </div>
   );
 }

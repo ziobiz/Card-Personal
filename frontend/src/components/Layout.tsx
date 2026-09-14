@@ -1,8 +1,9 @@
-import { NavLink, useNavigate, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useBrand } from '../brand/BrandContext';
+import { TNavLink, useTenantNav } from './TenantLink';
 import './Layout.css';
 
 function IconHome() {
@@ -56,11 +57,11 @@ export default function Layout() {
   const { t } = useTranslation();
   const { brand } = useBrand();
   const { logout } = useAuth();
-  const navigate = useNavigate();
+  const go = useTenantNav();
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    window.location.href = go('/login');
   };
 
   const itemClass = ({ isActive }: { isActive: boolean }) => (isActive ? 'on' : undefined);
@@ -68,31 +69,31 @@ export default function Layout() {
   return (
     <div className="wx-shell">
       <header className="wx-top">
-        <NavLink to="/" className="wx-mark">
+        <TNavLink to="/" className="wx-mark">
           {brand.logoLogin ? <img src={brand.logoLogin} alt={brand.productName} className="wx-mark-img" /> : brand.productName}
-        </NavLink>
+        </TNavLink>
         <LanguageSwitcher />
       </header>
       <div className="wx-frame">
         <aside className="wx-side">
-          <NavLink to="/" end className={itemClass}>
+          <TNavLink to="/" end className={itemClass}>
             <IconHome /> {t('nav.home')}
-          </NavLink>
-          <NavLink to="/cards/issue" className={itemClass}>
+          </TNavLink>
+          <TNavLink to="/cards/issue" className={itemClass}>
             <IconIssue /> {t('nav.cardsIssue')}
-          </NavLink>
-          <NavLink to="/cards/manage" className={itemClass}>
+          </TNavLink>
+          <TNavLink to="/cards/manage" className={itemClass}>
             <IconManage /> {t('nav.cardsManage')}
-          </NavLink>
-          <NavLink to="/earn" className={itemClass}>
+          </TNavLink>
+          <TNavLink to="/earn" className={itemClass}>
             <IconEarn /> {t('nav.earn')}
-          </NavLink>
-          <NavLink to="/activity" className={itemClass}>
+          </TNavLink>
+          <TNavLink to="/activity" className={itemClass}>
             <IconActivity /> {t('nav.activity')}
-          </NavLink>
-          <NavLink to="/account" className={itemClass}>
+          </TNavLink>
+          <TNavLink to="/account" className={itemClass}>
             <IconAccount /> {t('nav.account')}
-          </NavLink>
+          </TNavLink>
           <button type="button" onClick={handleLogout}>
             {t('nav.logout')}
           </button>
@@ -103,26 +104,26 @@ export default function Layout() {
       </div>
       <p className="wx-shell-copy">{brand.copyright || 'Copyright © 2026 ICOCARD Service by ONTHELINE'}</p>
       <nav className="wx-bottom" aria-label="Primary">
-        <NavLink to="/" end className={itemClass}>
+        <TNavLink to="/" end className={itemClass}>
           <IconHome />
           {t('nav.home')}
-        </NavLink>
-        <NavLink to="/cards/issue" className={itemClass}>
+        </TNavLink>
+        <TNavLink to="/cards/issue" className={itemClass}>
           <IconIssue />
           {t('nav.cardsIssueShort')}
-        </NavLink>
-        <NavLink to="/cards/manage" className={itemClass}>
+        </TNavLink>
+        <TNavLink to="/cards/manage" className={itemClass}>
           <IconManage />
           {t('nav.cardsManageShort')}
-        </NavLink>
-        <NavLink to="/activity" className={itemClass}>
+        </TNavLink>
+        <TNavLink to="/activity" className={itemClass}>
           <IconActivity />
           {t('nav.activity')}
-        </NavLink>
-        <NavLink to="/account" className={itemClass}>
+        </TNavLink>
+        <TNavLink to="/account" className={itemClass}>
           <IconAccount />
           {t('nav.accountShort')}
-        </NavLink>
+        </TNavLink>
       </nav>
     </div>
   );

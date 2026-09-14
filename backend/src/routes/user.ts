@@ -6,6 +6,8 @@ import { mockWirex } from '../services/wirex/mockWirex.js';
 import { wirexService } from '../services/wirex/wirexService.js';
 import { config } from '../config.js';
 import { webauthnService } from '../lib/webauthn.js';
+import { issueWalletChallenge, verifyWalletBind } from '../lib/walletBind.js';
+import { bridgeStore } from '../data/bridgeStore.js';
 
 const router = Router();
 router.use(requireAuth);
@@ -29,6 +31,7 @@ function publicProfile(user: NonNullable<ReturnType<typeof store.getUserById>>, 
       error: user.onboardingError || null,
       eoa: user.walletAddress || '',
       smartWallet: user.smartWalletAddress || '',
+      walletMode: user.walletMode || 'embedded',
     },
     source: user.source || 'direct',
     status: user.status || 'active',
@@ -67,10 +70,124 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/wallet/bridge', (req, res) => {
+  const user = store.getUserById(req.auth!.userId);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  res.json({
+    mode: user.walletMode || 'embedded',
+    items: bridgeStore.list({ userId: user.id }),
+  });
+});
+
 router.get('/onboarding', (req, res) => {
   const user = store.getUserById(req.auth!.userId);
   if (!user) return res.status(404).json({ error: 'User not found' });
-  res.json({ ok: true, ...publicProfile(user).onboarding, wirexUserId: user.wirexUserId || null, kycStatus: user.kycStatus || 'pending', mock: config.useMockWirex });
+  res.json({
+    ok: true,
+    ...publicProfile(user).onboarding,
+    wirexUserId: user.wirexUserId || null,
+    kycStatus: user.kycStatus || 'pending',
+    walletMode: user.walletMode || 'embedded',
+    mock: config.useMockWirex,
+  });
+});
+
+router.get('/wallet/challenge', (req, res) => {
+  res.json(issueWalletChallenge(req.auth!.userId));
+});
+
+router.post('/wallet/connect', async (req, res) => {
+  try {
+    const userId = req.auth!.userId;
+    const address = String(req.body?.address || '').trim() as `0x${string}`;
+    const signature = String(req.body?.signature || '').trim() as `0x${string}`;
+    if (!/^0x[a-fA-F0-9]{40}$/.test(address) || !signature.startsWith('0x')) {
+      return res.status(400).json({ error: 'address and signature required' });
+    }
+    const checked = await verifyWalletBind({ userId, address, signature });
+    if (!checked.ok) return res.status(400).json({ error: checked.error });
+    store.updateOnboarding(userId, {
+      walletAddress: address,
+      walletMode: 'external_eoa',
+      eoaKeyEnc: null,
+      onboardingStatus: 'wallet',
+      onboardingError: null,
+    });
+    const { onboardingService } = await import('../services/onboardingService.js');
+    const result = await onboardingService.run(userId, { issueCard: false, mint: false });
+    res.json({ ...result, mode: 'external_eoa', address });
+  } catch (e) {
+    res.status(500).json({ error: (e as Error).message });
+  }
+});
+
+router.post('/wallet/embedded', async (req, res) => {
+  try {
+    const userId = req.auth!.userId;
+    store.updateOnboarding(userId, { walletMode: 'embedded', onboardingStatus: 'none', onboardingError: null });
+    const { onboardingService } = await import('../services/onboardingService.js');
+    const result = await onboardingService.run(userId, { issueCard: false, mint: true });
+    res.json({ ...result, mode: 'embedded' });
+  } catch (e) {
+    res.status(500).json({ error: (e as Error).message });
+  }
+});
+
+router.post('/wallet/bridge/topup', async (req, res) => {
+  try {
+    const user = store.getUserById(req.auth!.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    const amount = Number(req.body?.amount || 0);
+    const currency = String(req.body?.currency || 'USD');
+    if (!(amount > 0)) return res.status(400).json({ error: 'amount required' });
+    store.updateOnboarding(user.id, { walletMode: 'bridge' });
+    const entry = bridgeStore.add({
+      partnerId: user.partnerId || 'direct',
+      userId: user.id,
+      direction: 'debit_request',
+      amount,
+      currency,
+      status: 'pending',
+      note: 'member_topup',
+    });
+    if (user.partnerId) {
+      const partner = (await import('../data/partnerStore.js')).partnerStore.getById(user.partnerId);
+      if (partner?.bridgeDebitUrl) {
+        try {
+          const r = await fetch(partner.bridgeDebitUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: user.id,
+              email: user.email,
+              amount,
+              currency,
+              request_id: entry.id,
+            }),
+          });
+          if (!r.ok) {
+            bridgeStore.update(entry.id, { status: 'failed', note: `partner HTTP ${r.status}` });
+            return res.status(502).json({ error: 'Bridge partner rejected debit', id: entry.id });
+          }
+        } catch (e) {
+          bridgeStore.update(entry.id, { status: 'failed', note: (e as Error).message });
+          return res.status(502).json({ error: 'Bridge partner unreachable', id: entry.id });
+        }
+      }
+    }
+    if (user.walletAddress && !config.useMockWirex) {
+      try {
+        const { sandboxHelper } = await import('../clients/wirex/SandboxHelperClient.js');
+        await sandboxHelper.mintWusd(user.walletAddress, amount);
+      } catch {
+        /* ledger still records */
+      }
+    }
+    bridgeStore.update(entry.id, { status: 'posted' });
+    res.json({ ok: true, entry: bridgeStore.list({ userId: user.id }).find((x) => x.id === entry.id) });
+  } catch (e) {
+    res.status(500).json({ error: (e as Error).message });
+  }
 });
 
 /** 온체인 지갑 → Wirex 유저 → KYC 링크 (공식 순서) */

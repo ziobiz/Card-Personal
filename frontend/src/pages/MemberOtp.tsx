@@ -8,6 +8,7 @@ import { FingerprintIcon } from '../components/BrandIcons';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useBrand } from '../brand/BrandContext';
 import { useAuth } from '../hooks/useAuth';
+import { useTenantNav } from '../components/TenantLink';
 import './Auth.css';
 
 function isMobileClient() {
@@ -33,6 +34,7 @@ export default function MemberOtp() {
   const { t } = useTranslation();
   const { brand } = useBrand();
   const navigate = useNavigate();
+  const go = useTenantNav();
   const { setToken } = useAuth();
   const enrollToken = useMemo(() => sessionStorage.getItem('memberOtpEnroll') || '', []);
   const mode = enrollToken ? 'setup' : 'verify';
@@ -64,7 +66,7 @@ export default function MemberOtp() {
       setOfferEnroll(true);
       return;
     }
-    navigate('/');
+    navigate(go('/'));
   };
 
   const runBiometricLogin = async () => {
@@ -91,7 +93,7 @@ export default function MemberOtp() {
       const options = await api.auth.webauthnRegisterOptions();
       const att = await startRegistration({ optionsJSON: options as never });
       await api.auth.webauthnRegisterVerify(att);
-      navigate('/');
+      navigate(go('/'));
     } catch (err) {
       setError((err as Error).message || t('auth.biometricEnrollFailed'));
     } finally {
@@ -120,7 +122,7 @@ export default function MemberOtp() {
             <button
               type="button"
               className="wx-auth-alt"
-              onClick={() => navigate('/')}
+              onClick={() => navigate(go('/'))}
               style={{ marginTop: 16, background: 'none', border: 'none', width: '100%' }}
             >
               {t('auth.biometricSkip')}

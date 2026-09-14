@@ -172,6 +172,9 @@ router.get('/overview', requirePartnerPortal, (req, res) => {
     feeSource: policy.source,
     feeTemplateName: policy.templateName,
     apiBase: '/api/partner/v1',
+    credentials: partnerStore.publicCredentialView(partner),
+    issuer: 'ICOCARD',
+    note: 'Use ICOCARD MID / API Key / Secret. Do not use Wirex keys.',
   });
 });
 

@@ -71,6 +71,7 @@ export interface MemberProfile {
     error?: string | null;
     eoa?: string;
     smartWallet?: string;
+    walletMode?: 'embedded' | 'external_eoa' | 'bridge';
   };
   source?: string;
   status?: string;
@@ -129,6 +130,26 @@ export interface PartnerFeeFields {
   partnerMonthlyFee?: number;
 }
 
+export interface CredentialKit {
+  issuer: string;
+  warning: string;
+  mid: string;
+  environment: string;
+  deliveryMode: string;
+  solutionSlug?: string;
+  solutionUrl?: string;
+  apiKey: string;
+  apiSecret: string;
+  hmacSecret: string;
+  auth: {
+    apiKeyHeader: string;
+    secretHeader: string;
+    hmac: { timestamp: string; signature: string; mid: string };
+    user: string;
+  };
+  endpoints: Record<string, string>;
+}
+
 export interface WalletBalance {
   primary: TokenBalance[];
   cardSummaries: { cardId: string; panLast4: string; balance: number; currency: string }[];
@@ -149,6 +170,8 @@ export interface BrandConfig {
   favicon: string;
   enabledLocales?: string[];
   defaultLocale?: string;
+  tenantSlug?: string;
+  deliveryMode?: string;
   updatedAt?: string;
 }
 
@@ -169,9 +192,10 @@ export const DEFAULT_BRAND: BrandConfig = {
   defaultLocale: 'en',
 };
 
-export async function fetchPublicBrand(): Promise<BrandConfig> {
+export async function fetchPublicBrand(slug?: string): Promise<BrandConfig> {
   const base = API || '';
-  const url = base ? `${base}/api/brand` : '/api/brand';
+  const q = slug ? `?slug=${encodeURIComponent(slug)}` : '';
+  const url = base ? `${base}/api/brand${q}` : `/api/brand${q}`;
   try {
     const res = await fetch(url);
     if (!res.ok) return DEFAULT_BRAND;
@@ -250,6 +274,7 @@ export const api = {
         smartWallet: string;
         wirexUserId?: string | null;
         kycStatus?: string;
+        walletMode?: 'embedded' | 'external_eoa' | 'bridge';
         mock?: boolean;
       }>('/user/onboarding'),
     onboard: (data?: { issueCard?: boolean }) =>
@@ -258,8 +283,27 @@ export const api = {
         steps: { step: string; ok: boolean; detail?: unknown }[];
         kycUrl?: string | null;
         card?: unknown;
-        onboarding: { status: string; error: string | null; eoa: string; smartWallet: string };
+        onboarding: { status: string; error: string | null; eoa: string; smartWallet: string; walletMode?: string };
       }>('/user/onboard', { method: 'POST', body: JSON.stringify(data ?? {}) }, 180000),
+    walletChallenge: () =>
+      request<{ nonce: string; message: string; expiresAt: number }>('/user/wallet/challenge'),
+    walletConnect: (address: string, signature: string) =>
+      request<{ ok: boolean; mode: string; address: string }>('/user/wallet/connect', {
+        method: 'POST',
+        body: JSON.stringify({ address, signature }),
+      }, 180000),
+    walletEmbedded: () =>
+      request<{ ok: boolean; mode: string }>('/user/wallet/embedded', { method: 'POST', body: '{}' }, 180000),
+    bridgeTopup: (amount: number, currency = 'USD') =>
+      request<{ ok: boolean; entry?: unknown }>('/user/wallet/bridge/topup', {
+        method: 'POST',
+        body: JSON.stringify({ amount, currency }),
+      }),
+    bridgeLedger: () =>
+      request<{
+        mode: string;
+        items: Array<{ id: string; amount: number; currency: string; status: string; direction: string; createdAt: string }>;
+      }>('/user/wallet/bridge'),
   },
   cards: {
     list: (page = 1, size = 10) =>
@@ -379,6 +423,12 @@ export const api = {
           name: string;
           companyName?: string;
           apiKeyPrefix: string;
+          mid?: string;
+          deliveryMode?: 'api' | 'sub_solution';
+          walletModes?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
+          solutionSlug?: string;
+          solutionUrl?: string;
+          credentials?: Record<string, unknown>;
           status: string;
           billingWalletAddress?: string;
           billingWarnings?: number;
@@ -394,7 +444,14 @@ export const api = {
         total: number;
       }>('/admin/partners'),
     createPartner: (data: Record<string, unknown>) =>
-      request<{ partner: { id: string; name: string; companyName?: string; status: string; createdAt: string }; apiKey: string; loginId?: string; orgCode?: string; warning: string }>('/admin/partners', {
+      request<{
+        partner: { id: string; name: string; companyName?: string; status: string; createdAt: string };
+        apiKey: string;
+        kit?: CredentialKit;
+        loginId?: string;
+        orgCode?: string;
+        warning: string;
+      }>('/admin/partners', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
@@ -411,6 +468,12 @@ export const api = {
       allowPlastic?: boolean;
       distribution?: Record<string, number>;
       distributionApplyStart?: string;
+      deliveryMode?: 'api' | 'sub_solution';
+      walletModes?: { embedded?: boolean; externalEoa?: boolean; bridge?: boolean };
+      webhookUrl?: string;
+      solutionSlug?: string;
+      solutionName?: string;
+      bridgeDebitUrl?: string;
     }) =>
       request<{ id: string; name: string; companyName?: string; status: string; fees?: PartnerFeeFields; customFees?: boolean; effectiveFees?: PartnerFeeFields; updatedAt?: string }>(`/admin/partners/${id}`, {
         method: 'PUT',
@@ -429,7 +492,7 @@ export const api = {
     runPartnerBilling: () =>
       request<{ month: string; results: Array<{ partnerId: string; name: string; status: string; warning?: number }> }>('/admin/partners/run-billing', { method: 'POST' }),
     regeneratePartnerKey: (id: string) =>
-      request<{ partner: { id: string; name: string; status: string }; apiKey: string; warning: string }>(`/admin/partners/${id}/regenerate-key`, {
+      request<{ partner: { id: string; name: string; status: string }; apiKey: string; kit?: CredentialKit; warning: string }>(`/admin/partners/${id}/regenerate-key`, {
         method: 'POST',
       }),
     getOrg: (level?: string) =>
@@ -624,6 +687,22 @@ export const api = {
         feeSource?: string;
         feeTemplateName?: string;
         apiBase: string;
+        credentials?: {
+          mid?: string;
+          deliveryMode?: string;
+          walletModes?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
+          apiKeyPrefix?: string;
+          hasApiSecret?: boolean;
+          hasHmac?: boolean;
+          webhookUrl?: string;
+          solutionSlug?: string;
+          solutionName?: string;
+          solutionUrl?: string;
+          bridgeDebitUrl?: string;
+          endpoints?: Record<string, string>;
+        };
+        issuer?: string;
+        note?: string;
       }>('/partner-portal/overview', {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
