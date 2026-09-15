@@ -12,7 +12,7 @@ type MenuGroup = { id: string; labelKey: string; icon: IconName; items: MenuItem
 type OpenTab = { to: string; labelKey: string };
 
 function SideIcon({ name }: { name: IconName }) {
-  const common = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  const common = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   if (name === 'gear') {
     return (
       <svg {...common}>
@@ -184,8 +184,8 @@ export default function AdminLayout() {
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
   })();
   const headerLangs = [
-    { code: 'ja', label: 'JP' },
     { code: 'ko', label: 'KR' },
+    { code: 'ja', label: 'JP' },
     { code: 'en', label: 'EN' },
     { code: 'zh', label: 'CH' },
     { code: 'th', label: 'TH' },

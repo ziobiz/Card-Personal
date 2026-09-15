@@ -77,8 +77,8 @@ export default function PartnerLayout() {
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
   })();
   const headerLangs = [
-    { code: 'ja', label: 'JP' },
     { code: 'ko', label: 'KR' },
+    { code: 'ja', label: 'JP' },
     { code: 'en', label: 'EN' },
     { code: 'zh', label: 'CH' },
     { code: 'th', label: 'TH' },
