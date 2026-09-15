@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -22,26 +22,11 @@ function IconIssue() {
     </svg>
   );
 }
-function IconManage() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <rect x="3" y="6" width="18" height="12" rx="2" />
-      <path d="M3 10h18M8 14h4" />
-    </svg>
-  );
-}
 function IconEarn() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <circle cx="12" cy="12" r="8" />
       <path d="M12 8v8M9.5 10.5c.6-1 1.5-1.5 2.5-1.5s2 .6 2.2 1.6c.2 1.2-1 1.8-2.2 2.1-1.3.3-2.5.9-2.3 2.2.2 1 1.2 1.6 2.3 1.6 1.1 0 2-.6 2.5-1.5" />
-    </svg>
-  );
-}
-function IconActivity() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M4 12h4l2.5-6 3 12 2-6h4" />
     </svg>
   );
 }
@@ -61,21 +46,13 @@ function IconAccount() {
     </svg>
   );
 }
-function IconHelp() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.1 1-1.1 1.8V14" />
-      <path d="M12 17h.01" />
-    </svg>
-  );
-}
 
 export default function Layout() {
   const { t } = useTranslation();
   const { brand } = useBrand();
   const { logout } = useAuth();
   const go = useTenantNav();
+  const { pathname } = useLocation();
   const shellLogo = resolveMemberShellLogo(brand);
 
   const handleLogout = () => {
@@ -84,6 +61,7 @@ export default function Layout() {
   };
 
   const itemClass = ({ isActive }: { isActive: boolean }) => (isActive ? 'on' : undefined);
+  const cardsClass = () => (pathname.includes('/cards') ? 'on' : undefined);
 
   return (
     <div className="wx-shell">
@@ -101,23 +79,14 @@ export default function Layout() {
           <TNavLink to="/wallet" className={itemClass}>
             <IconWallet /> {t('nav.wallet')}
           </TNavLink>
-          <TNavLink to="/cards/issue" className={itemClass}>
-            <IconIssue /> {t('nav.cardsIssue')}
-          </TNavLink>
-          <TNavLink to="/cards/manage" className={itemClass}>
-            <IconManage /> {t('nav.cardsManage')}
+          <TNavLink to="/cards/issue" className={cardsClass}>
+            <IconIssue /> {t('nav.cards')}
           </TNavLink>
           <TNavLink to="/earn" className={itemClass}>
             <IconEarn /> {t('nav.earn')}
           </TNavLink>
-          <TNavLink to="/activity" className={itemClass}>
-            <IconActivity /> {t('nav.activity')}
-          </TNavLink>
           <TNavLink to="/account" className={itemClass}>
             <IconAccount /> {t('nav.account')}
-          </TNavLink>
-          <TNavLink to="/help" className={itemClass}>
-            <IconHelp /> {t('nav.help')}
           </TNavLink>
           <button type="button" onClick={handleLogout}>
             {t('nav.logout')}
@@ -137,13 +106,9 @@ export default function Layout() {
           <IconWallet />
           {t('nav.walletShort')}
         </TNavLink>
-        <TNavLink to="/cards/issue" className={itemClass}>
+        <TNavLink to="/cards/issue" className={cardsClass}>
           <IconIssue />
-          {t('nav.cardsIssueShort')}
-        </TNavLink>
-        <TNavLink to="/cards/manage" className={itemClass}>
-          <IconManage />
-          {t('nav.cardsManageShort')}
+          {t('nav.cards')}
         </TNavLink>
         <TNavLink to="/account" className={itemClass}>
           <IconAccount />

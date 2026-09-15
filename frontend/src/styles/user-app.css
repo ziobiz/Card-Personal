@@ -1074,8 +1074,12 @@
   font-size: 0.78rem;
 }
 
-.user-app .wx-wallet-page .wx-wallet-modes {
-  margin-top: 0.35rem;
+.user-app .wx-wallet-empty {
+  margin-bottom: 1rem;
+}
+
+.user-app .wx-wallet-empty .section-title {
+  margin-top: 0;
 }
 
 @media (max-width: 720px) {

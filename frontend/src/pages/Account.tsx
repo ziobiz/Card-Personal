@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { startRegistration } from '@simplewebauthn/browser';
 import { api, type MemberProfile } from '../api';
 import { TLink } from '../components/TenantLink';
+import OnboardingPanel from './OnboardingPanel';
 
 export default function Account() {
   const { t } = useTranslation();
@@ -137,6 +138,8 @@ export default function Account() {
         {t('account.intro')}
       </p>
 
+      <OnboardingPanel variant="kyc" />
+
       <section className="card-surface wx-account-card">
         <h2 className="section-title">{t('account.loginSection')}</h2>
         <p className="muted-text wx-account-hint">{t('account.loginHint')}</p>
@@ -193,13 +196,6 @@ export default function Account() {
               autoComplete="country"
             />
           </label>
-          <label className="wx-account-field">
-            <span>{t('account.wallet')}</span>
-            <input className="input" value={profile?.walletAddress || ''} readOnly />
-          </label>
-          <TLink to="/wallet" className="section-link" style={{ gridColumn: '1 / -1' }}>
-            {t('wallet.manageLink')}
-          </TLink>
           <button type="submit" className="btn-primary" disabled={profileSaving}>
             {profileSaving ? t('common.loading') : t('account.saveProfile')}
           </button>
@@ -278,6 +274,21 @@ export default function Account() {
               {t('account.biometricClear')}
             </button>
           ) : null}
+        </div>
+      </section>
+
+      <section className="card-surface wx-account-card">
+        <h2 className="section-title">{t('account.moreSection')}</h2>
+        <div className="wx-account-sec-actions">
+          <TLink to="/help" className="wx-ghost">
+            {t('nav.help')}
+          </TLink>
+          <TLink to="/activity" className="wx-ghost">
+            {t('nav.activity')}
+          </TLink>
+          <TLink to="/wallet" className="wx-ghost">
+            {t('nav.wallet')}
+          </TLink>
         </div>
       </section>
     </div>

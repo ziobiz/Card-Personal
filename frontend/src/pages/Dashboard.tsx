@@ -1,37 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api, type Card, type TokenBalance } from '../api';
-import OnboardingPanel from './OnboardingPanel';
 import { TLink } from '../components/TenantLink';
+
+type Nudge = { title: string; body: string; to: string; cta: string } | null;
 
 export default function Dashboard() {
   const { t } = useTranslation();
-  const [kycNeeded, setKycNeeded] = useState(false);
-  const [kycLoading, setKycLoading] = useState(false);
-  const [kycErr, setKycErr] = useState('');
+  const [nudge, setNudge] = useState<Nudge>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [walletBalance, setWalletBalance] = useState<{
     primary: TokenBalance[];
     cardSummaries: { cardId: string; panLast4: string; balance: number; currency: string }[];
   } | null>(null);
-
-  const handleKycClick = async () => {
-    setKycLoading(true);
-    setKycErr('');
-    try {
-      const { url, message } = await api.kyc.getVerificationLink();
-      if (url) {
-        window.location.assign(url);
-        return;
-      }
-      setKycErr(message || t('dashboard.kycOpenFail'));
-    } catch (e) {
-      setKycErr((e as Error).message || t('dashboard.kycOpenFail'));
-    } finally {
-      setKycLoading(false);
-    }
-  };
 
   useEffect(() => {
     api.cards
@@ -46,16 +28,46 @@ export default function Dashboard() {
   }, [cards]);
 
   useEffect(() => {
-    api.user
-      .onboarding()
-      .then((r) => {
-        const st = r.status || '';
-        setKycNeeded(
-          st === 'registered' || st === 'kyc' || (r.kycStatus !== 'verified' && Boolean(r.wirexUserId))
-        );
-      })
-      .catch(() => setKycNeeded(false));
-  }, []);
+    Promise.all([api.user.onboarding().catch(() => null), api.cards.list(1, 5).catch(() => null)]).then(
+      ([onboard, cardRes]) => {
+        if (!onboard || onboard.mock) {
+          setNudge(null);
+          return;
+        }
+        const hasWallet = Boolean(onboard.eoa || onboard.smartWallet);
+        const kycDone = onboard.kycStatus === 'verified' || onboard.status === 'ready';
+        const hasCards = Boolean(cardRes?.items?.length);
+        if (!hasWallet) {
+          setNudge({
+            title: t('dashboard.nudgeWalletTitle'),
+            body: t('dashboard.nudgeWalletBody'),
+            to: '/wallet',
+            cta: t('dashboard.nudgeWalletCta'),
+          });
+          return;
+        }
+        if (!kycDone) {
+          setNudge({
+            title: t('dashboard.nudgeKycTitle'),
+            body: t('dashboard.nudgeKycBody'),
+            to: '/account',
+            cta: t('dashboard.kycCta'),
+          });
+          return;
+        }
+        if (!hasCards) {
+          setNudge({
+            title: t('dashboard.nudgeCardTitle'),
+            body: t('dashboard.nudgeCardBody'),
+            to: '/cards/issue',
+            cta: t('dashboard.issueCard'),
+          });
+          return;
+        }
+        setNudge(null);
+      }
+    );
+  }, [t]);
 
   const totalUsd =
     (walletBalance?.primary?.reduce((s, t) => s + t.balance, 0) ?? 0) +
@@ -63,26 +75,29 @@ export default function Dashboard() {
 
   return (
     <div className="app-container wx-home">
-      <OnboardingPanel />
-      {kycNeeded && (
+      {nudge ? (
         <div className="card-surface wx-kyc">
-          <span>{t('dashboard.kycNeeded')}</span>
-          <button type="button" onClick={() => void handleKycClick()} disabled={kycLoading} className="btn-primary btn-compact">
-            {kycLoading ? t('common.loading') : t('dashboard.kycCta')}
-          </button>
-          {kycErr ? (
-            <p className="auth-error" style={{ margin: '0.5rem 0 0', width: '100%' }}>
-              {kycErr}
+          <div>
+            <strong>{nudge.title}</strong>
+            <p className="muted-text" style={{ margin: '0.35rem 0 0' }}>
+              {nudge.body}
             </p>
-          ) : null}
+          </div>
+          <TLink to={nudge.to} className="btn-primary btn-compact">
+            {nudge.cta}
+          </TLink>
         </div>
-      )}
+      ) : null}
+
       <div className="wx-home-hero">
         <p className="wx-kicker">{t('dashboard.totalBalance')}</p>
         <h1 className="wx-balance">${loading ? '—' : totalUsd.toLocaleString()}</h1>
         <div className="wx-actions">
-          <TLink to="/cards/manage" className="btn-primary">
+          <TLink to="/wallet" className="btn-primary">
             {t('dashboard.addFunds')}
+          </TLink>
+          <TLink to="/cards/issue" className="wx-ghost">
+            {t('nav.cards')}
           </TLink>
           <TLink to="/earn" className="wx-ghost">
             {t('nav.earn')}
@@ -123,7 +138,12 @@ export default function Dashboard() {
               </TLink>
             ))
           ) : (
-            <p className="muted-text">{t('dashboard.noCards')}</p>
+            <p className="muted-text">
+              {t('dashboard.noCards')}{' '}
+              <TLink to="/cards/issue" className="primary-link">
+                {t('dashboard.issueCard')}
+              </TLink>
+            </p>
           )}
         </div>
       </div>
@@ -138,12 +158,7 @@ export default function Dashboard() {
         {loading ? (
           <p className="muted-text">{t('common.loading')}</p>
         ) : cards.length === 0 ? (
-          <p className="muted-text">
-            {t('dashboard.noActivity')}{' '}
-            <TLink to="/cards/manage" className="primary-link">
-              {t('dashboard.issueCard')}
-            </TLink>
-          </p>
+          <p className="muted-text">{t('dashboard.noActivity')}</p>
         ) : (
           cards.slice(0, 5).map((card) => (
             <div key={card.id} className="wx-list-row">

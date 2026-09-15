@@ -77,7 +77,8 @@
   },
   "account": {
     "title": "My account",
-    "intro": "Manage your login ID, password, personal details, and security settings.",
+    "intro": "Manage profile, identity verification, password, and security. Create or connect a wallet in My wallet.",
+    "moreSection": "More",
     "loginSection": "Login",
     "loginHint": "Your email is your login ID and cannot be changed.",
     "loginId": "Login ID (email)",
@@ -114,26 +115,44 @@
     "biometricCleared": "Biometrics removed."
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Home",
+    "totalBalance": "Total balance",
+    "addFunds": "Add funds",
     "totalCards": "Total Cards",
     "activeCards": "Active Cards",
     "recentCards": "Recent Cards",
+    "recentActivity": "Recent activity",
     "viewAll": "View all",
     "noCards": "No cards issued yet",
-    "issueCard": "Issue virtual card",
+    "issueCard": "Issue a card",
+    "accounts": "Accounts",
+    "linkedCards": "Cards",
+    "manage": "Manage",
+    "noActivity": "No recent activity",
     "kycNeeded": "Identity verification is required.",
     "kycCta": "Verify KYC",
-    "kycOpenFail": "Could not open the KYC link. Tap Continue on Home, then try again."
+    "kycOpenFail": "Could not open the KYC link. Try again from My account.",
+    "nudgeWalletTitle": "Set up your wallet first",
+    "nudgeWalletBody": "Balances and card spend live in My wallet. Create or connect a wallet there.",
+    "nudgeWalletCta": "Go to My wallet",
+    "nudgeKycTitle": "Identity verification needed",
+    "nudgeKycBody": "Complete KYC in My account before you can issue a card.",
+    "nudgeCardTitle": "Issue a card",
+    "nudgeCardBody": "Your wallet is ready. Apply for a virtual or plastic card."
   },
   "onboard": {
     "title": "Card setup",
     "lead": "We create an on-chain wallet, register you with Wirex, complete KYC, then issue a card.",
+    "walletTitle": "Wallet setup",
+    "walletLead": "Create our wallet or connect an external wallet, then finish Wirex registration here.",
+    "kycTitle": "Identity verification (KYC)",
+    "kycLead": "Verify your identity to issue a card. After verification, go to Cards.",
     "continue": "Continue",
     "running": "Working...",
     "failed": "Onboarding failed.",
     "progressOk": "Progress updated.",
     "kycOpening": "Opening KYC…",
-    "kycNoLink": "No KYC link yet. Tap Continue to finish Wirex registration, then try again.",
+    "kycNoLink": "No KYC link yet. Finish wallet setup in My wallet, then try again.",
     "kycRetry": "Open KYC link again",
     "step": {
       "wallet": "Embedded wallet",
@@ -144,9 +163,9 @@
     }
   },
   "walletMode": {
-    "title": "Wallet connection",
-    "lead": "Card spend always leaves our Smart Wallet (WUSD/WEUR). A connected wallet is for signing and identity only.",
-    "spendNote": "POS never prompts MetaMask. BTC, Solana, and closed-loop points use the bridge into our rail.",
+    "title": "Create or connect a wallet",
+    "lead": "Issue our wallet or connect one you already have. Card spend uses the Smart Wallet balance.",
+    "spendNote": "POS never prompts MetaMask. BTC, Solana, and closed-loop points use the bridge.",
     "embedded": "Our wallet",
     "embeddedDesc": "We issue and store the EOA plus Wirex Smart Wallet.",
     "useEmbedded": "Use our wallet",
@@ -223,7 +242,11 @@
   },
   "wallet": {
     "pageTitle": "My wallet",
-    "pageLead": "Manage balances, addresses, and how your wallet is connected. Card spend uses the Smart Wallet balance.",
+    "pageLead": "View issued wallet addresses and balances. Create our wallet or connect an external wallet here.",
+    "emptyTitle": "No wallet yet",
+    "emptyLead": "Tap Use our wallet to let the app create one, or connect MetaMask if you already have a wallet.",
+    "eoaLabel": "Signer wallet (EOA)",
+    "smartLabel": "Spend wallet (Smart Wallet)",
     "title": "Wallet Balance",
     "primaryWallet": "Primary wallet (stablecoins)",
     "cardBalance": "Card balance",
@@ -234,7 +257,7 @@
     "cardWalletAddress": "Card wallet address",
     "depositSuccess": "Deposit successful.",
     "depositModal": "Top up card",
-    "manageLink": "Manage connection in My wallet"
+    "manageLink": "View My wallet"
   },
   "admin": {
     "loginTitle": "Admin login",

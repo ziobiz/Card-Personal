@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api, type TokenBalance } from '../api';
 import WalletModePanel from '../components/WalletModePanel';
+import OnboardingPanel from './OnboardingPanel';
 import { TLink } from '../components/TenantLink';
 
 type Onboard = {
   status: string;
   eoa: string;
   smartWallet: string;
+  kycStatus?: string;
   walletMode?: 'embedded' | 'external_eoa' | 'bridge';
   allowedWalletModes?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
 };
@@ -37,6 +39,7 @@ export default function Wallet() {
     void load();
   }, []);
 
+  const issued = Boolean(info?.eoa || info?.smartWallet);
   const totalUsd =
     (balance?.primary?.reduce((s, t) => s + t.balance, 0) ?? 0) +
     (balance?.cardSummaries?.reduce((s, c) => s + c.balance, 0) ?? 0);
@@ -48,47 +51,54 @@ export default function Wallet() {
       </div>
       <p className="muted-text wx-wallet-page-lead">{t('wallet.pageLead')}</p>
 
-      <section className="card-surface wx-wallet-summary">
-        <div className="wx-wallet-summary-grid">
-          <div>
-            <p className="wx-kicker">{t('dashboard.totalBalance')}</p>
-            <h2 className="wx-wallet-balance">${totalUsd.toLocaleString()}</h2>
+      {issued ? (
+        <section className="card-surface wx-wallet-summary">
+          <div className="wx-wallet-summary-grid">
+            <div>
+              <p className="wx-kicker">{t('dashboard.totalBalance')}</p>
+              <h2 className="wx-wallet-balance">${totalUsd.toLocaleString()}</h2>
+            </div>
+            <div className="wx-wallet-summary-actions">
+              <TLink to="/cards/manage" className="btn-primary">
+                {t('dashboard.addFunds')}
+              </TLink>
+              <TLink to="/cards/issue" className="wx-ghost">
+                {t('nav.cards')}
+              </TLink>
+            </div>
           </div>
-          <div className="wx-wallet-summary-actions">
-            <TLink to="/cards/manage" className="btn-primary">
-              {t('dashboard.addFunds')}
-            </TLink>
-            <TLink to="/cards/issue" className="wx-ghost">
-              {t('nav.cardsIssue')}
-            </TLink>
-          </div>
-        </div>
-        {info?.eoa || info?.smartWallet ? (
           <div className="wx-wallet-addrs">
-            {info.eoa ? (
+            {info?.eoa ? (
               <p>
-                <span>EOA</span>
+                <span>{t('wallet.eoaLabel')}</span>
                 <code>{info.eoa}</code>
               </p>
             ) : null}
-            {info.smartWallet ? (
+            {info?.smartWallet ? (
               <p>
-                <span>Smart Wallet</span>
+                <span>{t('wallet.smartLabel')}</span>
                 <code>{info.smartWallet}</code>
               </p>
             ) : null}
           </div>
-        ) : null}
-        {balance?.primary?.length ? (
-          <div className="wallet-tokens" style={{ marginTop: '0.75rem' }}>
-            {balance.primary.map((tok) => (
-              <span key={tok.symbol} className="wallet-token-chip">
-                {tok.symbol}: {tok.balance.toLocaleString()}
-              </span>
-            ))}
-          </div>
-        ) : null}
-      </section>
+          {balance?.primary?.length ? (
+            <div className="wallet-tokens" style={{ marginTop: '0.75rem' }}>
+              {balance.primary.map((tok) => (
+                <span key={tok.symbol} className="wallet-token-chip">
+                  {tok.symbol}: {tok.balance.toLocaleString()}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </section>
+      ) : (
+        <section className="card-surface wx-wallet-empty">
+          <h2 className="section-title">{t('wallet.emptyTitle')}</h2>
+          <p className="muted-text">{t('wallet.emptyLead')}</p>
+        </section>
+      )}
+
+      <OnboardingPanel variant="wallet" />
 
       <WalletModePanel
         current={info?.walletMode || 'embedded'}
