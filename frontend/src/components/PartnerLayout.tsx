@@ -108,73 +108,72 @@ export default function PartnerLayout() {
 
   return (
     <div className={`hq-shell${collapsed ? ' is-collapsed' : ''}`}>
-      <header className="hq-top">
-        <Link to="/partner" className="hq-top-logo">
-          {brand.logoAdmin ? <img src={brand.logoAdmin} alt={brand.productName} /> : <span>{brand.productName || 'ICOCARD'}</span>}
+      <aside className="hq-side">
+        <Link to="/partner" className="hq-side-logo">
+          {brand.logoAdmin ? <img src={brand.logoAdmin} alt={brand.productName} /> : <span className="hq-side-logo-text">{brand.productName || 'ICOCARD'}</span>}
         </Link>
-        <div className="hq-top-fill" />
-        <div className="hq-right">
-          <div className="hq-langs" aria-label="Language">
-            <span className="hq-lang-label">{t('admin.lang')}</span>
-            {headerLangs.map((l) => (
-              <button
-                key={l.code}
-                type="button"
-                className={i18n.language.toLowerCase().startsWith(l.code) ? 'on' : ''}
-                onClick={() => i18n.changeLanguage(l.code as LanguageCode)}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
-          <span className="hq-meta-item">
-            {t('admin.sessionIp')}: <b>127.0.0.1</b>
-          </span>
-          <span className="hq-meta-item">
-            {t('admin.sessionTime')}: <b>{now}</b>
-          </span>
-          <div className="hq-user" ref={userRef}>
-            <button type="button" className="hq-user-btn" onClick={() => setUserOpen((v) => !v)}>
-              <span className="hq-avatar" aria-hidden />
-              <span className="hq-user-name">
-                {brand.productName} | {t('partner.portal')}
-              </span>
-              <span className={`hq-user-caret${userOpen ? ' is-open' : ''}`} />
-            </button>
-            {userOpen && (
-              <div className="hq-user-menu">
-                <button type="button" onClick={logout}>
-                  {t('nav.logout')}
-                </button>
-              </div>
-            )}
-          </div>
-          <button type="button" className="hq-close" onClick={closeAllTabs}>
-            ✕ {t('admin.closeAll')}
+        <div className="hq-fold-wrap">
+          <button type="button" className="hq-fold" onClick={() => setCollapsed((v) => !v)} title={t('admin.collapse')}>
+            {collapsed ? '»' : `« ${t('admin.collapse')}`}
           </button>
         </div>
-      </header>
-      <div className="hq-body">
-        <aside className="hq-side">
-          <div className="hq-fold-wrap">
-            <button type="button" className="hq-fold" onClick={() => setCollapsed((v) => !v)} title={t('admin.collapse')}>
-              {collapsed ? '»' : `« ${t('admin.collapse')}`}
+        <div className="hq-nav">
+          {visible.map((m) => (
+            <NavLink
+              key={m.to}
+              to={m.to}
+              end={m.end}
+              className={({ isActive }) => `hq-side-link${isActive ? ' on' : ''}`}
+              title={t(m.key)}
+            >
+              {collapsed ? t(m.key).slice(0, 1) : t(m.key)}
+            </NavLink>
+          ))}
+        </div>
+      </aside>
+      <div className="hq-main">
+        <header className="hq-top">
+          <div className="hq-right">
+            <div className="hq-langs" aria-label="Language">
+              <span className="hq-lang-label">{t('admin.lang')}</span>
+              {headerLangs.map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  className={i18n.language.toLowerCase().startsWith(l.code) ? 'on' : ''}
+                  onClick={() => i18n.changeLanguage(l.code as LanguageCode)}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
+            <span className="hq-meta-item">
+              {t('admin.sessionIp')}: <b>127.0.0.1</b>
+            </span>
+            <span className="hq-meta-item">
+              {t('admin.sessionTime')}: <b>{now}</b>
+            </span>
+            <div className="hq-user" ref={userRef}>
+              <button type="button" className="hq-user-btn" onClick={() => setUserOpen((v) => !v)}>
+                <span className="hq-avatar" aria-hidden />
+                <span className="hq-user-name">
+                  {brand.productName} | {t('partner.portal')}
+                </span>
+                <span className={`hq-user-caret${userOpen ? ' is-open' : ''}`} />
+              </button>
+              {userOpen && (
+                <div className="hq-user-menu">
+                  <button type="button" onClick={logout}>
+                    {t('nav.logout')}
+                  </button>
+                </div>
+              )}
+            </div>
+            <button type="button" className="hq-close" onClick={closeAllTabs}>
+              ✕ {t('admin.closeAll')}
             </button>
           </div>
-          <div className="hq-nav">
-            {visible.map((m) => (
-              <NavLink
-                key={m.to}
-                to={m.to}
-                end={m.end}
-                className={({ isActive }) => `hq-side-link${isActive ? ' on' : ''}`}
-                title={t(m.key)}
-              >
-                {collapsed ? t(m.key).slice(0, 1) : t(m.key)}
-              </NavLink>
-            ))}
-          </div>
-        </aside>
+        </header>
         <div className="hq-content">
           <div className="hq-tabbar">
             {tabs.map((tab) => (

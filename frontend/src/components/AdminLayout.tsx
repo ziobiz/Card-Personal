@@ -237,73 +237,16 @@ export default function AdminLayout() {
 
   return (
     <div className={`hq-shell${collapsed ? ' is-collapsed' : ''}${tablet ? ' is-tablet' : ''}`}>
-      <header className="hq-top">
-        <Link to="/admin/dashboard" className="hq-top-logo">
-          {brand.logoAdmin ? <img src={brand.logoAdmin} alt={brand.productName} /> : <span>{brand.productName || 'ICOCARD'}</span>}
+      <aside className="hq-side">
+        <Link to="/admin/dashboard" className="hq-side-logo">
+          {brand.logoAdmin ? <img src={brand.logoAdmin} alt={brand.productName} /> : <span className="hq-side-logo-text">{brand.productName || 'ICOCARD'}</span>}
         </Link>
-        <div className="hq-top-fill" />
-        <div className="hq-right">
-          <label className="hq-tablet">
-            <span>{t('admin.tablet')}</span>
-            <input type="checkbox" checked={tablet} onChange={(e) => setTablet(e.target.checked)} />
-          </label>
-          <div className="hq-langs" aria-label="Language">
-            <span className="hq-lang-label">{t('admin.lang')}</span>
-            {headerLangs.map((l) => (
-              <button
-                key={l.code}
-                type="button"
-                className={i18n.language.toLowerCase().startsWith(l.code) ? 'on' : ''}
-                onClick={() => i18n.changeLanguage(l.code as LanguageCode)}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
-          <span className="hq-meta-item">
-            {t('admin.sessionIp')}: <b>127.0.0.1</b>
-          </span>
-          <span className="hq-meta-item">
-            {t('admin.sessionTime')}: <b>{now}</b>
-          </span>
-          <div className="hq-user" ref={userRef}>
-            <button type="button" className="hq-user-btn" onClick={() => setUserOpen((v) => !v)}>
-              <span className="hq-avatar" aria-hidden />
-              <span className="hq-user-name">
-                {brand.operatorName} HQ | {t('admin.roleAdmin')}
-              </span>
-              <span className={`hq-user-caret${userOpen ? ' is-open' : ''}`} />
-            </button>
-            {userOpen && (
-              <div className="hq-user-menu">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setUserOpen(false);
-                    navigate('/admin/me');
-                  }}
-                >
-                  {t('admin.myInfo')}
-                </button>
-                <button type="button" onClick={logout}>
-                  {t('admin.logout')}
-                </button>
-              </div>
-            )}
-          </div>
-          <button type="button" className="hq-close" onClick={closeAllTabs}>
-            ✕ {t('admin.closeAll')}
+        <div className="hq-fold-wrap">
+          <button type="button" className="hq-fold" onClick={() => setCollapsed((v) => !v)} title={t('admin.collapse')}>
+            {collapsed ? '»' : `« ${t('admin.collapse')}`}
           </button>
         </div>
-      </header>
-      <div className="hq-body">
-        <aside className="hq-side">
-          <div className="hq-fold-wrap">
-            <button type="button" className="hq-fold" onClick={() => setCollapsed((v) => !v)} title={t('admin.collapse')}>
-              {collapsed ? '»' : `« ${t('admin.collapse')}`}
-            </button>
-          </div>
-          <div className="hq-nav">
+        <div className="hq-nav">
           {groups.map((g) => {
             const inSection = g.items.some((it) => loc.pathname === it.to);
             const expanded = collapsed ? false : (openId ?? currentId) === g.id;
@@ -356,8 +299,64 @@ export default function AdminLayout() {
               </div>
             );
           })}
+        </div>
+      </aside>
+      <div className="hq-main">
+        <header className="hq-top">
+          <div className="hq-right">
+            <label className="hq-tablet">
+              <span>{t('admin.tablet')}</span>
+              <input type="checkbox" checked={tablet} onChange={(e) => setTablet(e.target.checked)} />
+            </label>
+            <div className="hq-langs" aria-label="Language">
+              <span className="hq-lang-label">{t('admin.lang')}</span>
+              {headerLangs.map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  className={i18n.language.toLowerCase().startsWith(l.code) ? 'on' : ''}
+                  onClick={() => i18n.changeLanguage(l.code as LanguageCode)}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
+            <span className="hq-meta-item">
+              {t('admin.sessionIp')}: <b>127.0.0.1</b>
+            </span>
+            <span className="hq-meta-item">
+              {t('admin.sessionTime')}: <b>{now}</b>
+            </span>
+            <div className="hq-user" ref={userRef}>
+              <button type="button" className="hq-user-btn" onClick={() => setUserOpen((v) => !v)}>
+                <span className="hq-avatar" aria-hidden />
+                <span className="hq-user-name">
+                  {brand.operatorName} HQ | {t('admin.roleAdmin')}
+                </span>
+                <span className={`hq-user-caret${userOpen ? ' is-open' : ''}`} />
+              </button>
+              {userOpen && (
+                <div className="hq-user-menu">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUserOpen(false);
+                      navigate('/admin/me');
+                    }}
+                  >
+                    {t('admin.myInfo')}
+                  </button>
+                  <button type="button" onClick={logout}>
+                    {t('admin.logout')}
+                  </button>
+                </div>
+              )}
+            </div>
+            <button type="button" className="hq-close" onClick={closeAllTabs}>
+              ✕ {t('admin.closeAll')}
+            </button>
           </div>
-        </aside>
+        </header>
         <div className="hq-content">
           <div className="hq-tabbar">
             {tabs.map((tab) => (
