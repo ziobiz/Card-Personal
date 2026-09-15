@@ -587,6 +587,8 @@
     "brandLoginNotice": "사칭 안내 문구",
     "brandLoginNoticeTitle": "사칭 안내 제목",
     "brandLoginNoticeBody": "사칭 안내 내용",
+    "brandLoginNoticeTitleShort": "제목",
+    "brandLoginNoticeBodyShort": "내용",
     "brandLoginBgBlock": "배경 이미지",
     "brandLoginNoticeBlock": "사칭 안내 문구",
     "brandLoginNoticeToggleHint": "활성으로 두면 제목·내용 입력이 가능하고 로그인 패널에 노출됩니다. 비활성이면 안내가 숨겨지고 로고와 이메일·비밀번호가 바로 이어집니다.",

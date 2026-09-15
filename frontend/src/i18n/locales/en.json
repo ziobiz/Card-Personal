@@ -642,6 +642,8 @@
     "brandHeroTooBig": "Background image is too large. Please upload a smaller file.",
     "brandLoginNoticeTitle": "Notice title",
     "brandLoginNoticeBody": "Notice body",
+    "brandLoginNoticeTitleShort": "Title",
+    "brandLoginNoticeBodyShort": "Content",
     "brandLoginBgBlock": "Background image",
     "brandLoginNoticeBlock": "Spoofing notice",
     "brandLoginNoticeToggleHint": "When active, title and body can be edited and shown on the login panel. When inactive, the notice is hidden and the logo sits above the email/password fields.",
