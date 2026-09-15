@@ -43,7 +43,7 @@ body {
 
 .is-admin {
   min-height: 100vh;
-  background: #eef1f4;
+  background: #ffffff;
   color: #333;
 }
 
@@ -162,7 +162,7 @@ select,
 /* Admin chrome lives in AdminLayout.css */
 .is-admin {
   color: #333;
-  background: #eef1f4;
+  background: #ffffff;
 }
 
 .is-admin .card-surface {
