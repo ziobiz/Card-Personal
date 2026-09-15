@@ -189,18 +189,39 @@ export default function AdminSettings() {
       <section className="card-surface hq-sandbox-card">
         <h3 className="section-title">{t('admin.walletHqDefault')}</h3>
         <p className="hq-card-hint">{t('admin.walletHqHint')}</p>
-        <div className="hq-form-grid">
-          <label className="admin-settings-checkbox">
-            <input type="checkbox" checked={form.walletEmbedded} onChange={(e) => setForm((f) => ({ ...f, walletEmbedded: e.target.checked }))} />
-            {t('walletMode.embedded')}
+        <div className="hq-form-grid hq-policy-grid">
+          <label>
+            <span>{t('walletMode.embedded')}</span>
+            <select
+              className="input"
+              value={form.walletEmbedded ? 'allow' : 'deny'}
+              onChange={(e) => setForm((f) => ({ ...f, walletEmbedded: e.target.value === 'allow' }))}
+            >
+              <option value="allow">{t('admin.optionAllow')}</option>
+              <option value="deny">{t('admin.optionDeny')}</option>
+            </select>
           </label>
-          <label className="admin-settings-checkbox">
-            <input type="checkbox" checked={form.walletExternal} onChange={(e) => setForm((f) => ({ ...f, walletExternal: e.target.checked }))} />
-            {t('walletMode.external')}
+          <label>
+            <span>{t('walletMode.external')}</span>
+            <select
+              className="input"
+              value={form.walletExternal ? 'allow' : 'deny'}
+              onChange={(e) => setForm((f) => ({ ...f, walletExternal: e.target.value === 'allow' }))}
+            >
+              <option value="allow">{t('admin.optionAllow')}</option>
+              <option value="deny">{t('admin.optionDeny')}</option>
+            </select>
           </label>
-          <label className="admin-settings-checkbox">
-            <input type="checkbox" checked={form.walletBridge} onChange={(e) => setForm((f) => ({ ...f, walletBridge: e.target.checked }))} />
-            {t('walletMode.bridge')}
+          <label>
+            <span>{t('walletMode.bridge')}</span>
+            <select
+              className="input"
+              value={form.walletBridge ? 'allow' : 'deny'}
+              onChange={(e) => setForm((f) => ({ ...f, walletBridge: e.target.value === 'allow' }))}
+            >
+              <option value="allow">{t('admin.optionAllow')}</option>
+              <option value="deny">{t('admin.optionDeny')}</option>
+            </select>
           </label>
         </div>
       </section>
@@ -208,18 +229,39 @@ export default function AdminSettings() {
       <section className="card-surface hq-sandbox-card">
         <h3 className="section-title">{t('admin.sectionOtp')}</h3>
         <p className="hq-card-hint">{t('admin.otpPolicyDesc')}</p>
-        <div className="hq-form-grid">
-          <label className="admin-settings-checkbox">
-            <input type="checkbox" checked={form.otpRequiredAdmin} onChange={(e) => setForm((f) => ({ ...f, otpRequiredAdmin: e.target.checked }))} />
-            {t('admin.otpRequiredAdmin')}
+        <div className="hq-form-grid hq-policy-grid">
+          <label>
+            <span>{t('admin.otpRequiredAdmin')}</span>
+            <select
+              className="input"
+              value={form.otpRequiredAdmin ? 'on' : 'off'}
+              onChange={(e) => setForm((f) => ({ ...f, otpRequiredAdmin: e.target.value === 'on' }))}
+            >
+              <option value="on">{t('admin.optionActive')}</option>
+              <option value="off">{t('admin.optionInactive')}</option>
+            </select>
           </label>
-          <label className="admin-settings-checkbox">
-            <input type="checkbox" checked={form.otpRequiredMember} onChange={(e) => setForm((f) => ({ ...f, otpRequiredMember: e.target.checked }))} />
-            {t('admin.otpRequiredMember')}
+          <label>
+            <span>{t('admin.otpRequiredMember')}</span>
+            <select
+              className="input"
+              value={form.otpRequiredMember ? 'on' : 'off'}
+              onChange={(e) => setForm((f) => ({ ...f, otpRequiredMember: e.target.value === 'on' }))}
+            >
+              <option value="on">{t('admin.optionActive')}</option>
+              <option value="off">{t('admin.optionInactive')}</option>
+            </select>
           </label>
-          <label className="admin-settings-checkbox">
-            <input type="checkbox" checked={form.otpRequiredOrg} onChange={(e) => setForm((f) => ({ ...f, otpRequiredOrg: e.target.checked }))} />
-            {t('admin.otpRequiredOrg')}
+          <label>
+            <span>{t('admin.otpRequiredOrg')}</span>
+            <select
+              className="input"
+              value={form.otpRequiredOrg ? 'on' : 'off'}
+              onChange={(e) => setForm((f) => ({ ...f, otpRequiredOrg: e.target.value === 'on' }))}
+            >
+              <option value="on">{t('admin.optionActive')}</option>
+              <option value="off">{t('admin.optionInactive')}</option>
+            </select>
           </label>
         </div>
       </section>

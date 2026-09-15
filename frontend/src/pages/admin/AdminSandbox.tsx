@@ -76,30 +76,39 @@ export default function AdminSandbox() {
         {loading && !status ? (
           <p className="muted-text">{t('common.loading')}</p>
         ) : (
-          <div className="hq-sandbox-status-grid">
-            <div className={`hq-pill ${status?.tokenOk ? 'ok' : status?.mock ? 'warn' : 'bad'}`}>
-              {status?.mock ? t('admin.sandboxMockOn') : status?.tokenOk ? t('admin.sandboxTokenOk') : t('admin.sandboxTokenFail')}
+          <div className="hq-sandbox-status">
+            <div className="hq-sandbox-status-banner">
+              <span className="hq-sandbox-status-label">{t('admin.sandboxTokenStatus')}</span>
+              <span className={`hq-pill ${status?.tokenOk ? 'ok' : status?.mock ? 'warn' : 'bad'}`}>
+                {status?.mock
+                  ? t('admin.sandboxMockOn')
+                  : status?.tokenOk
+                    ? t('admin.sandboxTokenOk')
+                    : t('admin.sandboxTokenFail')}
+              </span>
             </div>
-            <div className="hq-kv">
-              <span>{t('admin.environment')}</span>
-              <strong>{status?.environment || '—'}</strong>
-            </div>
-            <div className="hq-kv">
-              <span>API</span>
-              <strong className="hq-mono">{status?.apiBase || '—'}</strong>
-            </div>
-            <div className="hq-kv">
-              <span>Chain</span>
-              <strong>{status?.chainId ?? '—'}</strong>
-            </div>
-            <div className="hq-kv">
-              <span>{t('admin.sandboxWebhook')}</span>
-              <strong className="hq-mono">{status?.webhookBaseUrl || '—'}</strong>
-            </div>
-            <div className="hq-kv">
-              <span>{t('admin.brandLocales')}</span>
-              <strong>{(status?.enabledLocales || []).join(', ') || '—'}</strong>
-            </div>
+            <dl className="hq-sandbox-status-list">
+              <div className="hq-sandbox-status-row">
+                <dt>{t('admin.environment')}</dt>
+                <dd>{status?.environment || '—'}</dd>
+              </div>
+              <div className="hq-sandbox-status-row">
+                <dt>API</dt>
+                <dd className="hq-mono">{status?.apiBase || '—'}</dd>
+              </div>
+              <div className="hq-sandbox-status-row">
+                <dt>Chain</dt>
+                <dd>{status?.chainId ?? '—'}</dd>
+              </div>
+              <div className="hq-sandbox-status-row">
+                <dt>{t('admin.sandboxWebhook')}</dt>
+                <dd className="hq-mono">{status?.webhookBaseUrl || '—'}</dd>
+              </div>
+              <div className="hq-sandbox-status-row">
+                <dt>{t('admin.brandLocales')}</dt>
+                <dd>{(status?.enabledLocales || []).join(', ') || '—'}</dd>
+              </div>
+            </dl>
           </div>
         )}
         {status?.tokenError ? <p className="auth-error">{status.tokenError}</p> : null}

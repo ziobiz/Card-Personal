@@ -506,7 +506,6 @@ export default function AdminLayout() {
             <Outlet context={{ helpOn, toggleHelp, setPageActions } satisfies AdminOutletContext} />
           </div>
           <div className="hq-page-actions" aria-label="page actions">
-            <div className="hq-page-actions-extra">{pageActions}</div>
             <button
               type="button"
               className={`hq-hello hq-hello-page${helpOn ? ' on' : ''}`}
@@ -515,6 +514,7 @@ export default function AdminLayout() {
             >
               {t('admin.hello')}
             </button>
+            <div className="hq-page-actions-extra">{pageActions}</div>
           </div>
         </div>
       </div>
