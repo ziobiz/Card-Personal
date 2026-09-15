@@ -74,7 +74,7 @@ export default function App() {
   const shell = pathname.startsWith('/admin')
     ? 'is-admin'
     : pathname.startsWith('/partner')
-      ? 'partner-portal'
+      ? 'is-admin partner-portal'
       : 'user-app';
 
   return (

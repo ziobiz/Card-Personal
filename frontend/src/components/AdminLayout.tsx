@@ -1,11 +1,10 @@
 import { Link, NavLink, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type LanguageCode } from '../i18n';
 import { useBrand } from '../brand/BrandContext';
 import { api } from '../api';
 import './AdminLayout.css';
-import './AdminConsole.css';
 
 type MenuItem = { to: string; labelKey: string; menu: string };
 type IconName = 'gear' | 'cloud' | 'phone' | 'card' | 'user' | 'ops';
@@ -225,12 +224,6 @@ export default function AdminLayout() {
     navigate('/admin/login');
   };
 
-  const theme = {
-    '--hq-side': brand.sidebarBg || '#2c3138',
-    '--hq-accent': brand.accentColor || '#6658dd',
-    '--hq-logo-bg': brand.logoBg || '#2c3138',
-  } as CSSProperties;
-
   const currentId = groups.find((x) => x.items.some((it) => loc.pathname === it.to))?.id;
   const firstAllowed = groups[0]?.items[0]?.to || '/admin/dashboard';
   const pathAllowed =
@@ -243,15 +236,71 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className={`hq-shell${collapsed ? ' is-collapsed' : ''}${tablet ? ' is-tablet' : ''}`} style={theme}>
+    <div className={`hq-shell${collapsed ? ' is-collapsed' : ''}${tablet ? ' is-tablet' : ''}`}>
+      <header className="hq-top">
+        <Link to="/admin/dashboard" className="hq-top-logo">
+          {brand.logoAdmin ? <img src={brand.logoAdmin} alt={brand.productName} /> : <span>{brand.productName || 'ICOCARD'}</span>}
+        </Link>
+        <div className="hq-top-fill" />
+        <div className="hq-right">
+          <label className="hq-tablet">
+            <span>{t('admin.tablet')}</span>
+            <input type="checkbox" checked={tablet} onChange={(e) => setTablet(e.target.checked)} />
+          </label>
+          <div className="hq-langs" aria-label="Language">
+            <span className="hq-lang-label">{t('admin.lang')}</span>
+            {headerLangs.map((l) => (
+              <button
+                key={l.code}
+                type="button"
+                className={i18n.language.toLowerCase().startsWith(l.code) ? 'on' : ''}
+                onClick={() => i18n.changeLanguage(l.code as LanguageCode)}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+          <span className="hq-meta-item">
+            {t('admin.sessionIp')}: <b>127.0.0.1</b>
+          </span>
+          <span className="hq-meta-item">
+            {t('admin.sessionTime')}: <b>{now}</b>
+          </span>
+          <div className="hq-user" ref={userRef}>
+            <button type="button" className="hq-user-btn" onClick={() => setUserOpen((v) => !v)}>
+              <span className="hq-avatar" aria-hidden />
+              <span className="hq-user-name">
+                {brand.operatorName} HQ | {t('admin.roleAdmin')}
+              </span>
+              <span className={`hq-user-caret${userOpen ? ' is-open' : ''}`} />
+            </button>
+            {userOpen && (
+              <div className="hq-user-menu">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUserOpen(false);
+                    navigate('/admin/me');
+                  }}
+                >
+                  {t('admin.myInfo')}
+                </button>
+                <button type="button" onClick={logout}>
+                  {t('admin.logout')}
+                </button>
+              </div>
+            )}
+          </div>
+          <button type="button" className="hq-close" onClick={closeAllTabs}>
+            ✕ {t('admin.closeAll')}
+          </button>
+        </div>
+      </header>
       <div className="hq-body">
         <aside className="hq-side">
-          <Link to="/admin/dashboard" className="hq-side-logo">
-            {brand.logoAdmin ? <img src={brand.logoAdmin} alt={brand.productName} /> : <span className="hq-side-logo-text">{brand.productName || 'on the line'}</span>}
-          </Link>
           <div className="hq-fold-wrap">
             <button type="button" className="hq-fold" onClick={() => setCollapsed((v) => !v)} title={t('admin.collapse')}>
-              {collapsed ? '»' : `« « ${t('admin.collapse')}`}
+              {collapsed ? '»' : `« ${t('admin.collapse')}`}
             </button>
           </div>
           <div className="hq-nav">
@@ -310,62 +359,6 @@ export default function AdminLayout() {
           </div>
         </aside>
         <div className="hq-content">
-          <header className="hq-top">
-            <div className="hq-top-fill" />
-            <div className="hq-right">
-              <label className="hq-tablet">
-                <span>{t('admin.tablet')}</span>
-                <input type="checkbox" checked={tablet} onChange={(e) => setTablet(e.target.checked)} />
-              </label>
-              <div className="hq-langs" aria-label="Language">
-                <span className="hq-lang-label">{t('admin.lang')}</span>
-                {headerLangs.map((l) => (
-                  <button
-                    key={l.code}
-                    type="button"
-                    className={i18n.language.toLowerCase().startsWith(l.code) ? 'on' : ''}
-                    onClick={() => i18n.changeLanguage(l.code as LanguageCode)}
-                  >
-                    {l.label}
-                  </button>
-                ))}
-              </div>
-              <span className="hq-meta-item">
-                {t('admin.sessionIp')}: <b>127.0.0.1</b>
-              </span>
-              <span className="hq-meta-item">
-                {t('admin.sessionTime')}: <b>{now}</b>
-              </span>
-              <div className="hq-user" ref={userRef}>
-                <button type="button" className="hq-user-btn" onClick={() => setUserOpen((v) => !v)}>
-                  <span className="hq-avatar" aria-hidden />
-                  <span className="hq-user-name">
-                    {brand.operatorName} HQ | {t('admin.roleAdmin')}
-                  </span>
-                  <span className={`hq-user-caret${userOpen ? ' is-open' : ''}`} />
-                </button>
-                {userOpen && (
-                  <div className="hq-user-menu">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUserOpen(false);
-                        navigate('/admin/me');
-                      }}
-                    >
-                      {t('admin.myInfo')}
-                    </button>
-                    <button type="button" onClick={logout}>
-                      {t('admin.logout')}
-                    </button>
-                  </div>
-                )}
-              </div>
-              <button type="button" className="hq-close" onClick={closeAllTabs}>
-                ✕ {t('admin.closeAll')}
-              </button>
-            </div>
-          </header>
           <div className="hq-tabbar">
             {tabs.map((tab) => (
               <span key={tab.to} className={`hq-tab${loc.pathname === tab.to ? ' on' : ''}`}>

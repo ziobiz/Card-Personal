@@ -43,8 +43,17 @@ body {
 
 .is-admin {
   min-height: 100vh;
-  background: #000;
-  color: #f4f4f5;
+  background: #eef1f4;
+  color: #333;
+}
+
+.is-admin button,
+.is-admin a,
+.is-admin input,
+.is-admin select,
+.is-admin textarea,
+.is-admin .btn-like {
+  min-height: 0;
 }
 
 /* Touch target min 44px for mobile */
@@ -150,16 +159,16 @@ select,
   }
 }
 
-/* Admin Wirex One tone — tap targets remain compact in HQ shell */
+/* Admin chrome lives in AdminLayout.css */
 .is-admin {
-  color: #f4f4f5;
-  background: #000;
+  color: #333;
+  background: #eef1f4;
 }
 
 .is-admin .card-surface {
   background: #fff;
-  color: #2c3138;
-  border: 1px solid #c9d0d8;
+  color: #333;
+  border: 1px solid #e5e8ee;
   border-radius: 0;
 }
 
@@ -167,11 +176,11 @@ select,
 .is-admin .section-title,
 .is-admin .stat-label,
 .is-admin .stat-value {
-  color: #f4f4f5;
+  color: #333;
 }
 
 .is-admin .stat-label {
-  color: #9a9a9a;
+  color: #777;
 }
 
 .is-admin .hq-shell a,
@@ -181,7 +190,17 @@ select,
 
 .is-admin,
 .is-admin .hq-shell {
-  font-size: 13px;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-  letter-spacing: -0.02em;
+  font-size: 12px;
+  font-family: 'Malgun Gothic', 'Segoe UI', 'Noto Sans KR', sans-serif;
+  letter-spacing: 0;
+}
+
+/* Must follow the 44px touch-target rules above */
+.is-admin button,
+.is-admin a,
+.is-admin input,
+.is-admin select,
+.is-admin textarea,
+.is-admin .btn-like {
+  min-height: 0 !important;
 }

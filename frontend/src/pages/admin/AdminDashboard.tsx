@@ -28,34 +28,36 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="app-container admin-dashboard">
-      <h1 className="page-title">{t('admin.titleDashboard')}</h1>
-      {loading ? (
-        <p className="muted-text">{t('common.loading')}</p>
-      ) : stats ? (
-        <div className="admin-stats-grid">
-          <div className="card-surface stat-card">
-            <div className="stat-label">{t('admin.statUsers')}</div>
-            <div className="stat-value">{stats.totalUsers}</div>
-            <Link to="/admin/users" className="stat-link">{t('admin.viewDetails')}</Link>
+    <div className="admin-dashboard">
+      <div className="card-surface">
+        <h3 className="section-title">{t('admin.titleDashboard')}</h3>
+        {loading ? (
+          <p className="muted-text">{t('common.loading')}</p>
+        ) : stats ? (
+          <div className="admin-stats-grid">
+            <div className="stat-card">
+              <div className="stat-label">{t('admin.statUsers')}</div>
+              <div className="stat-value">{stats.totalUsers}</div>
+              <Link to="/admin/users" className="stat-link">{t('admin.viewDetails')}</Link>
+            </div>
+            <div className="stat-card">
+              <div className="stat-label">{t('admin.statCards')}</div>
+              <div className="stat-value">{stats.totalCards}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-label">{t('admin.statActive')}</div>
+              <div className="stat-value stat-success">{stats.activeCards}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-label">{t('admin.statBalance')}</div>
+              <div className="stat-value">${stats.totalBalance.toLocaleString()}</div>
+              <Link to="/admin/cards" className="stat-link">{t('admin.viewCards')}</Link>
+            </div>
           </div>
-          <div className="card-surface stat-card">
-            <div className="stat-label">{t('admin.statCards')}</div>
-            <div className="stat-value">{stats.totalCards}</div>
-          </div>
-          <div className="card-surface stat-card">
-            <div className="stat-label">{t('admin.statActive')}</div>
-            <div className="stat-value stat-success">{stats.activeCards}</div>
-          </div>
-          <div className="card-surface stat-card">
-            <div className="stat-label">{t('admin.statBalance')}</div>
-            <div className="stat-value">${stats.totalBalance.toLocaleString()}</div>
-            <Link to="/admin/cards" className="stat-link">{t('admin.viewCards')}</Link>
-          </div>
-        </div>
-      ) : (
-        <p className="muted-text">{t('admin.statsUnavailable')}</p>
-      )}
+        ) : (
+          <p className="muted-text">{t('admin.statsUnavailable')}</p>
+        )}
+      </div>
     </div>
   );
 }
