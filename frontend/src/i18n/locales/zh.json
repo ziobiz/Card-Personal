@@ -53,7 +53,7 @@
     "privacy": "隐私政策",
     "otpTitle": "两步验证",
     "otpTotpHint": "请输入验证器应用中的6位代码。",
-    "otpCode": "验证码",
+    "otpCode": "验证码 / OTP",
     "otpVerify": "确认验证",
     "otpVerifying": "验证中...",
     "otpInvalid": "验证码不正确。",
