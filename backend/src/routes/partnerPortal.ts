@@ -221,6 +221,16 @@ router.put('/access/groups/:id', requirePartnerPortal, (req, res) => {
   res.json(group);
 });
 
+router.delete('/access/groups/:id', requirePartnerPortal, (req, res) => {
+  const me = partnerActor(req);
+  if (!me || !canManagePartnerAccess(me) || !me.partnerId) return res.status(403).json({ error: 'Access denied' });
+  const current = accessGroupStore.get(req.params.id);
+  if (!current || current.owner !== me.partnerId) return res.status(404).json({ error: 'Not found' });
+  if (!accessGroupStore.remove(req.params.id)) return res.status(400).json({ error: 'Built-in group cannot be deleted' });
+  writeAudit({ actor: me, owner: me.partnerId, targetType: 'group', targetId: current.id, action: 'update', detail: `removed ${current.name}` });
+  res.json({ ok: true });
+});
+
 router.get('/access/history', requirePartnerPortal, (req, res) => {
   const me = partnerActor(req);
   if (!me || !canManagePartnerAccess(me) || !me.partnerId) return res.status(403).json({ error: 'Access denied' });

@@ -1,0 +1,243 @@
+.access-work {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.access-work .access-hint {
+  margin: 0 0 12px;
+  color: #666;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.access-work .access-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #dde1e8;
+  margin-bottom: 14px;
+}
+
+.access-work .access-tab {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 16px !important;
+  border: 1px solid transparent !important;
+  border-bottom: 0 !important;
+  background: transparent !important;
+  color: #555 !important;
+  border-radius: 4px 4px 0 0 !important;
+  font-weight: 600;
+}
+
+.access-work .access-tab.is-on {
+  background: #fff !important;
+  border-color: #dde1e8 !important;
+  color: #111 !important;
+  margin-bottom: -1px;
+}
+
+.access-work .access-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: flex-end;
+  margin-bottom: 12px;
+}
+
+.access-work .access-toolbar label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #555;
+  min-width: 180px;
+}
+
+.access-work .access-toolbar .input,
+.access-work .access-add .input,
+.access-work .access-editor .input,
+.access-work .access-split .input {
+  width: 100% !important;
+  max-width: 280px !important;
+  height: 28px !important;
+}
+
+.access-work .access-add {
+  margin-bottom: 14px;
+}
+
+.access-work .access-add-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px 14px;
+  padding: 0 4px;
+}
+
+.access-work .access-add-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #555;
+  max-width: none !important;
+  min-width: 0 !important;
+  flex: none !important;
+}
+
+.access-work .access-add-grid .input {
+  max-width: 100% !important;
+}
+
+.access-work .access-add-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 12px;
+  padding: 0 4px;
+}
+
+.access-work .access-table-wrap {
+  overflow-x: auto;
+  padding: 0 !important;
+}
+
+.access-work .access-table-wrap .section-title {
+  margin-bottom: 0;
+}
+
+.access-work .access-split {
+  display: grid;
+  grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.access-work .access-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 4px;
+}
+
+.access-work .access-group-item {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 32px !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+  padding: 6px 10px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.access-work .access-group-item.is-on {
+  background: #2c3138 !important;
+  color: #fff !important;
+  border-color: #2c3138 !important;
+}
+
+.access-work .access-group-add {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 0 4px 4px;
+}
+
+.access-work .access-group-add .input {
+  flex: 1;
+  max-width: none !important;
+}
+
+.access-work .access-editor {
+  min-width: 0;
+}
+
+.access-work .access-editor-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: flex-end;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.access-work .access-editor-head label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #555;
+  flex: 1 1 200px;
+  max-width: 320px !important;
+  min-width: 160px !important;
+}
+
+.access-work .access-modes {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 0 4px 12px;
+  font-size: 13px;
+}
+
+.access-work .access-modes label,
+.access-work .access-check {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  flex: none !important;
+  margin: 0;
+  padding: 4px 0;
+  white-space: nowrap;
+  color: #222;
+  font-size: 13px;
+}
+
+.access-work .access-section {
+  margin: 0 4px 16px;
+}
+
+.access-work .access-section h4 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #666;
+}
+
+.access-work .access-menus {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2px 12px;
+}
+
+.access-work .access-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 4px 4px;
+}
+
+.access-work .access-msg {
+  margin: 8px 0;
+  font-size: 12px;
+}
+
+.access-work .access-msg.is-err {
+  color: #b42318;
+}
+
+.access-work .access-empty {
+  padding: 16px;
+  color: #888;
+  font-size: 12px;
+}
+
+@media (max-width: 860px) {
+  .access-work .access-split {
+    grid-template-columns: 1fr;
+  }
+}

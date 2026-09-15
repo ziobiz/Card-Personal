@@ -418,7 +418,7 @@ router.get('/operators', (req, res) => {
 
 router.post('/operators', (req, res) => {
   const actor = hqActor(req);
-  if (!actor?.isSuper) return res.status(403).json({ error: 'Super admin required' });
+  if (!actor || !canManageHqAccess(actor)) return res.status(403).json({ error: 'Access denied' });
   const body = req.body ?? {};
   try {
     const scope = body.scope === 'PARTNER' ? 'PARTNER' : 'HQ';
@@ -434,7 +434,7 @@ router.post('/operators', (req, res) => {
       partnerId,
       groupId,
       menuOverride: Array.isArray(body.menuOverride) ? body.menuOverride.map(String) : undefined,
-      isSuper: scope === 'HQ' ? Boolean(body.isSuper) : !partnerHasSuper(partnerId || ''),
+      isSuper: scope === 'HQ' ? Boolean(actor.isSuper && body.isSuper) : !partnerHasSuper(partnerId || ''),
       mustChangePassword: false,
     });
     writeAudit({

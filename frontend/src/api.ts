@@ -580,6 +580,8 @@ export const api = {
       request('/admin/access/groups', { method: 'POST', body: JSON.stringify(data) }),
     updateAccessGroup: (id: string, data: { name?: string; menus?: string[] }) =>
       request(`/admin/access/groups/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteAccessGroup: (id: string) =>
+      request(`/admin/access/groups/${id}`, { method: 'DELETE' }),
     getAccessHistory: (owner?: string) =>
       request<{ items: Array<{ id: string; at: string; actorEmail: string; action: string; targetType: string; targetId: string; detail: string }> }>(
         `/admin/access/history${owner ? `?owner=${encodeURIComponent(owner)}` : ''}`
@@ -588,7 +590,7 @@ export const api = {
       request<{ items: Array<{ id: string; email: string; name: string; scope: string; role: string; partnerId?: string; partnerName?: string; status: string; createdAt: string; groupId?: string; isSuper?: boolean; menuOverride?: string[] }>; total: number }>(
         `/admin/operators${scope ? `?scope=${scope}` : ''}`
       ),
-    createOperator: (data: { email: string; name: string; password: string; scope: 'HQ' | 'PARTNER'; role?: string; partnerId?: string; groupId?: string; isSuper?: boolean }) =>
+    createOperator: (data: { email: string; name: string; password: string; scope: 'HQ' | 'PARTNER'; role?: string; partnerId?: string; groupId?: string; isSuper?: boolean; menuOverride?: string[] }) =>
       request('/admin/operators', { method: 'POST', body: JSON.stringify(data) }),
     updateOperator: (id: string, data: { name?: string; role?: string; status?: string; password?: string; groupId?: string; menuOverride?: string[]; isSuper?: boolean }) =>
       request(`/admin/operators/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
@@ -941,7 +943,7 @@ export const api = {
     staff: () => {
       const token = localStorage.getItem('partnerToken');
       return request<{
-        items: Array<{ id: string; email: string; name: string; role: string; status: string; createdAt: string; groupId?: string; isSuper?: boolean }>;
+        items: Array<{ id: string; email: string; name: string; role: string; status: string; createdAt: string; groupId?: string; isSuper?: boolean; menuOverride?: string[] }>;
         total: number;
         canAdd: boolean;
         groups?: Array<{ id: string; code: string; name: string }>;
@@ -950,7 +952,7 @@ export const api = {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
     },
-    addStaff: (data: { email: string; name: string; password: string; role?: string; groupId?: string }) => {
+    addStaff: (data: { email: string; name: string; password: string; role?: string; groupId?: string; menuOverride?: string[] }) => {
       const token = localStorage.getItem('partnerToken');
       return request('/partner-portal/staff', {
         method: 'POST',
@@ -981,7 +983,7 @@ export const api = {
     },
     accessGroups: () => {
       const token = localStorage.getItem('partnerToken');
-      return request<{ items: Array<{ id: string; code: string; name: string; menus: string[] }>; catalog: string[] }>('/partner-portal/access/groups', {
+      return request<{ items: Array<{ id: string; code: string; name: string; menus: string[]; builtIn?: boolean }>; catalog: string[] }>('/partner-portal/access/groups', {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
     },
@@ -998,6 +1000,13 @@ export const api = {
       return request(`/partner-portal/access/groups/${id}`, {
         method: 'PUT',
         body: JSON.stringify(data),
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+    },
+    deleteAccessGroup: (id: string) => {
+      const token = localStorage.getItem('partnerToken');
+      return request(`/partner-portal/access/groups/${id}`, {
+        method: 'DELETE',
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
     },
