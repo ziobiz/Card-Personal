@@ -515,7 +515,9 @@
     "standaloneWirexSaved": "已加密保存独立型 Wirex 密钥。",
     "opsOnly": "仅运营",
     "navManuals": "手册",
-    "navAccess": "访问权限"
+    "navAccess": "访问权限",
+    "hello": "帮助",
+    "helloHint": "显示或隐藏说明文字"
   },
   "earn": {
     "title": "收益",

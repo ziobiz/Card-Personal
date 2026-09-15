@@ -92,7 +92,7 @@ export default function AdminBrand() {
 
   return (
     <form className="hq-brand" onSubmit={save}>
-      <p className="hq-brand-lead">{t('admin.brandLead')}</p>
+      <p className="hq-card-hint hq-brand-lead">{t('admin.brandLead')}</p>
 
       <section className="card-surface hq-brand-card">
         <h3>{t('admin.brandIdentity')}</h3>
@@ -148,7 +148,7 @@ export default function AdminBrand() {
 
       <section className="card-surface hq-brand-card">
         <h3>{t('admin.brandLocales')}</h3>
-        <p className="muted-text hq-brand-locale-hint">{t('admin.brandLocalesHint')}</p>
+        <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandLocalesHint')}</p>
         <div className="hq-locale-grid">
           {LOCALE_OPTIONS.map(({ code, label }) => {
             const on = (form.enabledLocales || []).includes(code);

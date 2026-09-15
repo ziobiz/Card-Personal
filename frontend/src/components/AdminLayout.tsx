@@ -105,6 +105,7 @@ export default function AdminLayout() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [tablet, setTablet] = useState(false);
+  const [helpOn, setHelpOn] = useState(() => localStorage.getItem('hq_help_on') === '1');
   const [userOpen, setUserOpen] = useState(false);
   const [flyId, setFlyId] = useState<string | null>(null);
   const userRef = useRef<HTMLDivElement | null>(null);
@@ -258,6 +259,14 @@ export default function AdminLayout() {
     navigate('/admin/login');
   };
 
+  const toggleHelp = () => {
+    setHelpOn((v) => {
+      const next = !v;
+      localStorage.setItem('hq_help_on', next ? '1' : '0');
+      return next;
+    });
+  };
+
   const currentId = groups.find((x) => x.items.some((it) => loc.pathname === it.to))?.id;
   const firstAllowed = groups[0]?.items[0]?.to || '/admin/dashboard';
   const pathAllowed =
@@ -270,7 +279,7 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className={`hq-shell${collapsed ? ' is-collapsed' : ''}${tablet ? ' is-tablet' : ''}`}>
+    <div className={`hq-shell${collapsed ? ' is-collapsed' : ''}${tablet ? ' is-tablet' : ''}${helpOn ? ' is-help-on' : ''}`}>
       <aside className="hq-side">
         <Link to="/admin/dashboard" className="hq-side-logo">
           {brand.logoAdmin ? <img src={brand.logoAdmin} alt={brand.productName} /> : <span className="hq-side-logo-text">{brand.productName || 'ICOCARD'}</span>}
@@ -333,6 +342,16 @@ export default function AdminLayout() {
               </div>
             );
           })}
+        </div>
+        <div className="hq-side-foot">
+          <button
+            type="button"
+            className={`hq-hello${helpOn ? ' on' : ''}`}
+            onClick={toggleHelp}
+            title={t('admin.helloHint')}
+          >
+            {t('admin.hello')}
+          </button>
         </div>
       </aside>
       <div className="hq-main">

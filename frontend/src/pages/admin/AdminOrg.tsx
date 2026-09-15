@@ -76,8 +76,8 @@ export default function AdminOrg() {
         <h1 className="page-title">{t('admin.navOrg')}</h1>
         <Link to="/admin/partners" className="btn-outline">{t('admin.navPartners')}</Link>
       </div>
-      <p className="muted-text">{t('admin.orgHqOnly')}</p>
-      <p className="muted-text">{t('admin.orgDesc')}</p>
+      <p className="muted-text hq-card-hint">{t('admin.orgHqOnly')}</p>
+      <p className="muted-text hq-card-hint">{t('admin.orgDesc')}</p>
       <div className="admin-org-levels">
         {LEVELS.map((code) => (
           <button

@@ -516,7 +516,9 @@
     "standaloneWirexSaved": "単独型 Wirex キーを暗号化して保存しました。",
     "opsOnly": "運営専用",
     "navManuals": "マニュアル",
-    "navAccess": "アクセス権限"
+    "navAccess": "アクセス権限",
+    "hello": "ハロー",
+    "helloHint": "案内文の表示/非表示"
   },
   "earn": {
     "title": "リワード",

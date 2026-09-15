@@ -73,7 +73,7 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
 
   return (
     <div>
-      <p className="muted-text">{scope === 'HQ' ? t('admin.operatorsHqDesc') : t('admin.operatorsPartnerDesc')}</p>
+      <p className="muted-text hq-card-hint">{scope === 'HQ' ? t('admin.operatorsHqDesc') : t('admin.operatorsPartnerDesc')}</p>
       <form onSubmit={create} className="card-surface" style={{ marginBottom: 12 }}>
         <h3 className="section-title">{t('admin.operatorAdd')}</h3>
         <div className="hq-form-grid">

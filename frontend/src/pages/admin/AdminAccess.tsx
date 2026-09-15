@@ -69,7 +69,7 @@ export default function AdminAccess() {
 
   return (
     <div>
-      <p className="muted-text">{t('access.hqHint')}</p>
+      <p className="muted-text hq-card-hint">{t('access.hqHint')}</p>
       <div className="hq-toolbar" style={{ justifyContent: 'flex-start', gap: 12, marginBottom: 12 }}>
         <label>
           {t('access.owner')}

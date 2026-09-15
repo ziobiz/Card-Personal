@@ -172,7 +172,7 @@ export default function AdminPartners() {
         </button>
       </div>
 
-      <p className="muted-text admin-partners-desc">{t('admin.partnersDesc')}</p>
+      <p className="hq-card-hint">{t('admin.partnersDesc')}</p>
 
       {feePartner && (
         <form onSubmit={handleSaveFees} className="card-surface admin-partners-create">

@@ -564,7 +564,9 @@
     "resetOtpConfirm": "Reset Google OTP for {email}?\\n(They must re-enroll on next login)",
     "otpResetDone": "OTP for {email} has been reset.",
     "navManuals": "Manuals",
-    "navAccess": "Access"
+    "navAccess": "Access",
+    "hello": "Hello",
+    "helloHint": "Show or hide help text"
   },
   "earn": {
     "title": "Earn",

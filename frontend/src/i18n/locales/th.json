@@ -515,7 +515,9 @@
     "standaloneWirexSaved": "บันทึกคีย์ Wirex แบบสแตนด์อโลนแบบเข้ารหัสแล้ว",
     "opsOnly": "ดำเนินงานเท่านั้น",
     "navManuals": "คู่มือ",
-    "navAccess": "สิทธิ์เข้าถึง"
+    "navAccess": "สิทธิ์เข้าถึง",
+    "hello": "Hello",
+    "helloHint": "แสดง/ซ่อนข้อความช่วยเหลือ"
   },
   "earn": {
     "title": "รับรางวัล",
