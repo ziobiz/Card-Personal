@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useBrand } from '../brand/BrandContext';
+import { resolveMemberShellLogo } from '../api';
 import { TNavLink, useTenantNav } from './TenantLink';
 import './Layout.css';
 
@@ -67,6 +68,7 @@ export default function Layout() {
   const { brand } = useBrand();
   const { logout } = useAuth();
   const go = useTenantNav();
+  const shellLogo = resolveMemberShellLogo(brand);
 
   const handleLogout = () => {
     logout();
@@ -79,7 +81,7 @@ export default function Layout() {
     <div className="wx-shell">
       <header className="wx-top">
         <TNavLink to="/" className="wx-mark">
-          {brand.logoLogin ? <img src={brand.logoLogin} alt={brand.productName} className="wx-mark-img" /> : brand.productName}
+          {shellLogo ? <img src={shellLogo} alt={brand.productName} className="wx-mark-img" /> : brand.productName}
         </TNavLink>
         <LanguageSwitcher />
       </header>

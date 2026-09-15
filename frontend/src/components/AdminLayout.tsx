@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { type LanguageCode } from '../i18n';
 import { useBrand } from '../brand/BrandContext';
-import { api } from '../api';
+import { api, resolveAdminShellLogo } from '../api';
 import { contrastText, normalizeHex } from '../lib/colorHex';
 import './AdminLayout.css';
 
@@ -313,6 +313,8 @@ export default function AdminLayout() {
     return <Navigate to={firstAllowed} replace />;
   }
 
+  const adminShellLogo = resolveAdminShellLogo(brand);
+
   return (
     <div
       className={`hq-shell${collapsed ? ' is-collapsed' : ''}${tablet ? ' is-tablet' : ''}${helpOn ? ' is-help-on' : ''}`}
@@ -332,7 +334,11 @@ export default function AdminLayout() {
     >
       <aside className="hq-side">
         <Link to="/admin/dashboard" className="hq-side-logo" style={{ background: normalizeHex(brand.logoBg) || brand.logoBg || undefined }}>
-          {brand.logoAdmin ? <img src={brand.logoAdmin} alt={brand.productName} /> : <span className="hq-side-logo-text">{brand.productName || 'ICOCARD'}</span>}
+          {adminShellLogo ? (
+            <img src={adminShellLogo} alt={brand.productName} />
+          ) : (
+            <span className="hq-side-logo-text">{brand.productName || 'ICOCARD'}</span>
+          )}
         </Link>
         <div className="hq-fold-wrap">
           <button type="button" className="hq-fold" onClick={() => setCollapsed((v) => !v)} title={t('admin.collapse')}>

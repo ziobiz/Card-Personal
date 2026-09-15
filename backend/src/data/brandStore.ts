@@ -61,6 +61,10 @@ export interface BrandConfig extends BrandColorSet {
   supportEmail: string;
   logoAdmin: string;
   logoLogin: string;
+  /** Member shell (after login) top-left logo. Empty → falls back to logoLogin */
+  logoMemberShell: string;
+  /** Admin shell (after login) sidebar logo. Empty → falls back to logoAdmin */
+  logoAdminShell: string;
   favicon: string;
   /** Admin login left-panel hero (data URL or /path). Empty → system default. */
   loginHeroImage: string;
@@ -188,6 +192,8 @@ export const DEFAULT_BRAND: BrandConfig = {
   ...DEFAULT_COLORS,
   logoAdmin: '',
   logoLogin: '',
+  logoMemberShell: '',
+  logoAdminShell: '',
   favicon: '',
   loginHeroImage: '',
   memberLoginHeroImage: '',
@@ -406,7 +412,7 @@ export const brandStore = {
       const c = clipColor(partial[key]);
       if (c) next[key] = c;
     }
-    for (const key of ['logoAdmin', 'logoLogin', 'favicon'] as const) {
+    for (const key of ['logoAdmin', 'logoLogin', 'logoMemberShell', 'logoAdminShell', 'favicon'] as const) {
       if (partial[key] === undefined) continue;
       const img = clipDataUrl(partial[key]);
       if (img !== undefined) next[key] = img;

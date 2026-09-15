@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { resolveAdminShellLogo, resolveMemberShellLogo } from '../api';
 import { useBrand } from '../brand/BrandContext';
 import './ManualFrame.css';
 
@@ -18,7 +19,7 @@ const TITLE_KEY: Record<string, string> = {
 export default function ManualFrame({ manuals }: { manuals: ManualCard[] }) {
   const { t } = useTranslation();
   const { brand } = useBrand();
-  const logo = brand.logoAdmin || brand.logoLogin;
+  const logo = resolveAdminShellLogo(brand) || resolveMemberShellLogo(brand);
 
   return (
     <div className="manual-stack">

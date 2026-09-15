@@ -188,6 +188,10 @@ export interface BrandConfig extends BrandColorSet {
   supportEmail: string;
   logoAdmin: string;
   logoLogin: string;
+  /** Member after-login top/side logo (empty → logoLogin) */
+  logoMemberShell?: string;
+  /** Admin after-login sidebar logo (empty → logoAdmin) */
+  logoAdminShell?: string;
   favicon: string;
   /** Admin login left hero — independent of member */
   loginHeroImage?: string;
@@ -229,6 +233,8 @@ export const DEFAULT_BRAND: BrandConfig = {
   ...DEFAULT_COLORS,
   logoAdmin: '',
   logoLogin: '',
+  logoMemberShell: '',
+  logoAdminShell: '',
   favicon: '',
   loginHeroImage: '',
   memberLoginHeroImage: '',
@@ -273,6 +279,26 @@ export const DEFAULT_BRAND: BrandConfig = {
     },
   ],
 };
+
+/** Member login / register / OTP mark */
+export function resolveMemberLoginLogo(brand: BrandConfig): string {
+  return (brand.logoLogin || '').trim();
+}
+
+/** Member shell after login (top mark) */
+export function resolveMemberShellLogo(brand: BrandConfig): string {
+  return (brand.logoMemberShell || brand.logoLogin || '').trim();
+}
+
+/** Admin login panel logo */
+export function resolveAdminLoginLogo(brand: BrandConfig): string {
+  return (brand.logoAdmin || '').trim();
+}
+
+/** Admin sidebar after login */
+export function resolveAdminShellLogo(brand: BrandConfig): string {
+  return (brand.logoAdminShell || brand.logoAdmin || '').trim();
+}
 
 /** System default login background image */
 export const DEFAULT_LOGIN_HERO = '/user-hero-bg.png';

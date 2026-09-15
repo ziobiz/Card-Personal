@@ -1816,12 +1816,14 @@
   width: 100%;
 }
 
-.is-admin .hq-brand-lead,
-.is-admin .hq-brand-locale-hint {
-  color: #777;
-  line-height: 1.7;
-  margin: 0 0 16px;
-  max-width: none;
+.is-admin .hq-logo-slot-hint {
+  display: block;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  color: #888;
+  line-height: 1.4;
+  margin: 2px 0 6px;
 }
 
 .is-admin .hq-brand-grid,

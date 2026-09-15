@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { api } from '../../api';
+import { api, resolveAdminLoginLogo } from '../../api';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import TurnstileWidget from '../../components/TurnstileWidget';
 import { useBrand } from '../../brand/BrandContext';
@@ -18,6 +18,7 @@ export default function PartnerLogin() {
   const [turnstileToken, setTurnstileToken] = useState('');
   const [tsReset, setTsReset] = useState(0);
   const needTurnstile = Boolean(brand.turnstileEnabled);
+  const loginLogo = resolveAdminLoginLogo(brand);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +65,7 @@ export default function PartnerLogin() {
           <strong>{(brand.loginNoticeTitle || '').trim() || t('partner.scamTitle')}</strong>
           <p>{(brand.loginNoticeBody || '').trim() || t('partner.scamBody')}</p>
         </div>
-        {brand.logoAdmin ? <img className="tp-logo" src={brand.logoAdmin} alt={brand.productName} /> : <p className="tp-brand">{brand.productName}</p>}
+        {loginLogo ? <img className="tp-logo" src={loginLogo} alt={brand.productName} /> : <p className="tp-brand">{brand.productName}</p>}
         <h1>{t('auth.login')}</h1>
         {error ? <div className="auth-error">{error}</div> : null}
         <form onSubmit={handleSubmit}>

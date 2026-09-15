@@ -155,7 +155,10 @@ export default function AdminBrand() {
     reload();
   };
 
-  const onFile = async (k: 'logoAdmin' | 'logoLogin' | 'favicon', file?: File) => {
+  const onFile = async (
+    k: 'logoAdmin' | 'logoLogin' | 'logoMemberShell' | 'logoAdminShell' | 'favicon',
+    file?: File
+  ) => {
     if (!file) return;
     try {
       const url = await fileToDataUrl(file);
@@ -165,6 +168,34 @@ export default function AdminBrand() {
       setMsg(t('admin.brandFileTooBig'));
     }
   };
+
+  const LogoSlot = ({
+    field,
+    label,
+    hint,
+  }: {
+    field: 'logoAdmin' | 'logoLogin' | 'logoMemberShell' | 'logoAdminShell' | 'favicon';
+    label: string;
+    hint?: string;
+  }) => (
+    <label className="hq-logo-slot">
+      <span>{label}</span>
+      {hint ? <em className="hq-logo-slot-hint">{hint}</em> : null}
+      <div className="hq-logo-preview" style={{ background: form?.logoBg }}>
+        {form?.[field] ? <img src={String(form[field])} alt="" /> : <em>{form?.productName}</em>}
+      </div>
+      <input
+        type="file"
+        accept="image/png,image/jpeg,image/svg+xml,image/webp"
+        onChange={(e) => onFile(field, e.target.files?.[0])}
+      />
+      {form?.[field] ? (
+        <button type="button" className="btn-outline" onClick={() => set(field, '')}>
+          {t('admin.brandClear')}
+        </button>
+      ) : null}
+    </label>
+  );
 
   const onHeroFile = async (kind: 'admin' | 'member', file?: File) => {
     if (!file || !form) return;
@@ -341,45 +372,44 @@ export default function AdminBrand() {
       </section>
 
       <section className="card-surface hq-brand-card">
-        <h3>{t('admin.brandLogos')}</h3>
-        <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandLogosSplitHint')}</p>
+        <h3>{t('admin.brandLogosMemberCard')}</h3>
+        <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandLogosMemberHint')}</p>
         <div className="hq-brand-logos">
-          <label className="hq-logo-slot">
-            <span>{t('admin.brandLogoLogin')}</span>
-            <div className="hq-logo-preview" style={{ background: form.logoBg }}>
-              {form.logoLogin ? <img src={form.logoLogin} alt="" /> : <em>{form.productName}</em>}
-            </div>
-            <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" onChange={(e) => onFile('logoLogin', e.target.files?.[0])} />
-            {form.logoLogin && (
-              <button type="button" className="btn-outline" onClick={() => set('logoLogin', '')}>
-                {t('admin.brandClear')}
-              </button>
-            )}
-          </label>
-          <label className="hq-logo-slot">
-            <span>{t('admin.brandLogoAdmin')}</span>
-            <div className="hq-logo-preview" style={{ background: form.logoBg }}>
-              {form.logoAdmin ? <img src={form.logoAdmin} alt="" /> : <em>{form.productName}</em>}
-            </div>
-            <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" onChange={(e) => onFile('logoAdmin', e.target.files?.[0])} />
-            {form.logoAdmin && (
-              <button type="button" className="btn-outline" onClick={() => set('logoAdmin', '')}>
-                {t('admin.brandClear')}
-              </button>
-            )}
-          </label>
-          <label className="hq-logo-slot">
-            <span>{t('admin.brandFavicon')}</span>
-            <div className="hq-logo-preview" style={{ background: form.logoBg }}>
-              {form.favicon ? <img src={form.favicon} alt="" /> : <em>{form.productName}</em>}
-            </div>
-            <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" onChange={(e) => onFile('favicon', e.target.files?.[0])} />
-            {form.favicon && (
-              <button type="button" className="btn-outline" onClick={() => set('favicon', '')}>
-                {t('admin.brandClear')}
-              </button>
-            )}
-          </label>
+          <LogoSlot
+            field="logoLogin"
+            label={t('admin.brandLogoMemberLogin')}
+            hint={t('admin.brandLogoMemberLoginHint')}
+          />
+          <LogoSlot
+            field="logoMemberShell"
+            label={t('admin.brandLogoMemberShell')}
+            hint={t('admin.brandLogoMemberShellHint')}
+          />
+        </div>
+      </section>
+
+      <section className="card-surface hq-brand-card">
+        <h3>{t('admin.brandLogosAdminCard')}</h3>
+        <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandLogosAdminHint')}</p>
+        <div className="hq-brand-logos">
+          <LogoSlot
+            field="logoAdmin"
+            label={t('admin.brandLogoAdminLogin')}
+            hint={t('admin.brandLogoAdminLoginHint')}
+          />
+          <LogoSlot
+            field="logoAdminShell"
+            label={t('admin.brandLogoAdminShell')}
+            hint={t('admin.brandLogoAdminShellHint')}
+          />
+        </div>
+      </section>
+
+      <section className="card-surface hq-brand-card">
+        <h3>{t('admin.brandLogosOtherCard')}</h3>
+        <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandLogosOtherHint')}</p>
+        <div className="hq-brand-logos">
+          <LogoSlot field="favicon" label={t('admin.brandFavicon')} hint={t('admin.brandFaviconHint')} />
         </div>
       </section>
 

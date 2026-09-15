@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { type LanguageCode } from '../i18n';
 import { useBrand } from '../brand/BrandContext';
-import { api } from '../api';
+import { api, resolveAdminShellLogo } from '../api';
 import './AdminLayout.css';
 import './PartnerPortal.css';
 
@@ -135,11 +135,17 @@ export default function PartnerLayout() {
     window.location.href = '/partner/login';
   };
 
+  const partnerShellLogo = resolveAdminShellLogo(brand);
+
   return (
     <div className={`hq-shell${collapsed ? ' is-collapsed' : ''}`}>
       <aside className="hq-side">
         <Link to="/partner" className="hq-side-logo">
-          {brand.logoAdmin ? <img src={brand.logoAdmin} alt={brand.productName} /> : <span className="hq-side-logo-text">{brand.productName || 'ICOCARD'}</span>}
+          {partnerShellLogo ? (
+            <img src={partnerShellLogo} alt={brand.productName} />
+          ) : (
+            <span className="hq-side-logo-text">{brand.productName || 'ICOCARD'}</span>
+          )}
         </Link>
         <div className="hq-fold-wrap">
           <button type="button" className="hq-fold" onClick={() => setCollapsed((v) => !v)} title={t('admin.collapse')}>
