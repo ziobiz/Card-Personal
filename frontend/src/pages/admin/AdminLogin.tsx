@@ -47,7 +47,6 @@ export default function AdminLogin() {
 
   return (
     <AdminAuthChrome>
-      <h1 className="ac-title">{t('auth.login')}</h1>
       <form onSubmit={handleSubmit}>
         {error ? <div className="ac-error">{error}</div> : null}
         <label className="ac-field">
