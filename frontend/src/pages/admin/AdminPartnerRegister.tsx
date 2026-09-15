@@ -58,6 +58,7 @@ export default function AdminPartnerRegister() {
   const [solutionName, setSolutionName] = useState('');
   const [webhookUrl, setWebhookUrl] = useState('');
   const [bridgeDebitUrl, setBridgeDebitUrl] = useState('');
+  const [salesOrgEnabled, setSalesOrgEnabled] = useState(false);
 
   useEffect(() => {
     api.admin.getFeeTemplates().then((r) => {
@@ -94,7 +95,8 @@ export default function AdminPartnerRegister() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
-    const err = validateOrgProfile(form, t);
+    const useSalesOrg = deliveryMode === 'sub_solution_standalone' && salesOrgEnabled;
+    const err = validateOrgProfile({ ...form, orgLevel: 'MERCHANT' }, t, { requireParent: useSalesOrg });
     if (err) {
       setMessage(err);
       return;
@@ -108,12 +110,16 @@ export default function AdminPartnerRegister() {
       const payload = profilePayload(form);
       const isCustom = feePolicyId === FEE_CUSTOM;
       if (form.orgLevel === 'MERCHANT') {
+        const useSalesOrg = deliveryMode === 'sub_solution_standalone' && salesOrgEnabled;
         const r = await api.admin.createPartner({
           ...payload,
+          orgLevel: 'MERCHANT',
+          orgParentId: useSalesOrg ? payload.orgParentId : undefined,
           cardIssuePolicy,
           feePolicyId: isCustom ? '' : feePolicyId,
           fees: isCustom ? customFees : undefined,
           deliveryMode,
+          salesOrgEnabled: useSalesOrg,
           walletPolicySource,
           walletEmbedded,
           walletExternal,
@@ -180,7 +186,13 @@ export default function AdminPartnerRegister() {
       <div className="card-surface reg-card">
         <h3 className="section-title">{t('admin.sectionBasic')}</h3>
         <p className="hq-card-hint">{t('admin.basicHint')}</p>
-        <OrgBasicFields value={form} onChange={setForm} onSearchParent={openParentSearch} />
+        <OrgBasicFields
+          value={{ ...form, orgLevel: 'MERCHANT' }}
+          onChange={setForm}
+          onSearchParent={openParentSearch}
+          lockLevel
+          showSalesOrg={deliveryMode === 'sub_solution_standalone' && salesOrgEnabled}
+        />
       </div>
 
       <div className="card-surface reg-card">
@@ -278,7 +290,15 @@ export default function AdminPartnerRegister() {
         <div className="hq-form-grid">
           <label>
             <span>{t('admin.deliveryMode')}</span>
-            <select className="input" value={deliveryMode} onChange={(e) => setDeliveryMode(e.target.value as typeof deliveryMode)}>
+            <select
+              className="input"
+              value={deliveryMode}
+              onChange={(e) => {
+                const next = e.target.value as typeof deliveryMode;
+                setDeliveryMode(next);
+                if (next !== 'sub_solution_standalone') setSalesOrgEnabled(false);
+              }}
+            >
               <option value="api">{t('admin.deliveryApi')}</option>
               <option value="sub_solution">{t('admin.deliverySub')}</option>
               <option value="sub_solution_standalone">{t('admin.deliveryStandalone')}</option>
@@ -324,6 +344,10 @@ export default function AdminPartnerRegister() {
         {deliveryMode === 'sub_solution_standalone' ? (
           <div className="hq-form-grid" style={{ marginTop: 10 }}>
             <p className="hq-card-hint">{t('admin.deliveryStandaloneHint')}</p>
+            <label>
+              <input type="checkbox" checked={salesOrgEnabled} onChange={(e) => setSalesOrgEnabled(e.target.checked)} /> {t('admin.salesOrgOptional')}
+            </label>
+            <p className="hq-card-hint">{t('admin.salesOrgOptionalHint')}</p>
             <label>
               <span>Wirex Client ID</span>
               <input className="input" value={wirexClientId} onChange={(e) => setWirexClientId(e.target.value)} />

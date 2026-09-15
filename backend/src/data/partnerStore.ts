@@ -105,6 +105,8 @@ export interface Partner {
   /** HQ-issued merchant id (PG MID). Modes 1–2 never receive Wirex keys. */
   mid?: string;
   deliveryMode?: DeliveryMode;
+  /** Standalone add-on only. API / sub-solution never enable tenant sales org. */
+  salesOrgEnabled?: boolean;
   walletPolicySource?: WalletPolicySource;
   walletModes?: PartnerWalletModes;
   /** Standalone only: tenant Wirex contract (encrypted). Never used for API/sub_solution. */
@@ -305,6 +307,7 @@ export const partnerStore = {
     return {
       mid: p.mid || '',
       deliveryMode: p.deliveryMode || 'api',
+      salesOrgEnabled: isStandalone(p) && Boolean(p.salesOrgEnabled),
       walletPolicySource: p.walletPolicySource === 'custom' ? 'custom' : 'follow_hq',
       walletModes: resolveWalletModes(p),
       apiKeyPrefix: standalone ? '' : (p.apiKeyPrefix || '') + '...',
@@ -340,6 +343,7 @@ export const partnerStore = {
     feePolicyId?: string;
     distribution?: Partner['distribution'];
     deliveryMode?: DeliveryMode;
+    salesOrgEnabled?: boolean;
     walletPolicySource?: WalletPolicySource;
     walletModes?: PartnerWalletModes;
     webhookUrl?: string;
@@ -382,6 +386,7 @@ export const partnerStore = {
       allowPlastic: flags.allowPlastic,
       mid,
       deliveryMode,
+      salesOrgEnabled: standalone && Boolean(data.salesOrgEnabled),
       walletPolicySource,
       walletModes: walletPolicySource === 'custom' ? resolveWalletModes({ walletPolicySource: 'custom', walletModes: data.walletModes }) : undefined,
       apiSecretHash: standalone ? undefined : hashSecret(apiSecret),

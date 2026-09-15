@@ -132,9 +132,9 @@ function ComboPhone({
   );
 }
 
-export function validateOrgProfile(v: OrgProfileValues, t: (k: string) => string): string | null {
+export function validateOrgProfile(v: OrgProfileValues, t: (k: string) => string, opts?: { requireParent?: boolean }): string | null {
   if (!v.orgLevel) return t('admin.orgLevelRequired');
-  if (!v.parentId) return t('admin.parentRequired');
+  if (opts?.requireParent !== false && !v.parentId) return t('admin.parentRequired');
   if (!v.name.trim()) return t('admin.orgNameRequired');
   if (!v.businessNo.trim()) return t('admin.bizNoRequired');
   if (!v.ceoName.trim()) return t('admin.ceoRequired');
@@ -204,12 +204,14 @@ export function OrgBasicFields({
   onSearchParent,
   lockLevel,
   showCode,
+  showSalesOrg = true,
 }: {
   value: OrgProfileValues;
   onChange: (next: OrgProfileValues) => void;
   onSearchParent: (forLevel?: string) => void;
   lockLevel?: boolean;
   showCode?: boolean;
+  showSalesOrg?: boolean;
 }) {
   const { t } = useTranslation();
   const set = (patch: Partial<OrgProfileValues>) => onChange({ ...value, ...patch });
@@ -235,6 +237,8 @@ export function OrgBasicFields({
   return (
     <div className="org-profile-grid org-basic-grid">
       <div className="org-row">
+      {showSalesOrg ? (
+        <>
       <Field label={t('admin.orgParent')}>
         <div className="org-id-row">
           <input
@@ -270,6 +274,8 @@ export function OrgBasicFields({
           </select>
         )}
       </Field>
+        </>
+      ) : null}
       <Field label={t('admin.orgName')} required>
         <input className="input" value={value.name} onChange={(e) => set({ name: e.target.value })} required />
       </Field>

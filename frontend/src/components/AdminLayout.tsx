@@ -5,6 +5,7 @@ import { type LanguageCode } from '../i18n';
 import { useBrand } from '../brand/BrandContext';
 import { api } from '../api';
 import './AdminLayout.css';
+import './AdminConsole.css';
 
 type MenuItem = { to: string; labelKey: string; menu: string };
 type IconName = 'gear' | 'cloud' | 'phone' | 'card' | 'user' | 'ops';

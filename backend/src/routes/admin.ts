@@ -809,12 +809,16 @@ router.post('/partners', (req, res) => {
     businessNo: profile.businessNo,
     ceoName: profile.ceoName,
     phone: profile.phone || profile.mobile,
-    orgParentId: typeof body.orgParentId === 'string' ? body.orgParentId : undefined,
+    orgParentId:
+      parseDeliveryMode(body.deliveryMode) === 'sub_solution_standalone' && body.salesOrgEnabled === true && typeof body.orgParentId === 'string'
+        ? body.orgParentId
+        : undefined,
     cardIssuePolicy: parseCardIssuePolicy(body.cardIssuePolicy) ?? issuePolicyFromPartner({
       allowVirtual: body.allowVirtual !== false,
       allowPlastic: body.allowPlastic === true,
     }),
     deliveryMode: parseDeliveryMode(body.deliveryMode),
+    salesOrgEnabled: body.salesOrgEnabled === true,
     walletPolicySource: body.walletPolicySource === 'custom' ? 'custom' : 'follow_hq',
     walletModes: {
       embedded: body.walletEmbedded !== false,

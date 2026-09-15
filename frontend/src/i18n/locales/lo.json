@@ -171,7 +171,10 @@
     "resetPwOnce": "Temporary password for {{email}}: {{password}} (shown once)",
     "navHqOperators": "HQ",
     "navManuals": "Manuals",
-    "navAccess": "Access"
+    "navAccess": "Access",
+    "orgHqOnly": "Sales organization is HQ-only. It is not included in API or sub-solution. Standalone tenants can add it on request.",
+    "salesOrgOptional": "Enable sales organization (optional)",
+    "salesOrgOptionalHint": "Standalone only. Separate from HQ revenue-share org. Not available on API or sub-solution."
   },
   "partner": {
     "ourKeysNotWirex": "Authenticate with HQ-issued MID / API Key / Secret. Do not use Wirex keys.",

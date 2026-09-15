@@ -157,10 +157,10 @@ select,
 }
 
 .is-admin .card-surface {
-  background: linear-gradient(180deg, rgba(28, 28, 30, 0.82) 0%, rgba(10, 10, 12, 0.88) 100%);
-  color: #f4f4f5;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
+  background: #fff;
+  color: #2c3138;
+  border: 1px solid #c9d0d8;
+  border-radius: 0;
 }
 
 .is-admin .page-title,
