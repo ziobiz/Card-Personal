@@ -41,14 +41,6 @@ const COLOR_KEYS = [
 
 type ColorKey = (typeof COLOR_KEYS)[number];
 
-const COLOR_GROUPS: Array<{ id: string; tone: 'lavender' | 'peach' | 'mist' | 'sky' | 'mint'; keys: ColorKey[] }> = [
-  { id: 'colorGroupSidebar', tone: 'lavender', keys: ['sidebarBg', 'sidebarHover', 'sidebarActive', 'sidebarSub', 'sidebarText', 'accentColor'] },
-  { id: 'colorGroupChrome', tone: 'peach', keys: ['logoBg', 'foldBg', 'foldHover'] },
-  { id: 'colorGroupHeader', tone: 'mist', keys: ['headerBg'] },
-  { id: 'colorGroupTabbar', tone: 'sky', keys: ['tabbarBg', 'tabbarText', 'tabbarActive'] },
-  { id: 'colorGroupLogin', tone: 'mint', keys: ['loginPanelBg'] },
-];
-
 function ensureColorFields(b: BrandConfig): BrandConfig {
   const presets = b.colorPresets?.length
     ? b.colorPresets
@@ -383,7 +375,6 @@ export default function AdminBrand() {
               onChange={(e) => set('browserTitle', e.target.value)}
               placeholder={form.productName || 'ICOCARD'}
             />
-            <em className="hq-logo-slot-hint">{t('admin.brandBrowserTitleHint')}</em>
           </label>
           <label>
             {t('admin.brandOperator')}
@@ -397,7 +388,7 @@ export default function AdminBrand() {
             {t('admin.brandSupport')}
             <input className="input" value={form.supportEmail} onChange={(e) => set('supportEmail', e.target.value)} />
           </label>
-          <label className="hq-brand-span">
+          <label className="hq-brand-span hq-copyright-field">
             {t('admin.brandCopyright')}
             <input className="input" value={form.copyright} onChange={(e) => set('copyright', e.target.value)} />
           </label>
@@ -518,7 +509,6 @@ export default function AdminBrand() {
 
             <div className={`hq-notice-grid${form.loginNoticeEnabled === false ? ' is-disabled' : ''}`}>
               <label className="hq-notice-label-title">{t('admin.brandLoginNoticeTitleShort')}</label>
-              <div className="hq-notice-label-preview">{t('admin.brandLoginPreview')}</div>
               <input
                 className="input hq-login-title-input hq-notice-title"
                 value={form.loginNoticeTitle || ''}
@@ -526,9 +516,8 @@ export default function AdminBrand() {
                 placeholder={t('partner.scamTitle')}
                 disabled={form.loginNoticeEnabled === false}
               />
-              <div className="hq-notice-title-gap" />
               <label className="hq-notice-label-body">{t('admin.brandLoginNoticeBodyShort')}</label>
-              <div className="hq-notice-body-gap" />
+              <div className="hq-notice-label-preview">{t('admin.brandLoginPreview')}</div>
               <textarea
                 className="hq-login-body-input hq-notice-body"
                 value={form.loginNoticeBody || ''}
@@ -652,40 +641,33 @@ export default function AdminBrand() {
           ))}
         </div>
 
-        <div className="hq-color-groups">
-          {COLOR_GROUPS.map((group) => (
-            <div key={group.id} className={`hq-color-group tone-${group.tone}`}>
-              <h4>{t(`admin.${group.id}`)}</h4>
-              <div className="hq-brand-colors hq-brand-colors-labeled">
-                {group.keys.map((key) => {
-                  const value = normalizeHex(String(form[key] || '')) || String(form[key] || '#000000');
-                  const draft = hexDraft[key] ?? value;
-                  return (
-                    <label key={key} className="hq-color-field">
-                      <span className="hq-color-title">{colorLabels[key].title}</span>
-                      <span className="hq-color-hint">{colorLabels[key].hint}</span>
-                      <span className="hq-color-row">
-                        <input
-                          type="color"
-                          value={normalizeHex(value) || '#000000'}
-                          onChange={(e) => setColor(key, e.target.value)}
-                          title={value}
-                        />
-                        <input
-                          className="input hq-hex-input"
-                          value={draft}
-                          placeholder="#000000"
-                          spellCheck={false}
-                          onChange={(e) => setColor(key, e.target.value)}
-                          onBlur={() => commitColor(key)}
-                        />
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+        <div className="hq-brand-colors hq-brand-colors-labeled">
+          {COLOR_KEYS.map((key) => {
+            const value = normalizeHex(String(form[key] || '')) || String(form[key] || '#000000');
+            const draft = hexDraft[key] ?? value;
+            return (
+              <label key={key} className="hq-color-field">
+                <span className="hq-color-title">{colorLabels[key].title}</span>
+                <span className="hq-color-hint">{colorLabels[key].hint}</span>
+                <span className="hq-color-row">
+                  <input
+                    type="color"
+                    value={normalizeHex(value) || '#000000'}
+                    onChange={(e) => setColor(key, e.target.value)}
+                    title={value}
+                  />
+                  <input
+                    className="input hq-hex-input"
+                    value={draft}
+                    placeholder="#000000"
+                    spellCheck={false}
+                    onChange={(e) => setColor(key, e.target.value)}
+                    onBlur={() => commitColor(key)}
+                  />
+                </span>
+              </label>
+            );
+          })}
         </div>
         <div
           className="hq-brand-swatch"
