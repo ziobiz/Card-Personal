@@ -486,7 +486,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
   padding: 10px 16px 14px;
   background: #ffffff;
@@ -502,56 +502,97 @@
   gap: 8px;
 }
 
-/* PG Hello — pastel pink; other page actions: white / black text, no fill */
+/* PG toolbar button size (sampled ~32px H, 4px radius) */
+.is-admin .hq-page-actions .btn-primary,
+.is-admin .hq-page-actions .btn-secondary,
+.is-admin .hq-page-actions .btn-outline,
 .is-admin .hq-hello-page {
-  min-width: 64px;
-  height: 30px;
-  padding: 0 14px;
-  border: 1px solid #f3a8bc;
-  border-radius: 2px;
-  background: #f9c5d5;
-  color: #5a2438;
-  font-size: 12px;
-  font-weight: 700;
+  box-sizing: border-box;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 30px !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
   cursor: pointer;
 }
 
-.is-admin .hq-hello-page:hover {
-  background: #f7b4c8;
-  color: #4a1a2c;
-}
-
-.is-admin .hq-hello-page.on {
-  background: #f48fb1;
-  border-color: #e5739a;
-  color: #3d1526;
-}
-
+/* PG default action: white + gray border + black text */
 .is-admin .hq-page-actions .btn-primary,
 .is-admin .hq-page-actions .btn-secondary,
 .is-admin .hq-page-actions .btn-outline {
-  min-height: 30px !important;
-  height: 30px !important;
-  padding: 0 16px !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  background: #fff !important;
-  color: #222 !important;
-  border: 1px solid #c5cad3 !important;
-  border-radius: 2px !important;
-  box-shadow: none !important;
+  background: #ffffff !important;
+  color: #222222 !important;
+  border: 1px solid #b8bdc6 !important;
 }
 
 .is-admin .hq-page-actions .btn-primary:hover,
 .is-admin .hq-page-actions .btn-secondary:hover,
 .is-admin .hq-page-actions .btn-outline:hover {
-  background: #f7f8fa !important;
+  background: #f4f5f7 !important;
   color: #111 !important;
 }
 
 .is-admin .hq-page-actions .btn-primary:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+/* PG Hello — inactive: gray; active (.on): pastel red/pink */
+.is-admin .hq-hello-page {
+  min-width: 52px;
+  background: #e8eaed !important;
+  border: 1px solid #c5cad3 !important;
+  color: #6b7280 !important;
+}
+
+.is-admin .hq-hello-page:hover {
+  background: #dde1e6 !important;
+  color: #4b5563 !important;
+}
+
+.is-admin .hq-hello-page.on {
+  background: #f6c1cb !important;
+  border: 1px solid #e89aa8 !important;
+  color: #8b3a4a !important;
+  font-weight: 600 !important;
+}
+
+.is-admin .hq-hello-page.on:hover {
+  background: #f3b3bf !important;
+  border-color: #e08a9a !important;
+  color: #7a2f3e !important;
+}
+
+/* Align toolbar buttons to same PG size/tone */
+.is-admin .hq-toolbar .btn-primary,
+.is-admin .hq-toolbar .btn-secondary,
+.is-admin .hq-toolbar .btn-outline,
+.is-admin .hq-page .btn-secondary,
+.is-admin .hq-page .btn-outline,
+.is-admin .hq-page .btn-compact {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  border-radius: 4px !important;
+  background: #ffffff !important;
+  color: #222222 !important;
+  border: 1px solid #b8bdc6 !important;
+  box-shadow: none !important;
+}
+
+.is-admin .hq-toolbar .btn-primary:hover,
+.is-admin .hq-toolbar .btn-secondary:hover,
+.is-admin .hq-toolbar .btn-outline:hover,
+.is-admin .hq-page .btn-secondary:hover,
+.is-admin .hq-page .btn-outline:hover,
+.is-admin .hq-page .btn-compact:hover {
+  background: #f4f5f7 !important;
+  color: #111 !important;
 }
 
 .is-admin .hq-shell.is-collapsed .hq-nav {
