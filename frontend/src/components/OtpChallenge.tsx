@@ -143,9 +143,6 @@ export default function OtpChallenge({
               />
             </label>
             {loading ? <p className="ac-sub">{t('auth.otpVerifying')}</p> : null}
-            <button type="submit" disabled={!canSubmit} className="ac-submit">
-              {loading ? t('auth.otpVerifying') : t('auth.otpVerify')}
-            </button>
           </>
         ) : (
           <div className="wx-field wx-field-submit">
@@ -155,7 +152,6 @@ export default function OtpChallenge({
               inputMode="numeric"
               autoComplete="one-time-code"
               maxLength={6}
-              placeholder={t('auth.otpCode')}
               value={code}
               onChange={(e) => onCodeChange(e.target.value)}
               required

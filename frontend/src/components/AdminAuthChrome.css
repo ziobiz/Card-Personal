@@ -166,6 +166,47 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
+.ac-field .input[readonly] {
+  background: #f3f4f6 !important;
+  color: #6b7280 !important;
+}
+
+.ac-otp-field {
+  margin-top: 4px;
+  animation: ac-otp-in 0.22s ease-out;
+}
+
+.ac-otp-field .input {
+  letter-spacing: 0.28em;
+  font-size: 18px !important;
+  font-weight: 700;
+  text-align: center;
+}
+
+.ac-otp-field .input::placeholder {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+
+.ac-otp-status {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+@keyframes ac-otp-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .ac-submit {
   display: block;
   width: 100% !important;
