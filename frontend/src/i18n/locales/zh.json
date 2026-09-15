@@ -228,6 +228,7 @@
     "newApiKey": "新 API Key：",
     "billingDone": "计费完成",
     "endpoints": "合作方 API 端点",
+    "partnerList": "合作方列表",
     "sectionCards": "1. 发卡 API",
     "sectionWallet": "2. 钱包 API",
     "epCardsList": "卡片列表",

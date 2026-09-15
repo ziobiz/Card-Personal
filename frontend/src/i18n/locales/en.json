@@ -299,6 +299,7 @@
     "newApiKey": "New API Key: ",
     "billingDone": "Billing complete",
     "endpoints": "Partner API endpoints",
+    "partnerList": "Partner list",
     "sectionCards": "1. Card issuance API",
     "sectionWallet": "2. Wallet API",
     "epCardsList": "List cards",

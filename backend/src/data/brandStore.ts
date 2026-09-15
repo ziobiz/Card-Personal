@@ -68,9 +68,9 @@ export const DEFAULT_BRAND: BrandConfig = {
   copyright: 'Copyright © 2026 ICOCARD Service by ONTHELINE',
   supportEmail: '',
   headerBg: '#ffffff',
-  sidebarBg: '#3a4049',
+  sidebarBg: '#4a5160',
   accentColor: '#6658dd',
-  logoBg: '#3a4049',
+  logoBg: '#4a5160',
   loginPanelBg: '#e2e5ea',
   logoAdmin: '',
   logoLogin: '',
@@ -109,7 +109,19 @@ function load(): BrandConfig {
       enabledLocales,
       defaultLocale,
     };
-    const legacy = new Set(['#604010', '#c4a484', '#6658dd', '#6b5ce7', '#6aa3e8', '#2b2f36', '#3d434c', '#1c1f24']);
+    const legacy = new Set([
+      '#604010',
+      '#c4a484',
+      '#6658dd',
+      '#6b5ce7',
+      '#6aa3e8',
+      '#2b2f36',
+      '#3d434c',
+      '#1c1f24',
+      '#2c3138',
+      '#3a4049',
+      '#252a30',
+    ]);
     if (legacy.has((next.headerBg || '').toLowerCase())) next.headerBg = DEFAULT_BRAND.headerBg;
     if (legacy.has((next.sidebarBg || '').toLowerCase())) next.sidebarBg = DEFAULT_BRAND.sidebarBg;
     if (legacy.has((next.accentColor || '').toLowerCase())) next.accentColor = DEFAULT_BRAND.accentColor;

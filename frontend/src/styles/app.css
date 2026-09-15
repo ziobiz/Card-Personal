@@ -1152,15 +1152,16 @@
 .admin-api-ep-desc {
   display: inline;
   margin-left: 0.15rem;
-  color: var(--color-text);
-  font-size: 0.95rem;
+  color: #222;
+  font-size: 13px;
 }
 
 .admin-api-auth {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
-  font-size: 0.9rem;
+  border-top: 1px solid #e5e8ee;
+  font-size: 13px;
+  color: #222;
 }
 
 .admin-status-select {

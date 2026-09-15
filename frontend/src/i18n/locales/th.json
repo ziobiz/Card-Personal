@@ -228,6 +228,7 @@
     "newApiKey": "API Key ใหม่: ",
     "billingDone": "เรียกเก็บเงินเสร็จ",
     "endpoints": "จุดเชื่อม Partner API",
+    "partnerList": "รายชื่อพาร์ทเนอร์",
     "sectionCards": "1. API ออกบัตร",
     "sectionWallet": "2. API วอลเล็ต",
     "epCardsList": "รายการบัตร",

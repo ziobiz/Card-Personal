@@ -307,6 +307,7 @@
     "newApiKey": "새 API Key: ",
     "billingDone": "청구 완료",
     "endpoints": "파트너 API 엔드포인트",
+    "partnerList": "파트너사 리스트",
     "sectionCards": "1. 카드 발급 API",
     "sectionWallet": "2. 지갑 연동 API",
     "epCardsList": "카드 목록",

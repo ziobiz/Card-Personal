@@ -229,6 +229,7 @@
     "newApiKey": "新しいAPIキー: ",
     "billingDone": "請求完了",
     "endpoints": "パートナーAPIエンドポイント",
+    "partnerList": "パートナー一覧",
     "sectionCards": "1. カード発行API",
     "sectionWallet": "2. ウォレットAPI",
     "epCardsList": "カード一覧",

@@ -300,6 +300,7 @@ export default function AdminPartners() {
         <p className="muted-text">{t('common.loading')}</p>
       ) : (
         <div className="card-surface admin-table-wrap">
+          <h3>{t('admin.partnerList')}</h3>
           <table className="admin-table">
             <thead>
               <tr>
@@ -376,7 +377,11 @@ export default function AdminPartners() {
                     ) : (
                       <div className="muted-text">{t('admin.walletFollowHq')}</div>
                     )}
-                    {p.solutionUrl ? <div className="muted-text"><code>{p.solutionUrl}</code></div> : null}
+                    {p.solutionUrl ? (
+                      <div className="muted-text">
+                        <code>{p.solutionUrl}</code>
+                      </div>
+                    ) : null}
                   </td>
                   <td>{(p as { orgParentName?: string }).orgParentName || '-'}</td>
                   <td>
@@ -404,7 +409,7 @@ export default function AdminPartners() {
                     </div>
                     <select
                       className="input"
-                      value={p.customFees ? '__custom' : (p.feePolicyId || '')}
+                      value={p.customFees ? '__custom' : p.feePolicyId || ''}
                       onChange={async (e) => {
                         const v = e.target.value;
                         if (v === '__custom') return;
@@ -413,18 +418,18 @@ export default function AdminPartners() {
                       }}
                     >
                       <option value="">{t('admin.feeFollowHq')}</option>
-                      {templates.filter((x) => !x.isHqDefault).map((tpl) => (
-                        <option key={tpl.id} value={tpl.id}>{tpl.name}</option>
-                      ))}
+                      {templates
+                        .filter((x) => !x.isHqDefault)
+                        .map((tpl) => (
+                          <option key={tpl.id} value={tpl.id}>
+                            {tpl.name}
+                          </option>
+                        ))}
                       {p.customFees && <option value="__custom">{t('admin.feesCustom')}</option>}
                     </select>
                   </td>
                   <td>
-                    <select
-                      value={p.status}
-                      onChange={(e) => handleStatusChange(p.id, e.target.value)}
-                      className="admin-status-select"
-                    >
+                    <select value={p.status} onChange={(e) => handleStatusChange(p.id, e.target.value)} className="admin-status-select">
                       <option value="active">{t('admin.statusActive')}</option>
                       <option value="suspended">{t('admin.statusSuspended')}</option>
                     </select>
@@ -453,10 +458,7 @@ export default function AdminPartners() {
                     >
                       {t('admin.topup')}
                     </button>
-                    <button
-                      onClick={() => openFees(p)}
-                      className="btn-outline btn-compact"
-                    >
+                    <button onClick={() => openFees(p)} className="btn-outline btn-compact">
                       {t('admin.editFees')}
                     </button>
                     {p.deliveryMode === 'sub_solution_standalone' ? (
@@ -480,10 +482,7 @@ export default function AdminPartners() {
                         Wirex
                       </button>
                     ) : (
-                      <button
-                        onClick={() => handleRegenerate(p.id)}
-                        className="btn-outline btn-compact"
-                      >
+                      <button onClick={() => handleRegenerate(p.id)} className="btn-outline btn-compact">
                         Key
                       </button>
                     )}
