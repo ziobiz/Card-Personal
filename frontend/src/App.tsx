@@ -32,10 +32,12 @@ import PartnerApi from './pages/partner/PartnerApi';
 import PartnerFees from './pages/partner/PartnerFees';
 import PartnerStaff from './pages/partner/PartnerStaff';
 import PartnerManual from './pages/partner/PartnerManual';
-import AdminManuals from './pages/admin/AdminManuals';
-import HelpManual from './pages/HelpManual';
+import PartnerAccess from './pages/partner/PartnerAccess';
 import MemberOtp from './pages/MemberOtp';
 import Account from './pages/Account';
+import Help from './pages/Help';
+import AdminManuals from './pages/admin/AdminManuals';
+import AdminAccess from './pages/admin/AdminAccess';
 import { useAuth } from './hooks/useAuth';
 import { withTenant, solutionSlugFromPath } from './tenant';
 
@@ -62,7 +64,7 @@ function MemberChildRoutes() {
       <Route path="earn" element={<Earn />} />
       <Route path="activity" element={<Activity />} />
       <Route path="account" element={<Account />} />
-      <Route path="help" element={<HelpManual />} />
+      <Route path="help" element={<Help />} />
     </>
   );
 }
@@ -93,6 +95,7 @@ export default function App() {
           <Route path="fees" element={<PartnerFees />} />
           <Route path="staff" element={<PartnerStaff />} />
           <Route path="manual" element={<PartnerManual />} />
+          <Route path="access" element={<PartnerAccess />} />
         </Route>
         <Route
           path="/"
@@ -141,9 +144,10 @@ export default function App() {
           <Route path="fee-policy" element={<AdminFeePolicy view="manage" />} />
           <Route path="brand" element={<AdminBrand />} />
           <Route path="sandbox" element={<AdminSandbox />} />
-          <Route path="manuals" element={<AdminManuals />} />
           <Route path="me" element={<AdminMyInfo />} />
           <Route path="settings" element={<AdminSettings />} />
+          <Route path="manuals" element={<AdminManuals />} />
+          <Route path="access" element={<AdminAccess />} />
         </Route>
       </Routes>
     </div>

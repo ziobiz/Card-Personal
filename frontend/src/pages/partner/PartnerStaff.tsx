@@ -9,7 +9,10 @@ type Staff = {
   role: string;
   status: string;
   createdAt: string;
+  groupId?: string;
 };
+
+type Group = { id: string; code: string; name: string };
 
 export default function PartnerStaff() {
   const { t } = useTranslation();
@@ -19,6 +22,8 @@ export default function PartnerStaff() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('STAFF');
+  const [groupId, setGroupId] = useState('');
+  const [groups, setGroups] = useState<Group[]>([]);
   const [message, setMessage] = useState('');
 
   const load = () => {
@@ -27,6 +32,8 @@ export default function PartnerStaff() {
       .then((r) => {
         setItems(r.items);
         setCanAdd(Boolean(r.canAdd));
+        setGroups(r.groups || []);
+        setGroupId((id) => id || r.groups?.find((g) => g.code === 'general')?.id || r.groups?.[0]?.id || '');
       })
       .catch((e) => setMessage((e as Error).message));
   };
@@ -39,7 +46,7 @@ export default function PartnerStaff() {
     e.preventDefault();
     setMessage('');
     try {
-      await api.partnerPortal.addStaff({ email, name, password, role });
+      await api.partnerPortal.addStaff({ email, name, password, role, groupId });
       setEmail('');
       setName('');
       setPassword('');
@@ -75,6 +82,14 @@ export default function PartnerStaff() {
               <option value="STAFF">{t('admin.roleStaff')}</option>
             </select>
           </label>
+          <label>
+            {t('access.groupLabel')}
+            <select className="input" value={groupId} onChange={(e) => setGroupId(e.target.value)}>
+              {groups.map((g) => (
+                <option key={g.id} value={g.id}>{t(`access.group.${g.code}`, { defaultValue: g.name })}</option>
+              ))}
+            </select>
+          </label>
           <button type="submit" className="btn-primary">{t('admin.register')}</button>
         </form>
       ) : (
@@ -87,6 +102,7 @@ export default function PartnerStaff() {
             <th>{t('admin.colEmail')}</th>
             <th>{t('admin.operatorName')}</th>
             <th>{t('admin.operatorRole')}</th>
+            <th>{t('access.groupLabel')}</th>
             <th>{t('admin.colStatus')}</th>
           </tr>
         </thead>
@@ -96,6 +112,7 @@ export default function PartnerStaff() {
               <td>{o.email}</td>
               <td>{o.name}</td>
               <td>{o.role === 'STAFF' ? t('admin.roleStaff') : t('admin.roleAdmin')}</td>
+              <td>{groups.find((g) => g.id === o.groupId)?.name || '-'}</td>
               <td>{o.status === 'suspended' ? t('admin.statusSuspended') : t('admin.statusActive')}</td>
             </tr>
           ))}

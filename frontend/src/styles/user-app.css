@@ -915,47 +915,6 @@
   margin-bottom: 1rem;
 }
 
-.manual-doc-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.manual-doc-logo {
-  max-height: 40px;
-  max-width: 160px;
-  object-fit: contain;
-}
-
-.manual-doc-product {
-  margin: 0;
-  font-weight: 700;
-}
-
-.manual-doc-block {
-  margin-top: 18px;
-}
-
-.manual-doc-block ol {
-  padding-left: 1.2rem;
-}
-
-.manual-doc-block h2 {
-  margin: 0 0 6px;
-  font-size: 18px;
-}
-
-.manual-doc-block h3 {
-  margin: 0 0 4px;
-  font-size: 14px;
-}
-
-.is-admin .manual-doc,
-.partner-portal .manual-doc {
-  color: #1c1f24;
-}
-
 .user-app .wx-account-card .section-title {
   margin-top: 0;
   margin-bottom: 0.65rem;

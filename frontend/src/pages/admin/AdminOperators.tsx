@@ -12,16 +12,22 @@ type Operator = {
   partnerName?: string;
   status: string;
   createdAt: string;
+  groupId?: string;
+  isSuper?: boolean;
 };
+
+type Group = { id: string; code: string; name: string };
 
 export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
   const { t } = useTranslation();
   const [items, setItems] = useState<Operator[]>([]);
   const [partners, setPartners] = useState<Array<{ id: string; name: string; companyName?: string }>>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [partnerId, setPartnerId] = useState('');
+  const [groupId, setGroupId] = useState('');
   const [role, setRole] = useState('ADMIN');
   const [message, setMessage] = useState('');
 
@@ -34,7 +40,14 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
     if (scope === 'PARTNER') {
       api.admin.getPartners().then((r) => setPartners(r.items)).catch(() => setPartners([]));
     }
-  }, [scope]);
+    api.admin
+      .getAccessGroups(scope === 'HQ' ? 'HQ' : partnerId || 'HQ')
+      .then((r) => {
+        setGroups(r.items);
+        setGroupId((id) => id || r.items.find((g) => g.code === 'general')?.id || r.items[0]?.id || '');
+      })
+      .catch(() => setGroups([]));
+  }, [scope, partnerId]);
 
   const create = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +60,7 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
         scope,
         role,
         partnerId: scope === 'PARTNER' ? partnerId : undefined,
+        groupId,
       });
       setEmail('');
       setName('');
@@ -93,6 +107,14 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
               </select>
             </label>
           )}
+          <label>
+            {t('access.groupLabel')}
+            <select className="input" value={groupId} onChange={(e) => setGroupId(e.target.value)}>
+              {groups.map((g) => (
+                <option key={g.id} value={g.id}>{t(`access.group.${g.code}`, { defaultValue: g.name })}</option>
+              ))}
+            </select>
+          </label>
         </div>
         {message ? <p className="auth-error">{message}</p> : null}
         <div className="hq-toolbar" style={{ justifyContent: 'flex-start' }}>
@@ -106,6 +128,7 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
               <th>{t('admin.colEmail')}</th>
               <th>{t('admin.operatorName')}</th>
               {scope === 'PARTNER' && <th>{t('admin.colPartner')}</th>}
+              <th>{t('access.groupLabel')}</th>
               <th>{t('admin.operatorRole')}</th>
               <th>{t('admin.colStatus')}</th>
               <th>{t('admin.colJoined')}</th>
@@ -118,6 +141,7 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
                 <td>{o.email}</td>
                 <td>{o.name}</td>
                 {scope === 'PARTNER' && <td>{o.partnerName || o.partnerId || '-'}</td>}
+                <td>{groups.find((g) => g.id === o.groupId)?.name || (o.isSuper ? t('access.super') : '-')}</td>
                 <td>{o.role === 'STAFF' ? t('admin.roleStaff') : t('admin.roleAdmin')}</td>
                 <td>
                   <select

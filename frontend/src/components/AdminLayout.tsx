@@ -1,11 +1,12 @@
-import { Link, NavLink, useLocation, useNavigate, Outlet } from 'react-router-dom';
+import { Link, NavLink, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type LanguageCode } from '../i18n';
 import { useBrand } from '../brand/BrandContext';
+import { api } from '../api';
 import './AdminLayout.css';
 
-type MenuItem = { to: string; labelKey: string };
+type MenuItem = { to: string; labelKey: string; menu: string };
 type IconName = 'gear' | 'cloud' | 'phone' | 'card' | 'user' | 'ops';
 type MenuGroup = { id: string; labelKey: string; icon: IconName; items: MenuItem[] };
 type OpenTab = { to: string; labelKey: string };
@@ -89,16 +90,24 @@ export default function AdminLayout() {
     { to: '/admin/fee-policy', labelKey: 'admin.navFeePolicy' },
     { to: '/admin/partners', labelKey: 'admin.navPartners' },
   ]);
+  const [allowed, setAllowed] = useState<string[] | null>(null);
 
-  const groups: MenuGroup[] = [
+  useEffect(() => {
+    api.admin
+      .me()
+      .then((r) => setAllowed(r.allowedMenus || []))
+      .catch(() => setAllowed(null));
+  }, []);
+
+  const allGroups: MenuGroup[] = [
     {
       id: 'hq',
       labelKey: 'admin.menuHq',
       icon: 'gear',
       items: [
-        { to: '/admin/brand', labelKey: 'admin.navBrand' },
-        { to: '/admin/sandbox', labelKey: 'admin.navSandbox' },
-        { to: '/admin/settings', labelKey: 'admin.navSettings' },
+        { to: '/admin/brand', labelKey: 'admin.navBrand', menu: 'brand' },
+        { to: '/admin/sandbox', labelKey: 'admin.navSandbox', menu: 'sandbox' },
+        { to: '/admin/settings', labelKey: 'admin.navSettings', menu: 'settings' },
       ],
     },
     {
@@ -106,11 +115,11 @@ export default function AdminLayout() {
       labelKey: 'admin.menuMerchant',
       icon: 'phone',
       items: [
-        { to: '/admin/partners', labelKey: 'admin.navPartners' },
-        { to: '/admin/partners/new', labelKey: 'admin.navPartnerReg' },
-        { to: '/admin/org', labelKey: 'admin.navOrg' },
-        { to: '/admin/fee-list', labelKey: 'admin.navFeeList' },
-        { to: '/admin/fee-policy', labelKey: 'admin.navFeePolicy' },
+        { to: '/admin/partners', labelKey: 'admin.navPartners', menu: 'partners' },
+        { to: '/admin/partners/new', labelKey: 'admin.navPartnerReg', menu: 'partners_new' },
+        { to: '/admin/org', labelKey: 'admin.navOrg', menu: 'org' },
+        { to: '/admin/fee-list', labelKey: 'admin.navFeeList', menu: 'fee_list' },
+        { to: '/admin/fee-policy', labelKey: 'admin.navFeePolicy', menu: 'fee_policy' },
       ],
     },
     {
@@ -118,9 +127,10 @@ export default function AdminLayout() {
       labelKey: 'admin.menuUsers',
       icon: 'user',
       items: [
-        { to: '/admin/operators', labelKey: 'admin.navHqOperators' },
-        { to: '/admin/operators/partner', labelKey: 'admin.navPartnerOperators' },
-        { to: '/admin/customers', labelKey: 'admin.navCustomers' },
+        { to: '/admin/operators', labelKey: 'admin.navHqOperators', menu: 'operators' },
+        { to: '/admin/operators/partner', labelKey: 'admin.navPartnerOperators', menu: 'operators_partner' },
+        { to: '/admin/customers', labelKey: 'admin.navCustomers', menu: 'customers' },
+        { to: '/admin/access', labelKey: 'admin.navAccess', menu: 'access' },
       ],
     },
     {
@@ -128,12 +138,19 @@ export default function AdminLayout() {
       labelKey: 'admin.menuOps',
       icon: 'ops',
       items: [
-        { to: '/admin/dashboard', labelKey: 'admin.navDashboard' },
-        { to: '/admin/cards', labelKey: 'admin.navCards' },
-        { to: '/admin/manuals', labelKey: 'admin.navManuals' },
+        { to: '/admin/dashboard', labelKey: 'admin.navDashboard', menu: 'dashboard' },
+        { to: '/admin/cards', labelKey: 'admin.navCards', menu: 'cards' },
+        { to: '/admin/manuals', labelKey: 'admin.navManuals', menu: 'manuals' },
       ],
     },
   ];
+
+  const groups = allGroups
+    .map((g) => ({
+      ...g,
+      items: allowed ? g.items.filter((it) => allowed.includes(it.menu)) : g.items,
+    }))
+    .filter((g) => g.items.length);
 
   const crumb = useMemo(() => {
     const map: Record<string, string[]> = {
@@ -154,6 +171,7 @@ export default function AdminLayout() {
       '/admin/users': ['admin.menuUsers', 'admin.navHqOperators'],
       '/admin/cards': ['admin.menuOps', 'admin.navCards'],
       '/admin/manuals': ['admin.menuOps', 'admin.navManuals'],
+      '/admin/access': ['admin.menuUsers', 'admin.navAccess'],
       '/admin/me': ['admin.myInfo'],
     };
     return map[loc.pathname] ?? ['admin.menuMain'];
@@ -213,6 +231,15 @@ export default function AdminLayout() {
   } as CSSProperties;
 
   const currentId = groups.find((x) => x.items.some((it) => loc.pathname === it.to))?.id;
+  const firstAllowed = groups[0]?.items[0]?.to || '/admin/dashboard';
+  const pathAllowed =
+    loc.pathname === '/admin/me' ||
+    allowed == null ||
+    allGroups.some((g) => g.items.some((it) => it.to === loc.pathname && allowed.includes(it.menu)));
+
+  if (allowed && !pathAllowed) {
+    return <Navigate to={firstAllowed} replace />;
+  }
 
   return (
     <div className={`hq-shell${collapsed ? ' is-collapsed' : ''}${tablet ? ' is-tablet' : ''}`} style={theme}>

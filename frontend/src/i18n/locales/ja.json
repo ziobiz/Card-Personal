@@ -21,7 +21,8 @@
     "activity": "取引",
     "account": "マイ情報",
     "accountShort": "アカウント",
-    "help": "ご案内"
+    "help": "ヘルプ",
+    "helpShort": "ヘルプ"
   },
   "auth": {
     "login": "ログイン",
@@ -511,7 +512,8 @@
     "isolationHqHint": "Wirex には ICOCARD 運営としてのみ見えます。パートナーは Wirex キーを受け取りません。",
     "standaloneWirexSaved": "単独型 Wirex キーを暗号化して保存しました。",
     "opsOnly": "運営専用",
-    "navManuals": "マニュアル"
+    "navManuals": "マニュアル",
+    "navAccess": "アクセス権限"
   },
   "earn": {
     "title": "リワード",
@@ -563,7 +565,8 @@
     "manual6": "サブソリューションは /s/{slug} の会員アプリです。キーは本社発行で Wirex キーは受け取りません。",
     "standaloneHint": "単独型は運営のみです。ICOCARD パートナー API キーはありません。",
     "noReseller": "単独型では再販 API が無効です。会員アプリで運営します。",
-    "manual7": "サブソリューション単独型は加盟店の Wirex 契約キーで運営のみ行います。再販キーは発行しません。"
+    "manual7": "サブソリューション単独型は加盟店の Wirex 契約キーで運営のみ行います。再販キーは発行しません。",
+    "navAccess": "アクセス権限"
   },
   "walletMode": {
     "title": "ウォレット接続",
@@ -586,63 +589,92 @@
     "noneEnabled": "この加盟店では許可されたウォレット方式がありません。本社へ連絡してください。"
   },
   "manual": {
-    "draftNote": "準備中の文書です。機能確定後に更新します。",
-    "support": "サポート",
-    "hqLead": "本社は顧客・API・サブソリューション・単独型のマニュアルをすべて閲覧できます。",
-    "aclLater": "精算・発行・一般管理者グループとメニュー権限、履歴は後で構築します。",
-    "customer": {
-      "title": "顧客向け案内",
-      "lead": "カードを利用する個人向けです。本社会員アプリと全パートナー類型で同一です。",
-      "c1Title": "登録とログイン",
-      "c1Body": "メールとパスワードで登録します。OTPが有効なら認証アプリのコードを入力します。サブソリューションは /s/{slug} で同じ流れです。",
-      "c2Title": "ウォレット3方式",
-      "c2Body": "埋め込み、外部EOA、ブリッジのうち加盟店が許可した方式だけ表示されます。カード決済は当社Smart Walletのみです。",
-      "c3Title": "カード発行",
-      "c3Body": "アプリで仮想カードを発行します。実物は加盟店方針が許す場合のみ。KYCが必要なことがあります。",
-      "c4Title": "チャージと利用",
-      "c4Body": "許可されたウォレットでチャージし決済します。履歴は取引メニューです。",
-      "c5Title": "セキュリティ",
-      "c5Body": "パスワードとOTPはアカウントで管理します。紛失時は本社またはパートナー運用者が初期化できます。",
-      "c6Title": "問い合わせ",
-      "c6Body": "画面ロゴのブランドサポートへ連絡してください。Wirexへ直接問い合わせないでください。"
+    "title": "運用マニュアル",
+    "preparingBadge": "準備中",
+    "preparing": "本文は開発完了後に提供します。現在はロゴ付きの構成のみです。",
+    "hqHint": "本社は顧客・API・サブソリューション・単独型・本社運用の全マニュアルを開けます。",
+    "partnerHint": "パートナー種別の運用/APIマニュアルと共通の顧客マニュアルを表示します。",
+    "customerTitle": "顧客ガイド",
+    "partnerApiTitle": "API連携マニュアル",
+    "partnerSubTitle": "サブソリューション運用マニュアル",
+    "partnerSoloTitle": "単独型運用マニュアル",
+    "hqTitle": "本社運用マニュアル",
+    "outCustomer1": "カード発行・チャージ・決済",
+    "outCustomer2": "ウォレット方式と Smart Wallet 決済",
+    "outCustomer3": "アカウント・OTP・セキュリティ",
+    "outCustomer4": "サポート・紛争連絡先",
+    "outApi1": "本社発行の MID / API Key / Secret / HMAC",
+    "outApi2": "加盟店サイトからのカード・ウォレット API",
+    "outApi3": "Webhook と精算突合",
+    "outSub1": "/s/{slug} のブランド会員アプリ",
+    "outSub2": "本社 ICOCARD キーのみ — Wirex キーは使わない",
+    "outSolo1": "加盟店の Wirex 契約キーで運用のみ",
+    "outSolo2": "再販キットなし。Wirex には当該加盟店として表示",
+    "outHq1": "パートナー・手数料・提供方式",
+    "outHq2": "運用者・グループ・メニュー権限",
+    "outHq3": "顧客・パートナーマニュアル",
+    "id": {
+      "customer": "顧客",
+      "partner_api": "パートナー · API",
+      "partner_sub": "パートナー · サブソリューション",
+      "partner_standalone": "パートナー · 単独型",
+      "hq_ops": "本社運用"
+    }
+  },
+  "access": {
+    "hqHint": "総管理者が運用者を作成します。一般管理者・精算チーム・発行チームにグループ化し、グループまたはIDごとにメニュー権限を設定します。本社・サブプラットフォーム・単独型で同じです。",
+    "partnerHint": "運用者をグループ化し、開けるメニューを設定します。変更履歴が残ります。",
+    "owner": "組織",
+    "groups": "グループ",
+    "groupLabel": "グループ",
+    "groupName": "グループ名",
+    "addGroup": "グループ追加",
+    "saveGroup": "グループ保存",
+    "noGroup": "グループを選択してください。",
+    "menus": "メニュー",
+    "assign": "ユーザー割当",
+    "super": "総管理者",
+    "history": "ユーザー履歴",
+    "noHistory": "履歴はありません。",
+    "at": "時刻",
+    "actor": "実行者",
+    "actionLabel": "操作",
+    "detail": "内容",
+    "group": {
+      "general": "一般管理者",
+      "settlement": "精算チーム",
+      "issuance": "発行チーム"
     },
-    "api": {
-      "title": "API連携案内",
-      "lead": "自社アプリから本社発行のMID・API Key・Secretで連携します。Wirexキーは受け取りません。",
-      "a1Title": "キット",
-      "a1Body": "加盟店登録時に一度だけ表示されます。X-API-Key、X-API-Secret、X-ICO-Mid、任意HMACを使います。",
-      "a2Title": "ユーザー",
-      "a2Body": "X-Partner-User-Id でパートナー側ユーザーを区別します。WirexにはICOCARD運営としてだけ見えます。",
-      "a3Title": "カードとウォレット",
-      "a3Body": "/api/partner/v1/cards、/wallet、/bridge を呼び出します。許可されないウォレット方式は拒否されます。",
-      "a4Title": "隔離",
-      "a4Body": "パートナーはWirexを知れず、Wirexはサブ加盟店を知れません。",
-      "a5Title": "顧客案内",
-      "a5Body": "最終利用者には下記の顧客案内をそのまま提供します。"
+    "action": {
+      "create": "作成",
+      "update": "更新",
+      "status": "状態",
+      "menus": "メニュー",
+      "group": "グループ",
+      "password": "パスワード",
+      "otp": "OTP"
     },
-    "sub": {
-      "title": "サブソリューション運営案内",
-      "lead": "ブランド会員アプリ /s/{slug} で運営します。キーは本社ICOCARDキーです。",
-      "s1Title": "会員アプリ",
-      "s1Body": "ロゴと名前がブランド表示になります。顧客は本社と同じ登録・カード流れです。",
-      "s2Title": "キー",
-      "s2Body": "本社キットのみ使います。Wirexキーは配布しません。",
-      "s3Title": "担当者",
-      "s3Body": "パートナーポータルで運用担当を追加できます。カード顧客ではありません。",
-      "s4Title": "顧客案内",
-      "s4Body": "会員には顧客案内をそのまま表示します。"
-    },
-    "standalone": {
-      "title": "単独型運営案内",
-      "lead": "加盟店のWirex契約キーで運営のみ行います。ICOCARD再販キーはありません。",
-      "t1Title": "範囲",
-      "t1Body": "会員アプリでカードサービスを運営します。再販APIやキー再配布はありません。",
-      "t2Title": "Wirex",
-      "t2Body": "Wirexには当該加盟店として見えます。本社キーへフォールバックしません。",
-      "t3Title": "担当者",
-      "t3Body": "パートナーポータルで運用担当を追加します。",
-      "t4Title": "顧客案内",
-      "t4Body": "会員には顧客案内をそのまま表示します。"
+    "menu": {
+      "dashboard": "ダッシュボード",
+      "brand": "ブランド/プラットフォーム",
+      "sandbox": "Sandbox",
+      "settings": "設定",
+      "partners": "加盟店一覧",
+      "partners_new": "加盟店登録",
+      "org": "組織",
+      "fee_list": "手数料一覧",
+      "fee_policy": "手数料管理",
+      "operators": "本社運用者",
+      "operators_partner": "パートナー運用者",
+      "customers": "顧客",
+      "cards": "カード",
+      "manuals": "マニュアル",
+      "access": "アクセス権限",
+      "home": "ホーム",
+      "api": "API",
+      "fees": "手数料",
+      "staff": "ユーザー",
+      "manual": "マニュアル"
     }
   }
 }

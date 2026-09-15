@@ -262,6 +262,8 @@ export const api = {
   },
   user: {
     get: () => request<MemberProfile>('/user'),
+    getManuals: () =>
+      request<{ items: Array<{ id: string; outlineKeys: string[]; ready: false }>; ready: boolean }>('/user/manuals'),
     updateProfile: (data: { displayName?: string; phone?: string; country?: string }) =>
       request<{ ok: boolean; user: MemberProfile }>('/user/profile', {
         method: 'PUT',
@@ -397,13 +399,37 @@ export const api = {
       }),
     getUsers: () =>
       request<{ items: { id: string; email: string; wirexUserId?: string; createdAt: string; source?: string; partnerId?: string }[]; total: number }>('/admin/users'),
+    me: () =>
+      request<{
+        id: string;
+        email: string;
+        name: string;
+        isSuper?: boolean;
+        groupId?: string;
+        allowedMenus: string[];
+        catalog: string[];
+      }>('/admin/me'),
+    getManuals: () =>
+      request<{ items: Array<{ id: string; outlineKeys: string[]; ready: false }>; ready: boolean }>('/admin/manuals'),
+    getAccessGroups: (owner?: string) =>
+      request<{ items: Array<{ id: string; code: string; name: string; menus: string[]; builtIn: boolean }>; catalog: string[]; owner: string }>(
+        `/admin/access/groups${owner ? `?owner=${encodeURIComponent(owner)}` : ''}`
+      ),
+    createAccessGroup: (data: { owner?: string; name: string; menus?: string[]; code?: string }) =>
+      request('/admin/access/groups', { method: 'POST', body: JSON.stringify(data) }),
+    updateAccessGroup: (id: string, data: { name?: string; menus?: string[] }) =>
+      request(`/admin/access/groups/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    getAccessHistory: (owner?: string) =>
+      request<{ items: Array<{ id: string; at: string; actorEmail: string; action: string; targetType: string; targetId: string; detail: string }> }>(
+        `/admin/access/history${owner ? `?owner=${encodeURIComponent(owner)}` : ''}`
+      ),
     getOperators: (scope?: 'HQ' | 'PARTNER') =>
-      request<{ items: Array<{ id: string; email: string; name: string; scope: string; role: string; partnerId?: string; partnerName?: string; status: string; createdAt: string }>; total: number }>(
+      request<{ items: Array<{ id: string; email: string; name: string; scope: string; role: string; partnerId?: string; partnerName?: string; status: string; createdAt: string; groupId?: string; isSuper?: boolean; menuOverride?: string[] }>; total: number }>(
         `/admin/operators${scope ? `?scope=${scope}` : ''}`
       ),
-    createOperator: (data: { email: string; name: string; password: string; scope: 'HQ' | 'PARTNER'; role?: string; partnerId?: string }) =>
+    createOperator: (data: { email: string; name: string; password: string; scope: 'HQ' | 'PARTNER'; role?: string; partnerId?: string; groupId?: string; isSuper?: boolean }) =>
       request('/admin/operators', { method: 'POST', body: JSON.stringify(data) }),
-    updateOperator: (id: string, data: { name?: string; role?: string; status?: string; password?: string }) =>
+    updateOperator: (id: string, data: { name?: string; role?: string; status?: string; password?: string; groupId?: string; menuOverride?: string[]; isSuper?: boolean }) =>
       request(`/admin/operators/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     getMembers: (source?: 'direct' | 'partner') =>
       request<{ items: Array<{ id: string; email: string; wirexUserId?: string; source: string; partnerId?: string; partnerName?: string; country?: string; kycStatus?: string; otpEnabled?: boolean; status: string; createdAt: string }>; total: number }>(
@@ -737,18 +763,73 @@ export const api = {
     },
     staff: () => {
       const token = localStorage.getItem('partnerToken');
-      return request<{ items: Array<{ id: string; email: string; name: string; role: string; status: string; createdAt: string }>; total: number; canAdd: boolean }>(
-        '/partner-portal/staff',
-        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
-      );
+      return request<{
+        items: Array<{ id: string; email: string; name: string; role: string; status: string; createdAt: string; groupId?: string; isSuper?: boolean }>;
+        total: number;
+        canAdd: boolean;
+        groups?: Array<{ id: string; code: string; name: string }>;
+        catalog?: string[];
+      }>('/partner-portal/staff', {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
     },
-    addStaff: (data: { email: string; name: string; password: string; role?: string }) => {
+    addStaff: (data: { email: string; name: string; password: string; role?: string; groupId?: string }) => {
       const token = localStorage.getItem('partnerToken');
       return request('/partner-portal/staff', {
         method: 'POST',
         body: JSON.stringify(data),
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
+    },
+    updateStaff: (id: string, data: { status?: string; role?: string; groupId?: string; menuOverride?: string[]; name?: string; password?: string }) => {
+      const token = localStorage.getItem('partnerToken');
+      return request(`/partner-portal/staff/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+    },
+    me: () => {
+      const token = localStorage.getItem('partnerToken');
+      return request<{ allowedMenus: string[]; deliveryMode?: string; canManageAccess?: boolean }>('/partner-portal/me', {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+    },
+    manuals: () => {
+      const token = localStorage.getItem('partnerToken');
+      return request<{ items: Array<{ id: string; outlineKeys: string[]; ready: false }>; deliveryMode?: string; ready: boolean }>(
+        '/partner-portal/manuals',
+        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
+      );
+    },
+    accessGroups: () => {
+      const token = localStorage.getItem('partnerToken');
+      return request<{ items: Array<{ id: string; code: string; name: string; menus: string[] }>; catalog: string[] }>('/partner-portal/access/groups', {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+    },
+    createAccessGroup: (data: { name: string; menus?: string[] }) => {
+      const token = localStorage.getItem('partnerToken');
+      return request('/partner-portal/access/groups', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+    },
+    updateAccessGroup: (id: string, data: { name?: string; menus?: string[] }) => {
+      const token = localStorage.getItem('partnerToken');
+      return request(`/partner-portal/access/groups/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+    },
+    accessHistory: () => {
+      const token = localStorage.getItem('partnerToken');
+      return request<{ items: Array<{ id: string; at: string; actorEmail: string; action: string; detail: string }> }>(
+        '/partner-portal/access/history',
+        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
+      );
     },
   },
 };

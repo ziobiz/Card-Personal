@@ -1,32 +1,36 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ManualDoc, { type ManualAudience } from '../../components/ManualDoc';
-
-const TABS: ManualAudience[] = ['customer', 'api', 'sub', 'standalone'];
+import { api } from '../../api';
+import ManualFrame, { type ManualCard } from '../../components/ManualFrame';
 
 export default function AdminManuals() {
   const { t } = useTranslation();
-  const [tab, setTab] = useState<ManualAudience>('customer');
+  const [items, setItems] = useState<ManualCard[]>([]);
+  const [active, setActive] = useState('customer');
+
+  useEffect(() => {
+    api.admin
+      .getManuals()
+      .then((r) => {
+        setItems(r.items);
+        if (r.items[0]) setActive(r.items[0].id);
+      })
+      .catch(() => setItems([]));
+  }, []);
+
+  const shown = items.filter((m) => m.id === active);
 
   return (
     <div>
-      <p className="hq-card-hint">{t('manual.hqLead')}</p>
-      <p className="hq-card-hint">{t('manual.aclLater')}</p>
-      <div className="hq-toolbar" style={{ justifyContent: 'flex-start', flexWrap: 'wrap' }}>
-        {TABS.map((id) => (
-          <button
-            key={id}
-            type="button"
-            className={tab === id ? 'btn-primary' : 'btn-secondary'}
-            onClick={() => setTab(id)}
-          >
-            {t(`manual.${id}.title`)}
+      <p className="muted-text">{t('manual.hqHint')}</p>
+      <div className="manual-pick">
+        {items.map((m) => (
+          <button key={m.id} type="button" className={m.id === active ? 'on' : ''} onClick={() => setActive(m.id)}>
+            {t(`manual.id.${m.id}`, { defaultValue: m.id })}
           </button>
         ))}
       </div>
-      <div className="card-surface">
-        <ManualDoc audience={tab} showCustomerAlso={tab !== 'customer'} />
-      </div>
+      <ManualFrame manuals={shown.length ? shown : items} />
     </div>
   );
 }

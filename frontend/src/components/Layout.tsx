@@ -55,8 +55,9 @@ function IconAccount() {
 function IconHelp() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M6 4.5h9.5L19.5 8v11.5H6z" />
-      <path d="M15.5 4.5V8H19.5M9 12h6M9 15.5h4.5" />
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.1 1-1.1 1.8V14" />
+      <path d="M12 17h.01" />
     </svg>
   );
 }

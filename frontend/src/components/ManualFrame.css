@@ -1,0 +1,78 @@
+.manual-frame {
+  background: #fff;
+  border: 1px solid #e6e8eb;
+  border-radius: 12px;
+  padding: 24px;
+  color: #1d2126;
+}
+
+.manual-frame-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.manual-frame-brand img {
+  max-height: 40px;
+  max-width: 160px;
+  object-fit: contain;
+}
+
+.manual-frame-brand-name {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.manual-badge {
+  display: inline-block;
+  background: #fff4e5;
+  color: #9a5b00;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.manual-frame h1,
+.manual-frame h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.manual-frame p,
+.manual-frame li {
+  line-height: 1.55;
+}
+
+.manual-frame ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.manual-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.manual-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.manual-pick button {
+  border: 1px solid #d5d9de;
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.manual-pick button.on {
+  border-color: #6658dd;
+  color: #6658dd;
+  font-weight: 600;
+}

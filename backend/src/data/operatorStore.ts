@@ -20,6 +20,9 @@ export interface Operator {
   role: OperatorRole;
   partnerId?: string;
   orgUnitId?: string;
+  groupId?: string;
+  menuOverride?: string[];
+  isSuper?: boolean;
   mustChangePassword?: boolean;
   otpSecret?: string;
   otpEnabled?: boolean;
@@ -64,6 +67,8 @@ function seedHq() {
       passwordHash: hashPassword(config.adminPassword),
       scope: 'HQ',
       role: 'ADMIN',
+      isSuper: true,
+      groupId: 'grp_hq_general',
       status: 'active',
       createdAt: new Date().toISOString(),
     };
@@ -75,6 +80,12 @@ function reload() {
   operators.clear();
   for (const o of load()) operators.set(o.id, o);
   seedHq();
+  const seedEmails = new Set(
+    [config.adminEmail, 'admin@icocard.local', 'admin@wirexcard.local'].map((e) => e.toLowerCase())
+  );
+  for (const o of operators.values()) {
+    if (o.scope === 'HQ' && seedEmails.has(o.email) && !o.isSuper) o.isSuper = true;
+  }
   save(Array.from(operators.values()));
 }
 
@@ -101,6 +112,9 @@ export const operatorStore = {
     role?: OperatorRole;
     partnerId?: string;
     orgUnitId?: string;
+    groupId?: string;
+    menuOverride?: string[];
+    isSuper?: boolean;
     mustChangePassword?: boolean;
   }): Operator {
     const email = data.email.trim().toLowerCase();
@@ -116,6 +130,9 @@ export const operatorStore = {
       role: data.role === 'STAFF' ? 'STAFF' : 'ADMIN',
       partnerId: data.scope === 'PARTNER' ? data.partnerId : undefined,
       orgUnitId: data.orgUnitId,
+      groupId: data.groupId,
+      menuOverride: data.menuOverride,
+      isSuper: Boolean(data.isSuper),
       mustChangePassword: data.mustChangePassword !== false,
       otpSecret: undefined,
       otpEnabled: false,
@@ -128,7 +145,7 @@ export const operatorStore = {
   },
   update(
     id: string,
-    data: Partial<Pick<Operator, 'name' | 'role' | 'status' | 'partnerId' | 'orgUnitId' | 'mustChangePassword' | 'otpEnabled' | 'otpSecret'>> & {
+    data: Partial<Pick<Operator, 'name' | 'role' | 'status' | 'partnerId' | 'orgUnitId' | 'groupId' | 'menuOverride' | 'isSuper' | 'mustChangePassword' | 'otpEnabled' | 'otpSecret'>> & {
       password?: string;
       clearOtp?: boolean;
     }
@@ -140,6 +157,9 @@ export const operatorStore = {
     if (data.status != null) o.status = data.status;
     if (data.partnerId != null) o.partnerId = data.partnerId;
     if (data.orgUnitId != null) o.orgUnitId = data.orgUnitId;
+    if (data.groupId !== undefined) o.groupId = data.groupId || undefined;
+    if (data.menuOverride !== undefined) o.menuOverride = data.menuOverride;
+    if (data.isSuper !== undefined) o.isSuper = data.isSuper;
     if (data.mustChangePassword != null) o.mustChangePassword = data.mustChangePassword;
     if (data.otpEnabled != null) o.otpEnabled = data.otpEnabled;
     if (data.clearOtp) {
@@ -165,6 +185,9 @@ export const operatorStore = {
       role: o.role,
       partnerId: o.partnerId,
       orgUnitId: o.orgUnitId,
+      groupId: o.groupId || '',
+      menuOverride: o.menuOverride || [],
+      isSuper: Boolean(o.isSuper),
       mustChangePassword: Boolean(o.mustChangePassword),
       otpEnabled: Boolean(o.otpEnabled),
       status: o.status,

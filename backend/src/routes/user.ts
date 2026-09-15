@@ -10,6 +10,7 @@ import { issueWalletChallenge, verifyWalletBind } from '../lib/walletBind.js';
 import { bridgeStore } from '../data/bridgeStore.js';
 import { partnerStore } from '../data/partnerStore.js';
 import { isWalletModeAllowed, resolveWalletModes, walletModeDeniedError, type WalletModeKey } from '../lib/walletPolicy.js';
+import { manualsFor } from '../lib/manualCatalog.js';
 
 function partnerForUser(user: { partnerId?: string }) {
   return user.partnerId ? partnerStore.getById(user.partnerId) : undefined;
@@ -312,6 +313,10 @@ router.put('/wallet', async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: (e as Error).message });
   }
+});
+
+router.get('/manuals', (_req, res) => {
+  res.json({ items: manualsFor({ audience: 'customer' }), ready: false });
 });
 
 export default router;

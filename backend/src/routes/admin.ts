@@ -24,9 +24,15 @@ import { wirexClient } from '../clients/wirex/WirexClient.js';
 import { getWirexBaaSConfig } from '../config.js';
 import { resolvePartnerPolicy } from '../data/feePolicyTemplateStore.js';
 import { operatorStore } from '../data/operatorStore.js';
+import { accessGroupStore } from '../data/accessGroupStore.js';
+import { accessAuditStore } from '../data/accessAuditStore.js';
 import adminSales from './adminSales.js';
 import { generateOtpSecret, otpAuthUrl, verifyTotp } from '../lib/totp.js';
 import { getSecuritySettings, maskEmail } from '../lib/otpPolicy.js';
+import { HQ_MENU_KEYS, PARTNER_MENU_KEYS } from '../lib/accessMenus.js';
+import { resolveOperatorMenus } from '../lib/resolveAccess.js';
+import { canManageHqAccess, defaultGroupId, hqActor, partnerHasSuper, writeAudit } from '../lib/accessActor.js';
+import { manualsFor } from '../lib/manualCatalog.js';
 
 const router = Router();
 
@@ -175,6 +181,84 @@ router.post('/otp/verify', (req, res) => {
 
 router.use(requireAdmin);
 router.use(adminSales);
+
+router.get('/me', (req, res) => {
+  const op = hqActor(req);
+  if (!op) return res.status(401).json({ error: 'Unauthorized' });
+  res.json({
+    ...operatorStore.publicView(op),
+    allowedMenus: resolveOperatorMenus(op),
+    catalog: HQ_MENU_KEYS,
+  });
+});
+
+router.get('/manuals', (req, res) => {
+  const op = hqActor(req);
+  if (!op) return res.status(401).json({ error: 'Unauthorized' });
+  res.json({ items: manualsFor({ audience: 'hq' }), ready: false });
+});
+
+router.get('/access/groups', (req, res) => {
+  const op = hqActor(req);
+  if (!op || op.scope !== 'HQ') return res.status(403).json({ error: 'Access denied' });
+  const owner = String(req.query.owner || 'HQ');
+  const safe = owner === 'HQ' || Boolean(partnerStore.getById(owner)) ? owner : 'HQ';
+  res.json({
+    items: accessGroupStore.list(safe),
+    catalog: safe === 'HQ' ? HQ_MENU_KEYS : PARTNER_MENU_KEYS,
+    owner: safe,
+  });
+});
+
+router.post('/access/groups', (req, res) => {
+  const op = hqActor(req);
+  if (!op || !canManageHqAccess(op)) return res.status(403).json({ error: 'Access denied' });
+  const owner = String(req.body?.owner || 'HQ');
+  const safe = owner === 'HQ' || Boolean(partnerStore.getById(owner)) ? owner : 'HQ';
+  const group = accessGroupStore.create({
+    owner: safe,
+    name: String(req.body?.name || ''),
+    menus: req.body?.menus,
+    code: req.body?.code,
+  });
+  writeAudit({ actor: op, owner: safe, targetType: 'group', targetId: group.id, action: 'create', detail: group.name });
+  res.status(201).json(group);
+});
+
+router.put('/access/groups/:id', (req, res) => {
+  const op = hqActor(req);
+  if (!op || !canManageHqAccess(op)) return res.status(403).json({ error: 'Access denied' });
+  const current = accessGroupStore.get(req.params.id);
+  if (!current) return res.status(404).json({ error: 'Not found' });
+  const group = accessGroupStore.update(req.params.id, { name: req.body?.name, menus: req.body?.menus });
+  writeAudit({
+    actor: op,
+    owner: current.owner,
+    targetType: 'group',
+    targetId: current.id,
+    action: 'menus',
+    detail: `${group?.name || current.name}:${(group?.menus || []).join(',')}`,
+  });
+  res.json(group);
+});
+
+router.delete('/access/groups/:id', (req, res) => {
+  const op = hqActor(req);
+  if (!op || !canManageHqAccess(op)) return res.status(403).json({ error: 'Access denied' });
+  const current = accessGroupStore.get(req.params.id);
+  if (!current) return res.status(404).json({ error: 'Not found' });
+  if (!accessGroupStore.remove(req.params.id)) return res.status(400).json({ error: 'Built-in group cannot be deleted' });
+  writeAudit({ actor: op, owner: current.owner, targetType: 'group', targetId: current.id, action: 'update', detail: `removed ${current.name}` });
+  res.json({ ok: true });
+});
+
+router.get('/access/history', (req, res) => {
+  const op = hqActor(req);
+  if (!canManageHqAccess(op)) return res.status(403).json({ error: 'Access denied' });
+  const owner = req.query.owner ? String(req.query.owner) : undefined;
+  const targetId = req.query.targetId ? String(req.query.targetId) : undefined;
+  res.json({ items: accessAuditStore.list(owner, targetId) });
+});
 
 type PostcodeItem = { zip: string; address: string };
 
@@ -331,39 +415,84 @@ router.get('/operators', (req, res) => {
 });
 
 router.post('/operators', (req, res) => {
+  const actor = hqActor(req);
+  if (!actor?.isSuper) return res.status(403).json({ error: 'Super admin required' });
   const body = req.body ?? {};
   try {
-    const op = operatorStore.create({
+    const scope = body.scope === 'PARTNER' ? 'PARTNER' : 'HQ';
+    const partnerId = scope === 'PARTNER' ? String(body.partnerId || '') : undefined;
+    const owner = scope === 'PARTNER' && partnerId ? partnerId : 'HQ';
+    const groupId = String(body.groupId || defaultGroupId(owner));
+    const created = operatorStore.create({
       email: String(body.email || ''),
       name: String(body.name || ''),
       password: String(body.password || ''),
-      scope: body.scope === 'PARTNER' ? 'PARTNER' : 'HQ',
+      scope,
       role: body.role === 'STAFF' ? 'STAFF' : 'ADMIN',
-      partnerId: body.partnerId,
+      partnerId,
+      groupId,
+      menuOverride: Array.isArray(body.menuOverride) ? body.menuOverride.map(String) : undefined,
+      isSuper: scope === 'HQ' ? Boolean(body.isSuper) : !partnerHasSuper(partnerId || ''),
       mustChangePassword: false,
     });
-    res.status(201).json(operatorStore.publicView(op));
+    writeAudit({
+      actor,
+      owner,
+      targetType: 'operator',
+      targetId: created.id,
+      action: 'create',
+      detail: `${created.email} ${created.scope} ${created.groupId || ''}`,
+    });
+    res.status(201).json(operatorStore.publicView(created));
   } catch (e) {
     res.status(400).json({ error: (e as Error).message });
   }
 });
 
 router.put('/operators/:id', (req, res) => {
+  const actor = hqActor(req);
+  if (!actor || (!actor.isSuper && !canManageHqAccess(actor))) return res.status(403).json({ error: 'Access denied' });
   const body = req.body ?? {};
+  const before = operatorStore.getById(req.params.id);
+  if (!before) return res.status(404).json({ error: 'Not found' });
   const op = operatorStore.update(req.params.id, {
     name: body.name,
     role: body.role,
     status: body.status,
     partnerId: body.partnerId,
     password: body.password,
+    groupId: body.groupId,
+    menuOverride: body.menuOverride,
+    isSuper: actor.isSuper ? body.isSuper : undefined,
   });
   if (!op) return res.status(404).json({ error: 'Not found' });
+  const owner = op.scope === 'PARTNER' && op.partnerId ? op.partnerId : 'HQ';
+  const action =
+    body.password ? 'password' : body.status && body.status !== before.status ? 'status' : body.groupId !== undefined ? 'group' : body.menuOverride ? 'menus' : 'update';
+  writeAudit({
+    actor,
+    owner,
+    targetType: 'operator',
+    targetId: op.id,
+    action,
+    detail: `${op.email} group=${op.groupId || ''} menus=${(op.menuOverride || []).join(',')}`,
+  });
   res.json(operatorStore.publicView(op));
 });
 
 router.post('/operators/:id/reset-otp', (req, res) => {
+  const actor = hqActor(req);
+  if (!actor) return res.status(401).json({ error: 'Unauthorized' });
   const op = operatorStore.update(req.params.id, { clearOtp: true });
   if (!op) return res.status(404).json({ error: 'Not found' });
+  writeAudit({
+    actor,
+    owner: op.scope === 'PARTNER' && op.partnerId ? op.partnerId : 'HQ',
+    targetType: 'operator',
+    targetId: op.id,
+    action: 'otp',
+    detail: `reset otp ${op.email}`,
+  });
   res.json({ ok: true, otpEnabled: false });
 });
 

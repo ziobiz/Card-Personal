@@ -1,38 +1,28 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { api, fetchPublicBrand, type BrandConfig } from '../../api';
-import ManualDoc, { type ManualAudience } from '../../components/ManualDoc';
-
-function audienceFromDelivery(mode?: string): ManualAudience {
-  if (mode === 'sub_solution_standalone') return 'standalone';
-  if (mode === 'sub_solution') return 'sub';
-  return 'api';
-}
+import { api } from '../../api';
+import ManualFrame, { type ManualCard } from '../../components/ManualFrame';
 
 export default function PartnerManual() {
   const { t } = useTranslation();
-  const [audience, setAudience] = useState<ManualAudience>('api');
-  const [brandOverride, setBrandOverride] = useState<BrandConfig | undefined>();
-  const [ready, setReady] = useState(false);
+  const [items, setItems] = useState<ManualCard[]>([]);
 
   useEffect(() => {
     api.partnerPortal
-      .overview()
-      .then(async (r) => {
-        setAudience(audienceFromDelivery(r.credentials?.deliveryMode));
-        const slug = r.credentials?.solutionSlug;
-        if (slug) setBrandOverride(await fetchPublicBrand(slug));
-      })
-      .catch(() => setAudience('api'))
-      .finally(() => setReady(true));
+      .manuals()
+      .then((r) => setItems(r.items))
+      .catch(() =>
+        setItems([
+          { id: 'partner_api', outlineKeys: ['manual.outApi1', 'manual.outApi2', 'manual.outApi3'] },
+          { id: 'customer', outlineKeys: ['manual.outCustomer1', 'manual.outCustomer2', 'manual.outCustomer3', 'manual.outCustomer4'] },
+        ])
+      );
   }, []);
 
-  if (!ready) return <p className="muted-text">{t('common.loading')}</p>;
-
   return (
-    <div className="pp-card">
-      <h1>{t('partner.navManual')}</h1>
-      <ManualDoc audience={audience} showCustomerAlso brandOverride={brandOverride} />
+    <div>
+      <p className="muted-text">{t('manual.partnerHint')}</p>
+      <ManualFrame manuals={items} />
     </div>
   );
 }

@@ -8,6 +8,12 @@ import { feeSettings } from '../data/feeSettings.js';
 import { resolvePartnerPolicy } from '../data/feePolicyTemplateStore.js';
 import { generateOtpSecret, otpAuthUrl, verifyTotp } from '../lib/totp.js';
 import { getSecuritySettings } from '../lib/otpPolicy.js';
+import { accessGroupStore } from '../data/accessGroupStore.js';
+import { accessAuditStore } from '../data/accessAuditStore.js';
+import { PARTNER_MENU_KEYS } from '../lib/accessMenus.js';
+import { canUseMenu, resolveOperatorMenus } from '../lib/resolveAccess.js';
+import { canManagePartnerAccess, defaultGroupId, partnerActor, writeAudit } from '../lib/accessActor.js';
+import { manualsFor } from '../lib/manualCatalog.js';
 
 const router = Router();
 
@@ -153,6 +159,72 @@ router.put('/password', (req, res) => {
   res.json({ ok: true, mustChangePassword: false });
 });
 
+router.get('/me', requirePartnerPortal, (req, res) => {
+  const me = partnerActor(req);
+  if (!me) return res.status(401).json({ error: 'Unauthorized' });
+  const partner = partnerStore.getById(me.partnerId || '');
+  res.json({
+    ...operatorStore.publicView(me),
+    allowedMenus: resolveOperatorMenus(me),
+    catalog: PARTNER_MENU_KEYS,
+    deliveryMode: partner?.deliveryMode || 'api',
+    canManageAccess: canManagePartnerAccess(me),
+  });
+});
+
+router.get('/manuals', requirePartnerPortal, (req, res) => {
+  const me = partnerActor(req);
+  if (!me) return res.status(401).json({ error: 'Unauthorized' });
+  const partner = partnerStore.getById(me.partnerId || '');
+  res.json({
+    items: manualsFor({ audience: 'partner', delivery: partner?.deliveryMode || 'api' }),
+    deliveryMode: partner?.deliveryMode || 'api',
+    ready: false,
+  });
+});
+
+router.get('/access/groups', requirePartnerPortal, (req, res) => {
+  const me = partnerActor(req);
+  if (!me || !canManagePartnerAccess(me) || !me.partnerId) return res.status(403).json({ error: 'Access denied' });
+  res.json({ items: accessGroupStore.list(me.partnerId), catalog: PARTNER_MENU_KEYS, owner: me.partnerId });
+});
+
+router.post('/access/groups', requirePartnerPortal, (req, res) => {
+  const me = partnerActor(req);
+  if (!me || !canManagePartnerAccess(me) || !me.partnerId) return res.status(403).json({ error: 'Access denied' });
+  const group = accessGroupStore.create({
+    owner: me.partnerId,
+    name: String(req.body?.name || ''),
+    menus: req.body?.menus,
+    code: req.body?.code,
+  });
+  writeAudit({ actor: me, owner: me.partnerId, targetType: 'group', targetId: group.id, action: 'create', detail: group.name });
+  res.status(201).json(group);
+});
+
+router.put('/access/groups/:id', requirePartnerPortal, (req, res) => {
+  const me = partnerActor(req);
+  if (!me || !canManagePartnerAccess(me) || !me.partnerId) return res.status(403).json({ error: 'Access denied' });
+  const current = accessGroupStore.get(req.params.id);
+  if (!current || current.owner !== me.partnerId) return res.status(404).json({ error: 'Not found' });
+  const group = accessGroupStore.update(req.params.id, { name: req.body?.name, menus: req.body?.menus });
+  writeAudit({
+    actor: me,
+    owner: me.partnerId,
+    targetType: 'group',
+    targetId: current.id,
+    action: 'menus',
+    detail: `${group?.name || current.name}:${(group?.menus || []).join(',')}`,
+  });
+  res.json(group);
+});
+
+router.get('/access/history', requirePartnerPortal, (req, res) => {
+  const me = partnerActor(req);
+  if (!me || !canManagePartnerAccess(me) || !me.partnerId) return res.status(403).json({ error: 'Access denied' });
+  res.json({ items: accessAuditStore.list(me.partnerId, req.query.targetId ? String(req.query.targetId) : undefined) });
+});
+
 router.get('/staff', requirePartnerPortal, (req, res) => {
   const partnerId = req.auth!.partnerId!;
   const me = operatorStore.getById(req.auth!.userId);
@@ -160,12 +232,18 @@ router.get('/staff', requirePartnerPortal, (req, res) => {
     .list('PARTNER')
     .filter((o) => o.partnerId === partnerId)
     .map((o) => operatorStore.publicView(o));
-  res.json({ items, total: items.length, canAdd: me?.role !== 'STAFF' });
+  res.json({
+    items,
+    total: items.length,
+    canAdd: Boolean(me && (me.isSuper || me.role === 'ADMIN')),
+    groups: accessGroupStore.list(partnerId),
+    catalog: PARTNER_MENU_KEYS,
+  });
 });
 
 router.post('/staff', requirePartnerPortal, (req, res) => {
   const me = operatorStore.getById(req.auth!.userId);
-  if (!me || me.role === 'STAFF') return res.status(403).json({ error: 'Admin role required to add users' });
+  if (!me || !(me.isSuper || me.role === 'ADMIN')) return res.status(403).json({ error: 'Admin role required to add users' });
   try {
     const op = operatorStore.create({
       email: String(req.body?.email || ''),
@@ -174,7 +252,17 @@ router.post('/staff', requirePartnerPortal, (req, res) => {
       scope: 'PARTNER',
       role: req.body?.role === 'STAFF' ? 'STAFF' : 'ADMIN',
       partnerId: me.partnerId,
+      groupId: String(req.body?.groupId || defaultGroupId(me.partnerId || '')),
+      menuOverride: Array.isArray(req.body?.menuOverride) ? req.body.menuOverride.map(String) : undefined,
       mustChangePassword: true,
+    });
+    writeAudit({
+      actor: me,
+      owner: me.partnerId || '',
+      targetType: 'operator',
+      targetId: op.id,
+      action: 'create',
+      detail: `${op.email} ${op.groupId || ''}`,
     });
     res.status(201).json({ operator: operatorStore.publicView(op) });
   } catch (e) {
@@ -184,12 +272,26 @@ router.post('/staff', requirePartnerPortal, (req, res) => {
 
 router.put('/staff/:id', requirePartnerPortal, (req, res) => {
   const me = operatorStore.getById(req.auth!.userId);
-  if (!me || me.role === 'STAFF') return res.status(403).json({ error: 'Admin role required' });
+  if (!me || !(me.isSuper || me.role === 'ADMIN' || canUseMenu(me, 'access'))) {
+    return res.status(403).json({ error: 'Admin role required' });
+  }
   const target = operatorStore.getById(req.params.id);
   if (!target || target.partnerId !== me.partnerId) return res.status(404).json({ error: 'Not found' });
   const updated = operatorStore.update(target.id, {
     status: req.body?.status === 'suspended' ? 'suspended' : req.body?.status === 'active' ? 'active' : undefined,
     role: req.body?.role === 'STAFF' || req.body?.role === 'ADMIN' ? req.body.role : undefined,
+    groupId: req.body?.groupId,
+    menuOverride: req.body?.menuOverride,
+    name: req.body?.name,
+    password: req.body?.password,
+  });
+  writeAudit({
+    actor: me,
+    owner: me.partnerId || '',
+    targetType: 'operator',
+    targetId: target.id,
+    action: req.body?.password ? 'password' : req.body?.groupId !== undefined ? 'group' : req.body?.menuOverride ? 'menus' : 'update',
+    detail: `${target.email} group=${updated?.groupId || ''}`,
   });
   res.json(operatorStore.publicView(updated!));
 });
