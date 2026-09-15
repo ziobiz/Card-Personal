@@ -325,10 +325,16 @@ export default function AdminLayout() {
           ['--pg-side-hover']: normalizeHex(brand.sidebarHover || '') || brand.sidebarHover || undefined,
           ['--pg-side-active']: normalizeHex(brand.sidebarActive || '') || brand.sidebarActive || undefined,
           ['--pg-side-sub']: normalizeHex(brand.sidebarSub || '') || brand.sidebarSub || undefined,
+          ['--pg-side-text']:
+            normalizeHex(brand.sidebarText || '') ||
+            brand.sidebarText ||
+            contrastText(brand.sidebarBg || '#2c3138'),
+          ['--pg-fold']: normalizeHex(brand.foldBg || '') || brand.foldBg || undefined,
+          ['--pg-fold-hover']: normalizeHex(brand.foldHover || '') || brand.foldHover || undefined,
           ['--pg-tabbar']: normalizeHex(brand.tabbarBg || '') || brand.tabbarBg || undefined,
+          ['--pg-tabbar-text']: normalizeHex(brand.tabbarText || '') || brand.tabbarText || undefined,
           ['--pg-accent']: normalizeHex(brand.accentColor) || brand.accentColor || undefined,
           ['--pg-top']: normalizeHex(brand.headerBg) || brand.headerBg || undefined,
-          ['--pg-side-text']: contrastText(brand.sidebarBg || '#2c3138'),
         } as CSSProperties
       }
     >

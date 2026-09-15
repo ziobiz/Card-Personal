@@ -38,10 +38,18 @@ export interface BrandColorSet {
   sidebarActive: string;
   /** 사이드 서브메뉴 배경 */
   sidebarSub: string;
+  /** 왼쪽 메뉴 글자색 */
+  sidebarText: string;
   /** 로고 영역 배경 */
   logoBg: string;
   /** 상단바 아래 메뉴바(탭바) */
   tabbarBg: string;
+  /** 탭바 글자색 */
+  tabbarText: string;
+  /** 접기 버튼 배경 */
+  foldBg: string;
+  /** 접기 버튼 호버 */
+  foldHover: string;
   /** 활성 서브메뉴 강조 */
   accentColor: string;
   /** 로그인 패널 배경 */
@@ -96,8 +104,12 @@ export const COLOR_KEYS = [
   'sidebarHover',
   'sidebarActive',
   'sidebarSub',
+  'sidebarText',
   'logoBg',
   'tabbarBg',
+  'tabbarText',
+  'foldBg',
+  'foldHover',
   'accentColor',
   'loginPanelBg',
 ] as const;
@@ -111,8 +123,12 @@ export const DEFAULT_COLORS: BrandColorSet = {
   sidebarHover: '#353b45',
   sidebarActive: '#252a32',
   sidebarSub: '#242933',
+  sidebarText: '#d1d5db',
   logoBg: '#1f232b',
   tabbarBg: '#4a4a4a',
+  tabbarText: '#c8cdd4',
+  foldBg: '#3a4149',
+  foldHover: '#454d56',
   accentColor: '#6658dd',
   loginPanelBg: '#e2e5ea',
 };
@@ -124,8 +140,12 @@ export const LIGHT_COLORS: BrandColorSet = {
   sidebarHover: '#e5e7eb',
   sidebarActive: '#d1d5db',
   sidebarSub: '#e8eaed',
+  sidebarText: '#374151',
   logoBg: '#e5e7eb',
   tabbarBg: '#9ca3af',
+  tabbarText: '#1f2937',
+  foldBg: '#d1d5db',
+  foldHover: '#c4c9d1',
   accentColor: '#4f46e5',
   loginPanelBg: '#f8f9fb',
 };
@@ -137,8 +157,12 @@ export const DARK_COLORS: BrandColorSet = {
   sidebarHover: '#22262f',
   sidebarActive: '#0f1115',
   sidebarSub: '#0c0e12',
+  sidebarText: '#d1d5db',
   logoBg: '#0a0c10',
   tabbarBg: '#2a2f38',
+  tabbarText: '#c8cdd4',
+  foldBg: '#2a3038',
+  foldHover: '#353c46',
   accentColor: '#818cf8',
   loginPanelBg: '#2c3138',
 };
@@ -256,7 +280,11 @@ function load(): BrandConfig {
     if (!parsed.sidebarHover) colors.sidebarHover = DEFAULT_COLORS.sidebarHover;
     if (!parsed.sidebarActive) colors.sidebarActive = DEFAULT_COLORS.sidebarActive;
     if (!parsed.sidebarSub) colors.sidebarSub = DEFAULT_COLORS.sidebarSub;
+    if (!parsed.sidebarText) colors.sidebarText = DEFAULT_COLORS.sidebarText;
     if (!parsed.tabbarBg) colors.tabbarBg = DEFAULT_COLORS.tabbarBg;
+    if (!parsed.tabbarText) colors.tabbarText = DEFAULT_COLORS.tabbarText;
+    if (!parsed.foldBg) colors.foldBg = DEFAULT_COLORS.foldBg;
+    if (!parsed.foldHover) colors.foldHover = DEFAULT_COLORS.foldHover;
 
     const hadPresets = Array.isArray(parsed.colorPresets) && parsed.colorPresets.length > 0;
     const colorPresets = hadPresets ? normalizePresets(parsed.colorPresets) : defaultColorPresets();
