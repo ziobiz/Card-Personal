@@ -71,7 +71,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin: 4px 0 16px;
+  margin: 4px 0 28px;
   text-align: center;
 }
 
@@ -89,12 +89,12 @@
   font-weight: 800;
   color: #1e293b;
   letter-spacing: 0.04em;
-  margin: 4px 0 16px;
+  margin: 4px 0 28px;
   width: 100%;
 }
 
 .ac-notice {
-  margin: 0 0 18px;
+  margin: 8px 0 22px;
   padding: 12px 14px;
   border: 1px solid #e5e7eb;
   border-radius: 10px;

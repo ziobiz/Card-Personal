@@ -76,9 +76,6 @@ export default function AdminLogin() {
           {loading ? t('auth.loggingIn') : t('auth.loginButton')}
         </button>
       </form>
-      <a href="/login" className="ac-alt">
-        {t('admin.userLogin')}
-      </a>
     </AdminAuthChrome>
   );
 }
