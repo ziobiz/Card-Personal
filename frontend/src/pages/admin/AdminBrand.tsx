@@ -41,6 +41,14 @@ const COLOR_KEYS = [
 
 type ColorKey = (typeof COLOR_KEYS)[number];
 
+const COLOR_GROUPS: Array<{ id: string; tone: 'lavender' | 'peach' | 'mist' | 'sky' | 'mint'; keys: ColorKey[] }> = [
+  { id: 'colorGroupSidebar', tone: 'lavender', keys: ['sidebarBg', 'sidebarHover', 'sidebarActive', 'sidebarSub', 'sidebarText', 'accentColor'] },
+  { id: 'colorGroupChrome', tone: 'peach', keys: ['logoBg', 'foldBg', 'foldHover'] },
+  { id: 'colorGroupHeader', tone: 'mist', keys: ['headerBg'] },
+  { id: 'colorGroupTabbar', tone: 'sky', keys: ['tabbarBg', 'tabbarText', 'tabbarActive'] },
+  { id: 'colorGroupLogin', tone: 'mint', keys: ['loginPanelBg'] },
+];
+
 function ensureColorFields(b: BrandConfig): BrandConfig {
   const presets = b.colorPresets?.length
     ? b.colorPresets
@@ -368,6 +376,16 @@ export default function AdminBrand() {
             <input className="input" value={form.productName} onChange={(e) => set('productName', e.target.value)} />
           </label>
           <label>
+            {t('admin.brandBrowserTitle')}
+            <input
+              className="input"
+              value={form.browserTitle || ''}
+              onChange={(e) => set('browserTitle', e.target.value)}
+              placeholder={form.productName || 'ICOCARD'}
+            />
+            <em className="hq-logo-slot-hint">{t('admin.brandBrowserTitleHint')}</em>
+          </label>
+          <label>
             {t('admin.brandOperator')}
             <input className="input" value={form.operatorName} onChange={(e) => set('operatorName', e.target.value)} />
           </label>
@@ -483,65 +501,53 @@ export default function AdminBrand() {
           </div>
 
           <div className="hq-login-setup-block hq-login-notice-card">
-            <h4 className="hq-login-notice-title">{t('admin.brandLoginNoticeBlock')}</h4>
             <p className="hq-card-hint hq-login-notice-hint">{t('admin.brandLoginNoticeToggleHint')}</p>
+            <label className="hq-login-notice-toggle">
+              <span>{t('admin.brandLoginNoticeBlock')}</span>
+              <select
+                className="input hq-notice-status-select"
+                value={form.loginNoticeEnabled !== false ? 'on' : 'off'}
+                onChange={(e) =>
+                  setForm((s) => (s ? { ...s, loginNoticeEnabled: e.target.value === 'on' } : s))
+                }
+              >
+                <option value="on">{t('admin.optionActive')}</option>
+                <option value="off">{t('admin.optionInactive')}</option>
+              </select>
+            </label>
 
-            <div className="hq-login-notice-row">
-              <div className="hq-login-notice-left">
-                <label className="hq-login-notice-toggle">
-                  <select
-                    className="input hq-notice-status-select"
-                    value={form.loginNoticeEnabled !== false ? 'on' : 'off'}
-                    onChange={(e) =>
-                      setForm((s) => (s ? { ...s, loginNoticeEnabled: e.target.value === 'on' } : s))
-                    }
-                    aria-label={t('admin.brandLoginNoticeBlock')}
-                  >
-                    <option value="on">{t('admin.optionActive')}</option>
-                    <option value="off">{t('admin.optionInactive')}</option>
-                  </select>
-                </label>
-
-                <div className={`hq-login-notice-fields${form.loginNoticeEnabled === false ? ' is-disabled' : ''}`}>
-                  <label className="hq-login-field hq-login-field-narrow">
-                    {t('admin.brandLoginNoticeTitleShort')}
-                    <input
-                      className="input hq-login-title-input"
-                      value={form.loginNoticeTitle || ''}
-                      onChange={(e) => set('loginNoticeTitle', e.target.value)}
-                      placeholder={t('partner.scamTitle')}
-                      disabled={form.loginNoticeEnabled === false}
-                    />
-                  </label>
-                  <label className="hq-login-field hq-login-field-narrow">
-                    {t('admin.brandLoginNoticeBodyShort')}
-                    <textarea
-                      className="hq-login-body-input"
-                      rows={10}
-                      value={form.loginNoticeBody || ''}
-                      onChange={(e) => set('loginNoticeBody', e.target.value)}
-                      placeholder={t('partner.scamBody')}
-                      disabled={form.loginNoticeEnabled === false}
-                    />
-                  </label>
-                  <p className="muted-text hq-login-empty-hint">{t('admin.brandLoginNoticeEmptyHint')}</p>
-                </div>
-              </div>
-
-              <aside className="hq-login-setup-preview hq-login-preview-side" aria-label={t('admin.brandLoginPreview')}>
-                <h4>{t('admin.brandLoginPreview')}</h4>
-                <div className="hq-login-preview-panel hq-login-preview-text-only">
-                  {form.loginNoticeEnabled !== false ? (
-                    <section className="hq-login-preview-notice">
-                      <strong>{noticeTitlePreview}</strong>
-                      <p>{noticeBodyPreview}</p>
-                    </section>
-                  ) : (
-                    <p className="muted-text hq-login-preview-off-note">{t('admin.brandLoginNoticeOff')}</p>
-                  )}
-                </div>
+            <div className={`hq-notice-grid${form.loginNoticeEnabled === false ? ' is-disabled' : ''}`}>
+              <label className="hq-notice-label-title">{t('admin.brandLoginNoticeTitleShort')}</label>
+              <div className="hq-notice-label-preview">{t('admin.brandLoginPreview')}</div>
+              <input
+                className="input hq-login-title-input hq-notice-title"
+                value={form.loginNoticeTitle || ''}
+                onChange={(e) => set('loginNoticeTitle', e.target.value)}
+                placeholder={t('partner.scamTitle')}
+                disabled={form.loginNoticeEnabled === false}
+              />
+              <div className="hq-notice-title-gap" />
+              <label className="hq-notice-label-body">{t('admin.brandLoginNoticeBodyShort')}</label>
+              <div className="hq-notice-body-gap" />
+              <textarea
+                className="hq-login-body-input hq-notice-body"
+                value={form.loginNoticeBody || ''}
+                onChange={(e) => set('loginNoticeBody', e.target.value)}
+                placeholder={t('partner.scamBody')}
+                disabled={form.loginNoticeEnabled === false}
+              />
+              <aside className="hq-login-preview-panel hq-login-preview-text-only hq-notice-preview" aria-label={t('admin.brandLoginPreview')}>
+                {form.loginNoticeEnabled !== false ? (
+                  <section className="hq-login-preview-notice">
+                    <strong>{noticeTitlePreview}</strong>
+                    <p>{noticeBodyPreview}</p>
+                  </section>
+                ) : (
+                  <p className="muted-text hq-login-preview-off-note">{t('admin.brandLoginNoticeOff')}</p>
+                )}
               </aside>
             </div>
+            <p className="muted-text hq-login-empty-hint">{t('admin.brandLoginNoticeEmptyHint')}</p>
           </div>
         </div>
       </section>
@@ -646,33 +652,40 @@ export default function AdminBrand() {
           ))}
         </div>
 
-        <div className="hq-brand-colors hq-brand-colors-labeled">
-          {COLOR_KEYS.map((key) => {
-            const value = normalizeHex(String(form[key] || '')) || String(form[key] || '#000000');
-            const draft = hexDraft[key] ?? value;
-            return (
-              <label key={key} className="hq-color-field">
-                <span className="hq-color-title">{colorLabels[key].title}</span>
-                <span className="hq-color-hint">{colorLabels[key].hint}</span>
-                <span className="hq-color-row">
-                  <input
-                    type="color"
-                    value={normalizeHex(value) || '#000000'}
-                    onChange={(e) => setColor(key, e.target.value)}
-                    title={value}
-                  />
-                  <input
-                    className="input hq-hex-input"
-                    value={draft}
-                    placeholder="#000000"
-                    spellCheck={false}
-                    onChange={(e) => setColor(key, e.target.value)}
-                    onBlur={() => commitColor(key)}
-                  />
-                </span>
-              </label>
-            );
-          })}
+        <div className="hq-color-groups">
+          {COLOR_GROUPS.map((group) => (
+            <div key={group.id} className={`hq-color-group tone-${group.tone}`}>
+              <h4>{t(`admin.${group.id}`)}</h4>
+              <div className="hq-brand-colors hq-brand-colors-labeled">
+                {group.keys.map((key) => {
+                  const value = normalizeHex(String(form[key] || '')) || String(form[key] || '#000000');
+                  const draft = hexDraft[key] ?? value;
+                  return (
+                    <label key={key} className="hq-color-field">
+                      <span className="hq-color-title">{colorLabels[key].title}</span>
+                      <span className="hq-color-hint">{colorLabels[key].hint}</span>
+                      <span className="hq-color-row">
+                        <input
+                          type="color"
+                          value={normalizeHex(value) || '#000000'}
+                          onChange={(e) => setColor(key, e.target.value)}
+                          title={value}
+                        />
+                        <input
+                          className="input hq-hex-input"
+                          value={draft}
+                          placeholder="#000000"
+                          spellCheck={false}
+                          onChange={(e) => setColor(key, e.target.value)}
+                          onBlur={() => commitColor(key)}
+                        />
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
         <div
           className="hq-brand-swatch"

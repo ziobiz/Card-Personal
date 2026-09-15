@@ -76,6 +76,8 @@ export interface BrandConfig extends BrandColorSet {
   /** Admin shell (after login) sidebar logo. Empty → falls back to logoAdmin */
   logoAdminShell: string;
   favicon: string;
+  /** Browser tab + bookmark name. Empty → productName */
+  browserTitle: string;
   /** Admin login left-panel hero (data URL or /path). Empty → system default. */
   loginHeroImage: string;
   /** Member login page background (data URL or /path). Empty → /user-hero-bg.png */
@@ -225,6 +227,7 @@ export const DEFAULT_BRAND: BrandConfig = {
   logoMemberShell: '',
   logoAdminShell: '',
   favicon: '',
+  browserTitle: '',
   loginHeroImage: '',
   memberLoginHeroImage: '',
   loginMainText: '',
@@ -435,6 +438,8 @@ export const brandStore = {
     };
     const name = clipText(partial.productName, 40);
     if (name != null) next.productName = name || DEFAULT_BRAND.productName;
+    const tab = clipText(partial.browserTitle, 60);
+    if (tab != null) next.browserTitle = tab;
     const op = clipText(partial.operatorName, 80);
     if (op != null) next.operatorName = op;
     const card = clipText(partial.cardBrandName, 24);

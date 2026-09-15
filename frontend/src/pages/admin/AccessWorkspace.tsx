@@ -268,7 +268,7 @@ export default function AccessWorkspace({ variant }: { variant: 'hq' | 'partner'
 
   return (
     <div className="access-work">
-      <p className="access-hint">{isHq ? t('access.hqHint') : t('access.partnerHint')}</p>
+      <p className={isHq ? 'access-hint hq-card-hint' : 'access-hint'}>{isHq ? t('access.hqHint') : t('access.partnerHint')}</p>
       {isHq ? (
         <div className="access-toolbar">
           <label>

@@ -205,6 +205,8 @@ export interface BrandConfig extends BrandColorSet {
   /** Admin after-login sidebar logo (empty → logoAdmin) */
   logoAdminShell?: string;
   favicon: string;
+  /** Browser tab and bookmark name. Empty → productName */
+  browserTitle?: string;
   /** Admin login left hero — independent of member */
   loginHeroImage?: string;
   /** Member login page background — independent of admin */
@@ -253,6 +255,7 @@ export const DEFAULT_BRAND: BrandConfig = {
   logoMemberShell: '',
   logoAdminShell: '',
   favicon: '',
+  browserTitle: '',
   loginHeroImage: '',
   memberLoginHeroImage: '',
   loginMainText: '',

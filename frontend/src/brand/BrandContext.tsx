@@ -24,7 +24,8 @@ export function BrandProvider({ children }: { children: ReactNode }) {
   }, [slug]);
 
   useEffect(() => {
-    document.title = brand.productName;
+    const title = (brand.browserTitle || '').trim() || brand.productName;
+    document.title = title;
     let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
     if (!link) {
       link = document.createElement('link');
@@ -32,7 +33,14 @@ export function BrandProvider({ children }: { children: ReactNode }) {
       document.head.appendChild(link);
     }
     if (brand.favicon) link.href = brand.favicon;
-  }, [brand.productName, brand.favicon]);
+    let apple = document.querySelector<HTMLMetaElement>('meta[name="apple-mobile-web-app-title"]');
+    if (!apple) {
+      apple = document.createElement('meta');
+      apple.name = 'apple-mobile-web-app-title';
+      document.head.appendChild(apple);
+    }
+    apple.content = title;
+  }, [brand.productName, brand.browserTitle, brand.favicon]);
 
   const value = useMemo(() => ({ brand, reload, slug }), [brand, slug]);
   return <BrandContext.Provider value={value}>{children}</BrandContext.Provider>;

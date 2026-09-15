@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
+import type { AdminOutletContext } from '../../components/AdminLayout';
 
 type FeePolicy = {
   treasuryWalletAddress?: string;
@@ -28,6 +29,7 @@ type Settings = {
 
 export default function AdminSettings() {
   const { t } = useTranslation();
+  const { setPageActions } = useOutletContext<AdminOutletContext>();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -92,6 +94,15 @@ export default function AdminSettings() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    setPageActions(
+      <Link to="/admin/fee-policy" className="btn-outline">
+        {t('admin.navFeePolicy')}
+      </Link>
+    );
+    return () => setPageActions(null);
+  }, [setPageActions, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -293,15 +304,18 @@ export default function AdminSettings() {
       <section className="card-surface hq-sandbox-card">
         <h3 className="section-title">{t('admin.sectionFees')}</h3>
         <p className="hq-card-hint">{t('admin.settingsFeeHint')}</p>
-        <div className="hq-form-grid">
-          <label>
-            <span>{t('admin.treasuryWallet')}</span>
-            <input type="text" className="input" value={form.treasuryWalletAddress} onChange={(e) => setForm((f) => ({ ...f, treasuryWalletAddress: e.target.value }))} placeholder="0x..." />
-          </label>
-        </div>
-        <div className="hq-toolbar" style={{ justifyContent: 'flex-start' }}>
-          <Link to="/admin/fee-policy" className="btn-secondary">{t('admin.navFeePolicy')}</Link>
-        </div>
+        <label className="hq-treasury-field">
+          <span>{t('admin.treasuryWallet')}</span>
+          <input
+            type="text"
+            className="input"
+            value={form.treasuryWalletAddress}
+            onChange={(e) => setForm((f) => ({ ...f, treasuryWalletAddress: e.target.value }))}
+            placeholder="0x..."
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </label>
       </section>
 
       {settings?.updatedAt ? (
