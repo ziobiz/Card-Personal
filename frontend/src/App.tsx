@@ -32,6 +32,8 @@ import PartnerApi from './pages/partner/PartnerApi';
 import PartnerFees from './pages/partner/PartnerFees';
 import PartnerStaff from './pages/partner/PartnerStaff';
 import PartnerManual from './pages/partner/PartnerManual';
+import AdminManuals from './pages/admin/AdminManuals';
+import HelpManual from './pages/HelpManual';
 import MemberOtp from './pages/MemberOtp';
 import Account from './pages/Account';
 import { useAuth } from './hooks/useAuth';
@@ -60,6 +62,7 @@ function MemberChildRoutes() {
       <Route path="earn" element={<Earn />} />
       <Route path="activity" element={<Activity />} />
       <Route path="account" element={<Account />} />
+      <Route path="help" element={<HelpManual />} />
     </>
   );
 }
@@ -138,6 +141,7 @@ export default function App() {
           <Route path="fee-policy" element={<AdminFeePolicy view="manage" />} />
           <Route path="brand" element={<AdminBrand />} />
           <Route path="sandbox" element={<AdminSandbox />} />
+          <Route path="manuals" element={<AdminManuals />} />
           <Route path="me" element={<AdminMyInfo />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>

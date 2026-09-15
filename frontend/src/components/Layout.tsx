@@ -52,6 +52,14 @@ function IconAccount() {
     </svg>
   );
 }
+function IconHelp() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M6 4.5h9.5L19.5 8v11.5H6z" />
+      <path d="M15.5 4.5V8H19.5M9 12h6M9 15.5h4.5" />
+    </svg>
+  );
+}
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -93,6 +101,9 @@ export default function Layout() {
           </TNavLink>
           <TNavLink to="/account" className={itemClass}>
             <IconAccount /> {t('nav.account')}
+          </TNavLink>
+          <TNavLink to="/help" className={itemClass}>
+            <IconHelp /> {t('nav.help')}
           </TNavLink>
           <button type="button" onClick={handleLogout}>
             {t('nav.logout')}

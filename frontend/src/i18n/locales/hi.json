@@ -12,7 +12,8 @@
     "dashboard": "डैशबोर्ड",
     "cards": "कार्ड",
     "logout": "लॉग आउट",
-    "earn": "Earn"
+    "earn": "Earn",
+    "help": "Guide"
   },
   "auth": {
     "login": "लॉग इन",
@@ -167,7 +168,8 @@
     "resetPwBtn": "Reset password",
     "resetPwConfirm": "Reset password for {{email}}?",
     "resetPwOnce": "Temporary password for {{email}}: {{password}} (shown once)",
-    "navHqOperators": "HQ"
+    "navHqOperators": "HQ",
+    "navManuals": "Manuals"
   },
   "partner": {
     "ourKeysNotWirex": "Authenticate with HQ-issued MID / API Key / Secret. Do not use Wirex keys.",
@@ -209,5 +211,65 @@
     "bridgeTopup": "Request bridge credit",
     "bridgeDone": "Bridge credit recorded.",
     "noneEnabled": "No wallet mode is enabled for this merchant. Contact HQ."
+  },
+  "manual": {
+    "draftNote": "Prepared draft. We will update this when features are finalized.",
+    "support": "Support",
+    "hqLead": "HQ can open customer, API, sub-solution, and standalone manuals.",
+    "aclLater": "Settlement, issuance, and general-admin groups plus menu ACL and user history will be built later.",
+    "customer": {
+      "title": "Customer guide",
+      "lead": "For individual card users. Same text on the HQ app and every partner type.",
+      "c1Title": "Sign up and login",
+      "c1Body": "Register with email and password. If OTP is on, enter the authenticator code. Sub-solutions use the same flow at /s/{slug}.",
+      "c2Title": "Three wallet modes",
+      "c2Body": "Embedded (we issue the wallet), external EOA (MetaMask bind), or bridge (BTC/points ledger). Only modes allowed for the merchant appear. Card spend uses our Smart Wallet only.",
+      "c3Title": "Card issue",
+      "c3Body": "Issue a virtual card in the app. Plastic is available when the merchant policy allows it. KYC may be required.",
+      "c4Title": "Top up and spend",
+      "c4Body": "Top up with an allowed wallet mode, then pay. See Activity for history.",
+      "c5Title": "Security",
+      "c5Body": "Manage password and OTP in Account. HQ or partner operators can reset them if needed.",
+      "c6Title": "Contact",
+      "c6Body": "Use the brand support on this screen. Do not contact Wirex directly."
+    },
+    "api": {
+      "title": "API integration guide",
+      "lead": "Call from your app with HQ-issued MID, API Key, and Secret. You never receive Wirex keys.",
+      "a1Title": "Kit",
+      "a1Body": "Shown once at merchant registration. Use X-API-Key, X-API-Secret, X-ICO-Mid, and optional HMAC.",
+      "a2Title": "Users",
+      "a2Body": "Identify end users with X-Partner-User-Id. Wirex sees ICOCARD only.",
+      "a3Title": "Cards and wallets",
+      "a3Body": "Call /api/partner/v1/cards, /wallet, /bridge. Disabled wallet modes are rejected.",
+      "a4Title": "Isolation",
+      "a4Body": "Partners cannot see Wirex. Wirex cannot see sub-merchants.",
+      "a5Title": "Customer guide",
+      "a5Body": "Give end users the customer guide below."
+    },
+    "sub": {
+      "title": "Sub-solution operations",
+      "lead": "Operate the branded member app at /s/{slug}. Keys are ICOCARD HQ keys.",
+      "s1Title": "Member app",
+      "s1Body": "Logo and name are branded. Customers use the same sign-up and card flow as HQ.",
+      "s2Title": "Keys",
+      "s2Body": "Use only the HQ kit. Wirex keys are not distributed.",
+      "s3Title": "Staff",
+      "s3Body": "Add operators in the partner portal. They are not card customers.",
+      "s4Title": "Customer guide",
+      "s4Body": "Show members the customer guide as-is."
+    },
+    "standalone": {
+      "title": "Standalone operations",
+      "lead": "Operate with the merchant Wirex contract. No ICOCARD reseller keys.",
+      "t1Title": "Scope",
+      "t1Body": "Run the card service on the member app. No Partner API resale or key redistribution.",
+      "t2Title": "Wirex",
+      "t2Body": "Wirex sees this merchant. HQ keys are never used as fallback.",
+      "t3Title": "Staff",
+      "t3Body": "Add operators in the partner portal.",
+      "t4Title": "Customer guide",
+      "t4Body": "Show members the customer guide as-is."
+    }
   }
 }

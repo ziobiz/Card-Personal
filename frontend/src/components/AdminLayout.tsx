@@ -130,6 +130,7 @@ export default function AdminLayout() {
       items: [
         { to: '/admin/dashboard', labelKey: 'admin.navDashboard' },
         { to: '/admin/cards', labelKey: 'admin.navCards' },
+        { to: '/admin/manuals', labelKey: 'admin.navManuals' },
       ],
     },
   ];
@@ -152,6 +153,7 @@ export default function AdminLayout() {
       '/admin/members/partner': ['admin.menuUsers', 'admin.navCustomers'],
       '/admin/users': ['admin.menuUsers', 'admin.navHqOperators'],
       '/admin/cards': ['admin.menuOps', 'admin.navCards'],
+      '/admin/manuals': ['admin.menuOps', 'admin.navManuals'],
       '/admin/me': ['admin.myInfo'],
     };
     return map[loc.pathname] ?? ['admin.menuMain'];

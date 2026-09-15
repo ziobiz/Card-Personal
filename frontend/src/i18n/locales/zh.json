@@ -23,7 +23,8 @@
     "cardsIssueShort": "申请",
     "cardsManageShort": "管理",
     "account": "我的信息",
-    "accountShort": "账户"
+    "accountShort": "账户",
+    "help": "使用说明"
   },
   "auth": {
     "login": "登录",
@@ -508,7 +509,8 @@
     "walletHqHint": "选择“遵循总部”的商户使用这些方式。未允许的方式会在会员应用与 API 中拦截。",
     "isolationHqHint": "Wirex 仅看到 ICOCARD 运营。合作方不会收到 Wirex 密钥。",
     "standaloneWirexSaved": "已加密保存独立型 Wirex 密钥。",
-    "opsOnly": "仅运营"
+    "opsOnly": "仅运营",
+    "navManuals": "手册"
   },
   "earn": {
     "title": "收益",
@@ -581,5 +583,65 @@
     "bridgeTopup": "申请桥接入金",
     "bridgeDone": "已记录桥接入金。",
     "noneEnabled": "此商户未启用任何钱包方式，请联系总部。"
+  },
+  "manual": {
+    "draftNote": "预备文稿。功能确定后会更新。",
+    "support": "客服",
+    "hqLead": "总部可查看客户、API、子方案、独立型全部手册。",
+    "aclLater": "结算组、发卡组、普通管理员及菜单权限、用户历史将在之后开发。",
+    "customer": {
+      "title": "客户操作说明",
+      "lead": "供持卡个人使用。总部会员应用与所有合作方类型内容相同。",
+      "c1Title": "注册与登录",
+      "c1Body": "使用邮箱和密码注册。若开启 OTP，请输入验证器代码。子方案在 /s/{slug} 使用相同流程。",
+      "c2Title": "三种钱包",
+      "c2Body": "仅显示商户允许的嵌入式、外部 EOA 或桥接。刷卡只使用我们的 Smart Wallet。",
+      "c3Title": "发卡",
+      "c3Body": "在应用中发行虚拟卡。实体卡需商户政策允许。可能需要 KYC。",
+      "c4Title": "充值与消费",
+      "c4Body": "用允许的钱包充值后支付。交易记录在活动菜单。",
+      "c5Title": "安全",
+      "c5Body": "在账户中管理密码和 OTP。遗失时总部或合作方可重置。",
+      "c6Title": "联系",
+      "c6Body": "联系本页品牌客服。请勿直接联系 Wirex。"
+    },
+    "api": {
+      "title": "API 对接说明",
+      "lead": "用总部发放的 MID、API Key、Secret 对接。不会收到 Wirex 密钥。",
+      "a1Title": "套件",
+      "a1Body": "商户注册时只显示一次。使用 X-API-Key、X-API-Secret、X-ICO-Mid 及可选 HMAC。",
+      "a2Title": "用户",
+      "a2Body": "用 X-Partner-User-Id 区分合作方用户。Wirex 只看到 ICOCARD 运营。",
+      "a3Title": "卡与钱包",
+      "a3Body": "调用 /api/partner/v1/cards、/wallet、/bridge。未允许的钱包方式会被拒绝。",
+      "a4Title": "隔离",
+      "a4Body": "合作方看不到 Wirex，Wirex 看不到下级商户。",
+      "a5Title": "客户说明",
+      "a5Body": "向最终用户提供下方客户说明。"
+    },
+    "sub": {
+      "title": "子方案运营说明",
+      "lead": "通过品牌会员应用 /s/{slug} 运营。密钥为总部 ICOCARD 密钥。",
+      "s1Title": "会员应用",
+      "s1Body": "显示品牌标志与名称。客户使用与总部相同的注册与发卡流程。",
+      "s2Title": "密钥",
+      "s2Body": "只用总部套件。不发放 Wirex 密钥。",
+      "s3Title": "员工",
+      "s3Body": "可在合作方门户添加运营人员。不是持卡客户。",
+      "s4Title": "客户说明",
+      "s4Body": "向会员原样展示客户说明。"
+    },
+    "standalone": {
+      "title": "独立型运营说明",
+      "lead": "用商户自己的 Wirex 合同密钥仅做运营。没有 ICOCARD 转售密钥。",
+      "t1Title": "范围",
+      "t1Body": "在会员应用运营发卡。无转售 API 与密钥再分发。",
+      "t2Title": "Wirex",
+      "t2Body": "Wirex 看到该商户。不会回退到总部密钥。",
+      "t3Title": "员工",
+      "t3Body": "在合作方门户添加运营人员。",
+      "t4Title": "客户说明",
+      "t4Body": "向会员原样展示客户说明。"
+    }
   }
 }
