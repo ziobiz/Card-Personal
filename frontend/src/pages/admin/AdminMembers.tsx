@@ -5,6 +5,7 @@ import { api } from '../../api';
 type Member = {
   id: string;
   email: string;
+  displayName?: string;
   wirexUserId?: string;
   source: string;
   partnerId?: string;
@@ -19,6 +20,7 @@ type Member = {
 export default function AdminMembers({ source }: { source?: 'direct' | 'partner' }) {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<'all' | 'direct' | 'partner'>(source || 'all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'active' | 'suspended' | 'rejected'>('all');
   const [items, setItems] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
@@ -48,6 +50,16 @@ export default function AdminMembers({ source }: { source?: 'direct' | 'partner'
             <option value="partner">{t('admin.channelPartner')}</option>
           </select>
         </label>
+        <label>
+          {t('admin.colStatus')}
+          <select className="input" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}>
+            <option value="all">{t('admin.filterAll')}</option>
+            <option value="pending">{t('admin.statusPending')}</option>
+            <option value="active">{t('admin.statusActive')}</option>
+            <option value="suspended">{t('admin.statusSuspended')}</option>
+            <option value="rejected">{t('admin.statusRejected')}</option>
+          </select>
+        </label>
         <button type="button" className="btn-primary" onClick={load}>
           {t('admin.search')}
         </button>
@@ -72,9 +84,14 @@ export default function AdminMembers({ source }: { source?: 'direct' | 'partner'
               </tr>
             </thead>
             <tbody>
-              {items.map((m) => (
+              {items
+                .filter((m) => statusFilter === 'all' || m.status === statusFilter)
+                .map((m) => (
                 <tr key={m.id}>
-                  <td>{m.email}</td>
+                  <td>
+                    {m.email}
+                    {m.displayName ? <div className="muted-text">{m.displayName}</div> : null}
+                  </td>
                   <td>{m.source === 'partner' ? t('admin.channelPartner') : t('admin.channelDirect')}</td>
                   <td>{m.partnerName || m.partnerId || '-'}</td>
                   <td className="mono">{m.wirexUserId || '-'}</td>
@@ -89,12 +106,40 @@ export default function AdminMembers({ source }: { source?: 'direct' | 'partner'
                         load();
                       }}
                     >
+                      <option value="pending">{t('admin.statusPending')}</option>
                       <option value="active">{t('admin.statusActive')}</option>
                       <option value="suspended">{t('admin.statusSuspended')}</option>
+                      <option value="rejected">{t('admin.statusRejected')}</option>
                     </select>
                   </td>
                   <td>{new Date(m.createdAt).toLocaleDateString()}</td>
                   <td>
+                    {m.status === 'pending' ? (
+                      <>
+                        <button
+                          type="button"
+                          className="btn-primary btn-compact"
+                          onClick={async () => {
+                            await api.admin.updateMember(m.id, { status: 'active' });
+                            setMessage(t('admin.memberApproved', { email: m.email }));
+                            load();
+                          }}
+                        >
+                          {t('admin.approveMember')}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-outline btn-compact"
+                          onClick={async () => {
+                            await api.admin.updateMember(m.id, { status: 'rejected' });
+                            setMessage(t('admin.memberRejected', { email: m.email }));
+                            load();
+                          }}
+                        >
+                          {t('admin.rejectMember')}
+                        </button>
+                      </>
+                    ) : null}
                     <button
                       type="button"
                       className="btn-outline btn-compact"
@@ -124,7 +169,9 @@ export default function AdminMembers({ source }: { source?: 'direct' | 'partner'
               ))}
             </tbody>
           </table>
-          {items.length === 0 && <p className="muted-text empty-text">{t('admin.noMembers')}</p>}
+          {items.filter((m) => statusFilter === 'all' || m.status === statusFilter).length === 0 && (
+            <p className="muted-text empty-text">{t('admin.noMembers')}</p>
+          )}
         </div>
       )}
     </div>

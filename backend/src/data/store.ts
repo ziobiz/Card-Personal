@@ -38,7 +38,7 @@ export interface AppUser {
   /** direct = ICOCARD 자체 회원, partner = 파트너 API 회원 */
   source?: 'direct' | 'partner';
   partnerId?: string;
-  status?: 'active' | 'suspended';
+  status?: 'active' | 'suspended' | 'pending' | 'rejected';
   otpSecret?: string;
   otpEnabled?: boolean;
   /** WebAuthn platform authenticator credentials (mobile biometrics) */
@@ -75,11 +75,16 @@ function loadFromFile(): { users: AppUser[] } {
   }
 }
 
-function saveToFile(users: AppUser[]): void {
-  try {
-    writeFileSync(DATA_FILE, JSON.stringify({ users }, null, 2), 'utf-8');
-  } catch (e) {
-    console.warn('Failed to save users:', e);
+function saveToFile(list: AppUser[]): void {
+  const payload = JSON.stringify({ users: list }, null, 2);
+  const targets = new Set([DATA_FILE]);
+  if (existsSync(pathByCwd) || pathByCwd !== DATA_FILE) targets.add(pathByCwd);
+  for (const file of targets) {
+    try {
+      writeFileSync(file, payload, 'utf-8');
+    } catch (e) {
+      console.warn('Failed to save users:', file, e);
+    }
   }
 }
 

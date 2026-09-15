@@ -7,6 +7,7 @@ import TurnstileWidget from '../components/TurnstileWidget';
 import { useBrand } from '../brand/BrandContext';
 import { useAuth } from '../hooks/useAuth';
 import { useTenantNav, TLink } from '../components/TenantLink';
+import { authErrorI18nKey } from '../lib/authErrors';
 import './Auth.css';
 
 function MailIcon({ light = false }: { light?: boolean }) {
@@ -83,8 +84,8 @@ export default function Login() {
       }
       navigate(go('/'));
     } catch (err) {
-      const msg = (err as Error).message;
-      setError(msg === 'tenant_mismatch' ? t('auth.tenantMismatch') : msg === 'tenant_not_found' ? t('auth.tenantNotFound') : msg);
+      const key = authErrorI18nKey(err);
+      setError(key ? t(key) : (err as Error).message);
       setTurnstileToken('');
       setTsReset((n) => n + 1);
     } finally {

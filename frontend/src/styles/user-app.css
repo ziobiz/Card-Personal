@@ -253,6 +253,31 @@
   text-decoration: none;
 }
 
+.wx-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0.15rem 0 0.4rem;
+  color: #b5b5b5;
+  font-size: 0.8rem;
+  text-align: left;
+  line-height: 1.45;
+}
+
+.wx-check input {
+  margin-top: 3px;
+  accent-color: #fff;
+}
+
+.wx-check a {
+  color: #fff;
+}
+
+.wx-field select.input {
+  appearance: none;
+  cursor: pointer;
+}
+
 .wx-admin-link {
   display: inline-block;
   margin-top: 1.1rem;

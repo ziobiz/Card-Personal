@@ -50,9 +50,10 @@ async function request<T>(
         (data.hint ? `${data.error} (${data.hint})` : data.error) ||
         `HTTP ${res.status}`;
       if (data._debug) msg += ` [받은이메일:${data._debug.receivedEmail}, 사용자수:${data._debug.usersCount}]`;
-      const err = new Error(msg) as Error & { status?: number; body?: unknown };
+      const err = new Error(msg) as Error & { status?: number; body?: unknown; code?: string };
       err.status = res.status;
       err.body = data;
+      if (typeof data.code === 'string') err.code = data.code;
       throw err;
     }
     return data as T;
@@ -361,16 +362,20 @@ export async function fetchPublicBrand(slug?: string): Promise<BrandConfig> {
 
 export const api = {
   auth: {
-    register: (email: string, password: string) =>
+    register: (email: string, password: string, extra?: { displayName?: string; country?: string }) =>
       request<{
+        ok?: boolean;
         token?: string;
         user?: User;
         mustSetupOtp?: boolean;
         enrollToken?: string;
+        needsApproval?: boolean;
       }>('/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, ...extra }),
       }),
+    registrationPolicy: () =>
+      request<{ mode: 'open' | 'approval'; needsApproval: boolean }>('/auth/registration-policy'),
     login: (email: string, password: string, turnstileToken?: string) =>
       request<{
         token?: string;
@@ -588,7 +593,7 @@ export const api = {
     updateOperator: (id: string, data: { name?: string; role?: string; status?: string; password?: string; groupId?: string; menuOverride?: string[]; isSuper?: boolean }) =>
       request(`/admin/operators/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     getMembers: (source?: 'direct' | 'partner') =>
-      request<{ items: Array<{ id: string; email: string; wirexUserId?: string; source: string; partnerId?: string; partnerName?: string; country?: string; kycStatus?: string; otpEnabled?: boolean; status: string; createdAt: string }>; total: number }>(
+      request<{ items: Array<{ id: string; email: string; displayName?: string; wirexUserId?: string; source: string; partnerId?: string; partnerName?: string; country?: string; kycStatus?: string; otpEnabled?: boolean; status: string; createdAt: string }>; total: number }>(
         `/admin/members${source ? `?source=${source}` : ''}`
       ),
     updateMember: (id: string, data: { status?: string }) =>
@@ -611,6 +616,7 @@ export const api = {
         };
         useMockWirex: boolean;
         walletPolicy?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
+        memberRegistration?: { mode?: 'open' | 'approval' };
         updatedAt?: string;
         _masked?: { clientSecret: string };
       }>('/admin/settings'),
@@ -801,6 +807,7 @@ export const api = {
       };
       useMockWirex?: boolean;
       walletPolicy?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
+      memberRegistration?: { mode?: 'open' | 'approval' };
     }) =>
       request<{
         wirex: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string };

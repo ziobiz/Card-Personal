@@ -22,6 +22,7 @@ type Settings = {
   };
   useMockWirex: boolean;
   walletPolicy?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
+  memberRegistration?: { mode?: 'open' | 'approval' };
   updatedAt?: string;
 };
 
@@ -51,6 +52,7 @@ export default function AdminSettings() {
     walletEmbedded: true,
     walletExternal: true,
     walletBridge: true,
+    memberRegistrationMode: 'open' as 'open' | 'approval',
   });
 
   useEffect(() => {
@@ -78,6 +80,7 @@ export default function AdminSettings() {
           walletEmbedded: r.walletPolicy?.embedded !== false,
           walletExternal: r.walletPolicy?.externalEoa !== false,
           walletBridge: r.walletPolicy?.bridge !== false,
+          memberRegistrationMode: r.memberRegistration?.mode === 'approval' ? 'approval' : 'open',
         });
       })
       .catch((e) => {
@@ -117,6 +120,9 @@ export default function AdminSettings() {
           embedded: form.walletEmbedded,
           externalEoa: form.walletExternal,
           bridge: form.walletBridge,
+        },
+        memberRegistration: {
+          mode: form.memberRegistrationMode,
         },
       });
       setMessage(t('admin.saved'));
@@ -221,6 +227,24 @@ export default function AdminSettings() {
             >
               <option value="allow">{t('admin.optionAllow')}</option>
               <option value="deny">{t('admin.optionDeny')}</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section className="card-surface hq-sandbox-card">
+        <h3 className="section-title">{t('admin.sectionRegistration')}</h3>
+        <p className="hq-card-hint">{t('admin.registrationDesc')}</p>
+        <div className="hq-form-grid hq-policy-grid">
+          <label>
+            <span>{t('admin.registrationMode')}</span>
+            <select
+              className="input"
+              value={form.memberRegistrationMode}
+              onChange={(e) => setForm((f) => ({ ...f, memberRegistrationMode: e.target.value as 'open' | 'approval' }))}
+            >
+              <option value="open">{t('admin.registrationOpen')}</option>
+              <option value="approval">{t('admin.registrationApproval')}</option>
             </select>
           </label>
         </div>

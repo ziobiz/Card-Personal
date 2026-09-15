@@ -41,6 +41,14 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
       res.status(401).json({ error: 'User not found' });
       return;
     }
+    if (user.status === 'pending') {
+      res.status(403).json({ error: 'Account pending approval', code: 'pending_approval' });
+      return;
+    }
+    if (user.status === 'rejected' || user.status === 'suspended') {
+      res.status(403).json({ error: 'Account suspended', code: user.status === 'rejected' ? 'account_rejected' : 'account_suspended' });
+      return;
+    }
     req.auth = { userId: decoded.userId, email: decoded.email, isAdmin: false };
     next();
   } catch {

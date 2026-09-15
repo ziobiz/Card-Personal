@@ -518,6 +518,7 @@ router.get('/members', (req, res) => {
     partnerId: u.partnerId,
     partnerName: u.partnerId ? partnerStore.getById(u.partnerId)?.companyName || partnerStore.getById(u.partnerId)?.name : undefined,
     country: u.country,
+    displayName: u.displayName,
     kycStatus: u.kycStatus,
     otpEnabled: Boolean(u.otpEnabled),
     status: u.status || 'active',
@@ -527,7 +528,10 @@ router.get('/members', (req, res) => {
 });
 
 router.put('/members/:id', (req, res) => {
-  const status = req.body?.status === 'suspended' ? 'suspended' : req.body?.status === 'active' ? 'active' : undefined;
+  const allowed = ['active', 'suspended', 'pending', 'rejected'] as const;
+  const raw = typeof req.body?.status === 'string' ? req.body.status : '';
+  const status = (allowed as readonly string[]).includes(raw) ? (raw as (typeof allowed)[number]) : undefined;
+  if (!status) return res.status(400).json({ error: 'Invalid status', code: 'invalid_status' });
   const user = store.updateMember(req.params.id, { status });
   if (!user) return res.status(404).json({ error: 'Not found' });
   res.json({ id: user.id, status: user.status || 'active' });
@@ -714,6 +718,7 @@ router.get('/settings', (_, res) => {
     security: sec,
     useMockWirex: s.useMockWirex ?? true,
     walletPolicy: s.walletPolicy ?? { embedded: true, externalEoa: true, bridge: true },
+    memberRegistration: s.memberRegistration ?? { mode: 'open' },
     updatedAt: s.updatedAt,
     _masked: {
       clientSecret: (s.wirex?.clientSecret?.length ?? 0) > 0 ? '********' : '',
@@ -758,12 +763,16 @@ router.put('/settings', (req, res) => {
   if (typeof wp.embedded === 'boolean') walletPolicyUpdate.embedded = wp.embedded;
   if (typeof wp.externalEoa === 'boolean') walletPolicyUpdate.externalEoa = wp.externalEoa;
   if (typeof wp.bridge === 'boolean') walletPolicyUpdate.bridge = wp.bridge;
+  const mr = body.memberRegistration ?? {};
+  const memberRegistrationUpdate: { mode?: 'open' | 'approval' } = {};
+  if (mr.mode === 'open' || mr.mode === 'approval') memberRegistrationUpdate.mode = mr.mode;
   settingsStore.update({
     wirex: wirexUpdate,
     useMockWirex,
     feePolicy: feePolicyUpdate,
     ...(Object.keys(securityUpdate).length ? { security: securityUpdate } : {}),
     ...(Object.keys(walletPolicyUpdate).length ? { walletPolicy: walletPolicyUpdate } : {}),
+    ...(Object.keys(memberRegistrationUpdate).length ? { memberRegistration: memberRegistrationUpdate } : {}),
   });
   const s = settingsStore.get();
   res.json({
@@ -772,6 +781,7 @@ router.put('/settings', (req, res) => {
     security: getSecuritySettings(),
     useMockWirex: s.useMockWirex ?? true,
     walletPolicy: s.walletPolicy ?? { embedded: true, externalEoa: true, bridge: true },
+    memberRegistration: s.memberRegistration ?? { mode: 'open' },
     updatedAt: s.updatedAt,
   });
 });

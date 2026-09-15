@@ -5,7 +5,7 @@ import { createHash } from 'crypto';
 import { config } from '../config.js';
 import { store } from '../data/store.js';
 import { partnerStore } from '../data/partnerStore.js';
-import { wirexService } from '../services/wirex/wirexService.js';
+import { getMemberRegistrationMode } from '../data/settingsStore.js';
 import { generateOtpSecret, otpAuthUrl, verifyTotp } from '../lib/totp.js';
 import { getSecuritySettings, maskEmail } from '../lib/otpPolicy.js';
 import { webauthnService } from '../lib/webauthn.js';
@@ -44,6 +44,14 @@ function tenantFromRequest(req: { headers: { [k: string]: string | string[] | un
   return { slug, partner };
 }
 
+router.get('/registration-policy', (_req, res) => {
+  const mode = getMemberRegistrationMode();
+  res.json({
+    mode,
+    needsApproval: mode === 'approval',
+  });
+});
+
 function readBearerUser(req: { headers: { authorization?: string } }): { userId: string; otpPending?: boolean } | null {
   const auth = req.headers.authorization;
   if (!auth?.startsWith('Bearer ')) return null;
@@ -60,76 +68,71 @@ router.post('/register', async (req, res) => {
   try {
     const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
     const password = typeof req.body.password === 'string' ? req.body.password : '';
-    const { wallet_address, country } = req.body;
+    const displayName = typeof req.body.displayName === 'string' ? req.body.displayName.trim().slice(0, 80) : '';
+    const country = typeof req.body.country === 'string' ? req.body.country.trim().toUpperCase().slice(0, 8) : 'KR';
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password required' });
+      return res.status(400).json({ error: 'Email and password required', code: 'missing_fields' });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ error: 'Invalid email', code: 'missing_fields' });
     }
     if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+      return res.status(400).json({ error: 'Password must be at least 6 characters', code: 'weak_password' });
     }
     store.loadUsers();
     if (store.getUserByEmail(email)) {
-      return res.status(409).json({ error: 'Email already registered' });
+      return res.status(409).json({ error: 'Email already registered', code: 'email_taken' });
     }
 
     const tenant = tenantFromRequest(req);
     if (tenant.slug && !tenant.partner) {
-      return res.status(400).json({ error: 'tenant_not_found' });
+      return res.status(400).json({ error: 'tenant_not_found', code: 'tenant_not_found' });
     }
 
-    const walletAddress = typeof wallet_address === 'string' ? wallet_address.trim() : undefined;
-    const residence = typeof country === 'string' ? country : 'GB';
+    const mode = getMemberRegistrationMode();
+    const status = mode === 'approval' ? 'pending' : 'active';
     const id = uuidv4();
 
-    let wirexUserId: string | undefined;
-    let storedWallet = walletAddress;
-    if (config.useMockWirex) {
-      const wirexUser = await wirexService.createUser({
-        email,
-        wallet_address: walletAddress,
-        country: residence,
-      });
-      wirexUserId = wirexUser.id;
-      storedWallet = walletAddress ?? wirexUser.primaryWalletAddress;
-    }
-
-    const appUser = {
+    store.addUser({
       id,
       email,
       passwordHash: hashPassword(password),
-      wirexUserId,
-      walletAddress: storedWallet,
-      country: residence,
-      source: tenant.partner ? ('partner' as const) : ('direct' as const),
+      displayName: displayName || undefined,
+      country: country || 'KR',
+      source: tenant.partner ? 'partner' : 'direct',
       partnerId: tenant.partner?.id,
-      otpSecret: undefined as string | undefined,
+      otpSecret: undefined,
       otpEnabled: false,
-      onboardingStatus: (config.useMockWirex ? 'ready' : 'none') as 'ready' | 'none',
+      status,
+      kycStatus: 'pending',
+      onboardingStatus: 'none',
       createdAt: new Date().toISOString(),
-    };
-    store.addUser(appUser);
+    });
 
-    if (!config.useMockWirex) {
-      const { onboardingService } = await import('../services/onboardingService.js');
-      void onboardingService.run(id).catch((err) => {
-        console.warn('[onboard] register', (err as Error).message);
+    if (status === 'pending') {
+      return res.status(201).json({
+        ok: true,
+        needsApproval: true,
+        user: { id, email, status },
       });
     }
 
     const sec = getSecuritySettings();
     if (sec.otpRequiredMember) {
-      return res.json({
+      return res.status(201).json({
+        ok: true,
+        needsApproval: false,
         mustSetupOtp: true,
         enrollToken: signEnroll(id),
         maskedEmail: maskEmail(email),
-        user: { id, email, wirexUserId: wirexUserId, walletAddress: appUser.walletAddress },
+        user: { id, email, status },
       });
     }
 
     const token = signMember(id, email);
-    res.json({ token, user: { id, email, wirexUserId, walletAddress: appUser.walletAddress } });
+    res.status(201).json({ ok: true, needsApproval: false, token, user: { id, email, status } });
   } catch (e) {
-    res.status(500).json({ error: (e as Error).message });
+    res.status(500).json({ error: (e as Error).message, code: 'register_failed' });
   }
 });
 
@@ -144,15 +147,21 @@ router.post('/login', async (req, res) => {
   const user = store.getUserByEmail(email);
   if (!user) {
     return res.status(401).json({
-      error: 'Invalid credentials',
-      hint: '회원가입을 먼저 해주세요. / Please register first. → http://localhost:3000/register',
+      error: 'Not registered',
+      code: 'not_registered',
     });
   }
   if (user.passwordHash !== hashPassword(password)) {
-    return res.status(401).json({ error: 'Invalid credentials', hint: '비밀번호를 확인해주세요.' });
+    return res.status(401).json({ error: 'Invalid credentials', code: 'bad_password' });
+  }
+  if (user.status === 'pending') {
+    return res.status(403).json({ error: 'Account pending approval', code: 'pending_approval' });
+  }
+  if (user.status === 'rejected') {
+    return res.status(403).json({ error: 'Registration rejected', code: 'account_rejected' });
   }
   if (user.status === 'suspended') {
-    return res.status(403).json({ error: 'Account suspended' });
+    return res.status(403).json({ error: 'Account suspended', code: 'account_suspended' });
   }
 
   const tenant = tenantFromRequest(req);

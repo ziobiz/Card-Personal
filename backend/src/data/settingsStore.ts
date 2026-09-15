@@ -30,6 +30,11 @@ export interface SecuritySettings {
   otpRequiredOrg?: boolean;
 }
 
+export interface MemberRegistrationSettings {
+  /** open = 가입 즉시 이용, approval = 관리자 승인 후 로그인 */
+  mode?: 'open' | 'approval';
+}
+
 export interface WalletPolicySettings {
   embedded?: boolean;
   externalEoa?: boolean;
@@ -43,6 +48,7 @@ export interface AdminSettings {
   security?: SecuritySettings;
   /** HQ default wallet modes when merchant chooses 본사설정 따름 */
   walletPolicy?: WalletPolicySettings;
+  memberRegistration?: MemberRegistrationSettings;
   updatedAt?: string;
 }
 
@@ -75,6 +81,9 @@ const DEFAULTS: AdminSettings = {
     externalEoa: true,
     bridge: true,
   },
+  memberRegistration: {
+    mode: 'open',
+  },
 };
 
 function loadFromFile(): AdminSettings {
@@ -89,6 +98,7 @@ function loadFromFile(): AdminSettings {
       feePolicy: { ...DEFAULTS.feePolicy, ...parsed.feePolicy },
       security: { ...DEFAULTS.security, ...parsed.security },
       walletPolicy: { ...DEFAULTS.walletPolicy, ...parsed.walletPolicy },
+      memberRegistration: { ...DEFAULTS.memberRegistration, ...parsed.memberRegistration },
     };
   } catch {
     return { ...DEFAULTS };
@@ -118,6 +128,7 @@ export const settingsStore = {
       feePolicy: { ...cached.feePolicy, ...partial.feePolicy },
       security: { ...cached.security, ...partial.security },
       walletPolicy: { ...cached.walletPolicy, ...partial.walletPolicy },
+      memberRegistration: { ...cached.memberRegistration, ...partial.memberRegistration },
       updatedAt: new Date().toISOString(),
     };
     saveToFile(cached);
@@ -128,3 +139,7 @@ export const settingsStore = {
     cached = loadFromFile();
   },
 };
+
+export function getMemberRegistrationMode(): 'open' | 'approval' {
+  return settingsStore.get().memberRegistration?.mode === 'approval' ? 'approval' : 'open';
+}
