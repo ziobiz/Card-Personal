@@ -23,7 +23,16 @@ import {
 
 export type OnboardStep = { step: string; ok: boolean; detail?: unknown };
 
-const running = new Set<string>();
+type RunResult = {
+  ok: boolean;
+  steps: OnboardStep[];
+  kycUrl?: string | null;
+  kycError?: string | null;
+  card?: unknown;
+  onboarding: ReturnType<typeof publicOnboarding>;
+};
+
+const inflight = new Map<string, Promise<RunResult>>();
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -126,14 +135,22 @@ async function registerApi(email: string, country: string, eoa: string, partnerI
 export const onboardingService = {
   publicOnboarding,
 
-  async run(userId: string, opts?: { issueCard?: boolean; mint?: boolean }): Promise<{
-    ok: boolean;
-    steps: OnboardStep[];
-    kycUrl?: string | null;
-    kycError?: string | null;
-    card?: unknown;
-    onboarding: ReturnType<typeof publicOnboarding>;
-  }> {
+  isBusy(userId: string) {
+    return inflight.has(userId);
+  },
+
+  async run(userId: string, opts?: { issueCard?: boolean; mint?: boolean }): Promise<RunResult> {
+    const existing = inflight.get(userId);
+    if (existing) return existing;
+    const job = execute(userId, opts);
+    inflight.set(userId, job);
+    return job.finally(() => {
+      if (inflight.get(userId) === job) inflight.delete(userId);
+    });
+  },
+};
+
+async function execute(userId: string, opts?: { issueCard?: boolean; mint?: boolean }): Promise<RunResult> {
     const steps: OnboardStep[] = [];
     if (config.useMockWirex) {
       const user = store.getUserById(userId);
@@ -146,10 +163,6 @@ export const onboardingService = {
         onboarding: publicOnboarding(store.getUserById(userId)!),
       };
     }
-    if (running.has(userId)) {
-      throw new Error('Onboarding already in progress');
-    }
-    running.add(userId);
     try {
       const user0 = store.getUserById(userId);
       if (!user0) throw new Error('User not found');
@@ -333,8 +346,5 @@ export const onboardingService = {
         steps,
         onboarding: latest ? publicOnboarding(latest) : { status: 'error', error: msg, eoa: '', smartWallet: '', wirexUserId: null, kycStatus: 'pending', walletMode: 'embedded', mock: false },
       };
-    } finally {
-      running.delete(userId);
     }
-  },
-};
+}

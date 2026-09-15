@@ -10,6 +10,7 @@ type Onboard = {
   wirexUserId?: string | null;
   kycStatus?: string;
   mock?: boolean;
+  busy?: boolean;
 };
 
 const WALLET_STEPS = ['wallet', 'onchain', 'registered'] as const;
@@ -93,11 +94,13 @@ export default function OnboardingPanel({ variant }: { variant: 'wallet' | 'kyc'
         kycStatus: r.onboarding.kycStatus || info.kycStatus,
         wirexUserId: r.onboarding.wirexUserId,
         mock: info.mock,
+        busy: false,
       });
       if (!r.ok) setMsg(r.kycError || r.onboarding.error || t('onboard.failed'));
       else setOkMsg(t('onboard.progressOk'));
     } catch (e) {
-      setMsg((e as Error).message);
+      const text = (e as Error).message || '';
+      setMsg(/already in progress/i.test(text) ? t('onboard.inProgress') : text);
     } finally {
       setBusy(false);
       void load();
@@ -121,6 +124,8 @@ export default function OnboardingPanel({ variant }: { variant: 'wallet' | 'kyc'
     );
   }
 
+  const waiting = busy || Boolean(info.busy);
+
   return (
     <section className="card-surface wx-onboard">
       <h3 className="section-title">{t('onboard.walletTitle')}</h3>
@@ -133,12 +138,13 @@ export default function OnboardingPanel({ variant }: { variant: 'wallet' | 'kyc'
           </li>
         ))}
       </ol>
+      {info.busy ? <p className="muted-text">{t('onboard.inProgress')}</p> : null}
       {info.error ? <p className="auth-error">{info.error}</p> : null}
       {msg ? <p className="auth-error">{msg}</p> : null}
       {okMsg ? <p className="wx-account-ok">{okMsg}</p> : null}
       <div className="wx-onboard-actions">
-        <button type="button" className="btn-primary" disabled={busy} onClick={() => void runWallet()}>
-          {busy ? t('onboard.running') : t('onboard.continue')}
+        <button type="button" className="btn-primary" disabled={waiting} onClick={() => void runWallet()}>
+          {waiting ? t('onboard.running') : t('onboard.continue')}
         </button>
       </div>
     </section>

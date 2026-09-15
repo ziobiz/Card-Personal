@@ -434,6 +434,7 @@ export const api = {
         allowedWalletModes?: { embedded: boolean; externalEoa: boolean; bridge: boolean };
         walletPolicySource?: 'follow_hq' | 'custom';
         mock?: boolean;
+        busy?: boolean;
       }>('/user/onboarding'),
     onboard: (data?: { issueCard?: boolean }) =>
       request<{

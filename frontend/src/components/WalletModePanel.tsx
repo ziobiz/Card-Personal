@@ -55,7 +55,8 @@ export default function WalletModePanel({ current = 'embedded', allowed, onChang
       setMsg(t('walletMode.embeddedDone'));
       await after('embedded');
     } catch (e) {
-      setErr((e as Error).message);
+      const text = (e as Error).message || '';
+      setErr(/already in progress/i.test(text) ? t('onboard.inProgress') : text);
     } finally {
       setBusy(false);
     }

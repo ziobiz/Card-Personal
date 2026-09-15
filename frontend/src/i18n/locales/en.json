@@ -149,6 +149,7 @@
     "kycLead": "Verify your identity to issue a card. After verification, go to Cards.",
     "continue": "Continue",
     "running": "Working...",
+    "inProgress": "Wallet setup is already running. Please wait until it finishes.",
     "failed": "Onboarding failed.",
     "progressOk": "Progress updated.",
     "kycOpening": "Opening KYC…",

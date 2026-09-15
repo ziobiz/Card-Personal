@@ -11,6 +11,7 @@ import { bridgeStore } from '../data/bridgeStore.js';
 import { partnerStore } from '../data/partnerStore.js';
 import { isWalletModeAllowed, resolveWalletModes, walletModeDeniedError, type WalletModeKey } from '../lib/walletPolicy.js';
 import { manualsFor } from '../lib/manualCatalog.js';
+import { onboardingService } from '../services/onboardingService.js';
 
 function partnerForUser(user: { partnerId?: string }) {
   return user.partnerId ? partnerStore.getById(user.partnerId) : undefined;
@@ -102,6 +103,7 @@ router.get('/onboarding', (req, res) => {
     allowedWalletModes: resolveWalletModes(partnerForUser(user)),
     walletPolicySource: partnerForUser(user)?.walletPolicySource === 'custom' ? 'custom' : 'follow_hq',
     mock: config.useMockWirex,
+    busy: onboardingService.isBusy(user.id),
   });
 });
 
@@ -145,8 +147,12 @@ router.post('/wallet/embedded', async (req, res) => {
     if (!user0) return res.status(404).json({ error: 'User not found' });
     const denied = assertWalletMode(user0, 'embedded');
     if (denied) return res.status(403).json({ error: denied });
-    store.updateOnboarding(userId, { walletMode: 'embedded', onboardingStatus: 'none', onboardingError: null });
-    const { onboardingService } = await import('../services/onboardingService.js');
+    const alreadyIssued = Boolean(user0.eoaKeyEnc || user0.walletAddress);
+    if (!alreadyIssued) {
+      store.updateOnboarding(userId, { walletMode: 'embedded', onboardingStatus: 'none', onboardingError: null });
+    } else {
+      store.updateOnboarding(userId, { walletMode: 'embedded', onboardingError: null });
+    }
     const result = await onboardingService.run(userId, { issueCard: false, mint: true });
     res.json({ ...result, mode: 'embedded' });
   } catch (e) {
