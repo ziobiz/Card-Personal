@@ -1,5 +1,6 @@
 import { Link, NavLink, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { type LanguageCode } from '../i18n';
 import { useBrand } from '../brand/BrandContext';
@@ -107,6 +108,7 @@ export default function AdminLayout() {
   const [tablet, setTablet] = useState(false);
   const [helpOn, setHelpOn] = useState(() => localStorage.getItem('hq_help_on') === '1');
   const [userOpen, setUserOpen] = useState(false);
+  const [userMenuPos, setUserMenuPos] = useState<{ top: number; right: number } | null>(null);
   const [flyId, setFlyId] = useState<string | null>(null);
   const userRef = useRef<HTMLDivElement | null>(null);
   const [tabs, setTabs] = useState<OpenTab[]>([
@@ -231,9 +233,30 @@ export default function AdminLayout() {
     setTabs((prev) => (prev.some((x) => x.to === loc.pathname) ? prev : [...prev, { to: loc.pathname, labelKey }]));
   }, [loc.pathname, crumb]);
 
+  useLayoutEffect(() => {
+    if (!userOpen || !userRef.current) {
+      setUserMenuPos(null);
+      return;
+    }
+    const place = () => {
+      const r = userRef.current!.getBoundingClientRect();
+      setUserMenuPos({ top: r.bottom + 8, right: window.innerWidth - r.right });
+    };
+    place();
+    window.addEventListener('resize', place);
+    window.addEventListener('scroll', place, true);
+    return () => {
+      window.removeEventListener('resize', place);
+      window.removeEventListener('scroll', place, true);
+    };
+  }, [userOpen]);
+
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
-      if (userRef.current && !userRef.current.contains(e.target as Node)) setUserOpen(false);
+      const t = e.target as Node;
+      if (userRef.current?.contains(t)) return;
+      if ((t as HTMLElement).closest?.('.hq-user-menu-portal')) return;
+      setUserOpen(false);
     };
     document.addEventListener('mousedown', onDoc);
     return () => document.removeEventListener('mousedown', onDoc);
@@ -361,6 +384,9 @@ export default function AdminLayout() {
               <span>{t('admin.tablet')}</span>
               <input type="checkbox" checked={tablet} onChange={(e) => setTablet(e.target.checked)} />
             </label>
+            <span className="hq-pipe" aria-hidden>
+              |
+            </span>
             <div className="hq-langs" aria-label="Language">
               <span className="hq-lang-label">{t('admin.lang')}</span>
               {headerLangs.map((l) => (
@@ -368,45 +394,72 @@ export default function AdminLayout() {
                   key={l.code}
                   type="button"
                   className={i18n.language.toLowerCase().startsWith(l.code) ? 'on' : ''}
-                  onClick={() => i18n.changeLanguage(l.code as LanguageCode)}
+                  onClick={() => void i18n.changeLanguage(l.code as LanguageCode)}
                 >
                   {l.label}
                 </button>
               ))}
             </div>
+            <span className="hq-pipe" aria-hidden>
+              |
+            </span>
             <span className="hq-meta-item">
               {t('admin.sessionIp')}: <b>127.0.0.1</b>
+            </span>
+            <span className="hq-pipe" aria-hidden>
+              |
             </span>
             <span className="hq-meta-item">
               {t('admin.sessionTime')}: <b>{now}</b>
             </span>
+            <span className="hq-pipe" aria-hidden>
+              |
+            </span>
             <div className="hq-user" ref={userRef}>
-              <button type="button" className="hq-user-btn" onClick={() => setUserOpen((v) => !v)}>
+              <button type="button" className="hq-user-btn" onClick={() => setUserOpen((v) => !v)} aria-expanded={userOpen}>
                 <span className="hq-avatar" aria-hidden />
                 <span className="hq-user-name">
                   {brand.operatorName} HQ | {t('admin.roleAdmin')}
                 </span>
                 <span className={`hq-user-caret${userOpen ? ' is-open' : ''}`} />
               </button>
-              {userOpen && (
-                <div className="hq-user-menu">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUserOpen(false);
-                      navigate('/admin/me');
-                    }}
-                  >
-                    {t('admin.myInfo')}
-                  </button>
-                  <button type="button" onClick={logout}>
-                    {t('admin.logout')}
-                  </button>
-                </div>
-              )}
+              {userOpen && userMenuPos
+                ? createPortal(
+                    <div
+                      className="hq-user-menu-portal"
+                      role="menu"
+                      style={{ top: userMenuPos.top, right: userMenuPos.right }}
+                    >
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setUserOpen(false);
+                          navigate('/admin/me');
+                        }}
+                      >
+                        {t('admin.myInfo')}
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setUserOpen(false);
+                          logout();
+                        }}
+                      >
+                        {t('admin.logout')}
+                      </button>
+                    </div>,
+                    document.body
+                  )
+                : null}
             </div>
             <button type="button" className="hq-close" onClick={closeAllTabs}>
-              ✕ {t('admin.closeAll')}
+              <span className="hq-close-x" aria-hidden>
+                ✕
+              </span>
+              <span>{t('admin.closeAll')}</span>
             </button>
           </div>
         </header>

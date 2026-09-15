@@ -67,6 +67,7 @@
   flex-direction: row;
   background: #eef1f4;
   color: #333;
+  overflow: visible;
 }
 
 .is-admin .hq-top {
@@ -75,12 +76,14 @@
   justify-content: flex-end;
   height: var(--hq-top-h);
   min-height: var(--hq-top-h);
-  background: var(--pg-top);
-  border-bottom: 1px solid #d5d8de;
+  /* PG / 2nd-image utility bar */
+  background: #e8e8e8 !important;
+  border-bottom: 1px solid #d0d0d0;
   padding: 0 18px 0 14px;
   flex-shrink: 0;
-  z-index: 40;
-  overflow-x: auto;
+  position: relative;
+  z-index: 100;
+  overflow: visible !important;
 }
 
 .is-admin .hq-top-fill {
@@ -94,6 +97,9 @@
   height: var(--hq-top-h);
   white-space: nowrap;
   margin-left: auto;
+  overflow: visible;
+  position: relative;
+  z-index: 61;
 }
 
 .is-admin .hq-right > * {
@@ -104,27 +110,26 @@
   border-left: 0;
 }
 
-.is-admin .hq-right > .hq-tablet,
-.is-admin .hq-right > .hq-langs,
-.is-admin .hq-right > .hq-meta-item,
-.is-admin .hq-right > .hq-user {
-  margin-right: 0;
-}
-
 .is-admin .hq-right > .hq-tablet::after,
 .is-admin .hq-right > .hq-langs::after,
-.is-admin .hq-right > .hq-meta-item::after {
-  content: '|';
-  display: inline-block;
-  margin: 0 18px;
-  color: #b7bbc3;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 1;
+.is-admin .hq-right > .hq-meta-item::after,
+.is-admin .hq-right > .hq-user::after,
+.is-admin .hq-close::before,
+.is-admin .hq-close::after {
+  content: none !important;
+  display: none !important;
 }
 
-.is-admin .hq-right > .hq-user {
-  margin-right: 20px;
+.is-admin .hq-pipe {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 16px;
+  color: #b7bbc3;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
 }
 
 .is-admin .hq-tablet {
@@ -140,35 +145,38 @@
   height: 14px;
 }
 
+/* Crypto-style language chips */
 .is-admin .hq-langs {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 5px 12px;
-  background: #f7f8fa;
-  border: 1px solid #d8dce3;
-  border-radius: 16px;
+  gap: 8px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
 
 .is-admin .hq-lang-label {
   color: #666;
   font-size: 12px;
-  margin-right: 2px;
+  margin-right: 4px;
 }
 
 .is-admin .hq-langs button {
-  width: auto;
-  height: auto;
-  min-width: 0;
-  border-radius: 0;
-  border: 0;
-  background: transparent;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  border-radius: 50%;
+  border: 1px solid #cfd3da;
+  background: #fff;
   color: #555;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0;
   cursor: pointer;
-  line-height: 1;
+  line-height: 30px;
+  text-align: center;
+  text-decoration: none !important;
 }
 
 .is-admin .hq-meta-item,
@@ -184,11 +192,11 @@
 }
 
 .is-admin .hq-langs button.on {
-  background: transparent;
-  border: 0;
-  color: #2f6fed;
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #fff !important;
   font-weight: 700;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 .is-admin .hq-meta-item b {
@@ -198,6 +206,7 @@
 
 .is-admin .hq-user {
   position: relative;
+  z-index: 70;
 }
 
 .is-admin .hq-user-btn {
@@ -229,13 +238,46 @@
 
 .is-admin .hq-user-menu {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 8px);
   right: 0;
-  min-width: 140px;
+  left: auto;
+  bottom: auto;
+  min-width: 148px;
   background: #fff;
   border: 1px solid #d5dae2;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-  z-index: 50;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+  z-index: 200;
+}
+
+/* Portal menu: fixed under the admin button, never clipped */
+.hq-user-menu-portal {
+  position: fixed;
+  min-width: 148px;
+  background: #fff;
+  border: 1px solid #d5dae2;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+  z-index: 10000;
+}
+
+.hq-user-menu-portal button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 0;
+  border-bottom: 1px solid #eef0f3;
+  padding: 10px 14px;
+  color: #333;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.hq-user-menu-portal button:last-child {
+  border-bottom: 0;
+}
+
+.hq-user-menu-portal button:hover {
+  background: #f4f6f8;
 }
 
 .is-admin .hq-user-menu button {
@@ -244,9 +286,15 @@
   text-align: left;
   background: #fff;
   border: 0;
-  padding: 8px 12px;
+  border-bottom: 1px solid #eef0f3;
+  padding: 10px 14px;
   color: #333;
   cursor: pointer;
+  font-size: 12px;
+}
+
+.is-admin .hq-user-menu button:last-child {
+  border-bottom: 0;
 }
 
 .is-admin .hq-user-menu button:hover {
@@ -254,15 +302,45 @@
 }
 
 .is-admin .hq-close {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
   background: #e53935 !important;
   color: #fff !important;
   border: 1px solid #c62828 !important;
   border-radius: 2px !important;
-  padding: 0 14px !important;
+  padding: 0 12px !important;
   height: 30px !important;
   font-size: 12px !important;
   font-weight: 600;
   cursor: pointer;
+  margin-left: 10px;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  position: relative;
+  isolation: isolate;
+}
+
+.is-admin .hq-close::before,
+.is-admin .hq-close::after,
+.is-admin .hq-close > *::before,
+.is-admin .hq-close > *::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  width: 0 !important;
+  background: transparent !important;
+}
+
+.is-admin .hq-close-x {
+  display: inline-block;
+  line-height: 1;
+  font-size: 12px;
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: #fff !important;
 }
 
 .is-admin .hq-main {
@@ -272,6 +350,9 @@
   display: flex;
   flex-direction: column;
   background: #f0f2f5;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
 }
 
 .is-admin .hq-body {
