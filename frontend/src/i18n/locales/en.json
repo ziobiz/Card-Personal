@@ -636,15 +636,16 @@
     "brandUsingDefaultAdmin": "Default: using /user-hero-bg.png (independent of member)",
     "brandLoginMainText": "Background caption (optional)",
     "brandLoginMainTextPh": "e.g. GLOBAL CARD PLATFORM",
-    "brandLoginNotice": "Show impersonation notice",
+    "brandLoginNotice": "Spoofing notice",
     "brandHeroTooBig": "Background image is too large. Please upload a smaller file.",
-    "brandLoginNoticeTitle": "Impersonation notice title",
-    "brandLoginNoticeBody": "Impersonation notice body",
+    "brandLoginNoticeTitle": "Notice title",
+    "brandLoginNoticeBody": "Notice body",
     "brandLoginBgBlock": "Background image",
-    "brandLoginNoticeBlock": "Impersonation notice text",
+    "brandLoginNoticeBlock": "Spoofing notice",
+    "brandLoginNoticeToggleHint": "When active, title and body can be edited and shown on the login panel. When inactive, the notice is hidden and the logo sits above the email/password fields.",
     "brandLoginPreview": "Login preview",
     "brandLoginNoticeEmptyHint": "Leave title/body empty to use the default localized notice.",
-    "brandLoginNoticeOff": "Impersonation notice is turned off."
+    "brandLoginNoticeOff": "Inactive — spoofing notice is not shown."
   },
   "earn": {
     "title": "Earn",

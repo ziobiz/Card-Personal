@@ -189,7 +189,7 @@ export default function AdminBrand() {
     <label className="hq-logo-slot">
       <span>{label}</span>
       {hint ? <em className="hq-logo-slot-hint">{hint}</em> : null}
-      <div className="hq-logo-preview" style={{ background: form?.logoBg }}>
+      <div className="hq-logo-preview hq-logo-preview-white">
         {form?.[field] ? <img src={String(form[field])} alt="" /> : <em>{form?.productName}</em>}
       </div>
       <input
@@ -433,7 +433,7 @@ export default function AdminBrand() {
           <label className="hq-logo-slot hq-hero-slot">
             <span>{t('admin.brandMemberLoginHeroImage')}</span>
             <div
-              className="hq-logo-preview hq-hero-preview"
+              className="hq-logo-preview hq-hero-preview hq-logo-preview-white"
               style={{
                 backgroundImage: `url(${form.memberLoginHeroImage || '/user-hero-bg.png'})`,
                 backgroundSize: 'cover',
@@ -456,50 +456,59 @@ export default function AdminBrand() {
         <h3>{t('admin.brandLoginHero')}</h3>
         <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandLoginHeroHint')}</p>
 
-        <div className="hq-login-setup">
-          <div className="hq-login-setup-edit">
-            <div className="hq-login-setup-block">
-              <h4>{t('admin.brandLoginBgBlock')}</h4>
-              <label className="hq-logo-slot hq-hero-slot">
-                <span>{t('admin.brandLoginHeroImage')}</span>
-                <div
-                  className="hq-logo-preview hq-hero-preview"
-                  style={{
-                    backgroundImage: `url(${form.loginHeroImage || '/user-hero-bg.png'})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }}
-                />
-                <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => void onHeroFile('admin', e.target.files?.[0])} />
-                {form.loginHeroImage ? (
-                  <button type="button" className="btn-outline" onClick={() => set('loginHeroImage', '')}>
-                    {t('admin.brandResetDefault')}
-                  </button>
-                ) : (
-                  <em className="muted-text">{t('admin.brandUsingDefaultAdmin')}</em>
-                )}
-              </label>
-              <label className="hq-brand-span hq-login-field">
-                {t('admin.brandLoginMainText')}
-                <input
-                  className="input"
-                  value={form.loginMainText || ''}
-                  onChange={(e) => set('loginMainText', e.target.value)}
-                  placeholder={t('admin.brandLoginMainTextPh')}
-                />
+        <div className="hq-login-setup hq-login-setup-stack">
+          <div className="hq-login-setup-block">
+            <h4>{t('admin.brandLoginBgBlock')}</h4>
+            <label className="hq-logo-slot hq-hero-slot">
+              <span>{t('admin.brandLoginHeroImage')}</span>
+              <div
+                className="hq-logo-preview hq-hero-preview hq-logo-preview-white"
+                style={{
+                  backgroundImage: `url(${form.loginHeroImage || '/user-hero-bg.png'})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+              <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => void onHeroFile('admin', e.target.files?.[0])} />
+              {form.loginHeroImage ? (
+                <button type="button" className="btn-outline" onClick={() => set('loginHeroImage', '')}>
+                  {t('admin.brandResetDefault')}
+                </button>
+              ) : (
+                <em className="muted-text">{t('admin.brandUsingDefaultAdmin')}</em>
+              )}
+            </label>
+            <label className="hq-brand-span hq-login-field">
+              {t('admin.brandLoginMainText')}
+              <input
+                className="input"
+                value={form.loginMainText || ''}
+                onChange={(e) => set('loginMainText', e.target.value)}
+                placeholder={t('admin.brandLoginMainTextPh')}
+              />
+            </label>
+          </div>
+
+          <div className="hq-login-setup-block hq-login-notice-card">
+            <div className="hq-login-notice-head">
+              <h4>{t('admin.brandLoginNoticeBlock')}</h4>
+              <label className="hq-login-notice-toggle">
+                <span>{t('admin.brandLoginNotice')}</span>
+                <select
+                  className="input hq-notice-status-select"
+                  value={form.loginNoticeEnabled !== false ? 'on' : 'off'}
+                  onChange={(e) =>
+                    setForm((s) => (s ? { ...s, loginNoticeEnabled: e.target.value === 'on' } : s))
+                  }
+                >
+                  <option value="on">{t('admin.optionActive')}</option>
+                  <option value="off">{t('admin.optionInactive')}</option>
+                </select>
               </label>
             </div>
+            <p className="hq-card-hint hq-login-notice-hint">{t('admin.brandLoginNoticeToggleHint')}</p>
 
-            <div className="hq-login-setup-block">
-              <h4>{t('admin.brandLoginNoticeBlock')}</h4>
-              <label className="hq-login-check">
-                <input
-                  type="checkbox"
-                  checked={form.loginNoticeEnabled !== false}
-                  onChange={(e) => setForm((s) => (s ? { ...s, loginNoticeEnabled: e.target.checked } : s))}
-                />
-                <span>{t('admin.brandLoginNotice')}</span>
-              </label>
+            <div className={`hq-login-notice-fields${form.loginNoticeEnabled === false ? ' is-disabled' : ''}`}>
               <label className="hq-login-field">
                 {t('admin.brandLoginNoticeTitle')}
                 <input
@@ -507,35 +516,50 @@ export default function AdminBrand() {
                   value={form.loginNoticeTitle || ''}
                   onChange={(e) => set('loginNoticeTitle', e.target.value)}
                   placeholder={t('partner.scamTitle')}
+                  disabled={form.loginNoticeEnabled === false}
                 />
               </label>
               <label className="hq-login-field">
                 {t('admin.brandLoginNoticeBody')}
                 <textarea
-                  className="input hq-login-body-input"
-                  rows={8}
+                  className="hq-login-body-input"
+                  rows={12}
                   value={form.loginNoticeBody || ''}
                   onChange={(e) => set('loginNoticeBody', e.target.value)}
                   placeholder={t('partner.scamBody')}
+                  disabled={form.loginNoticeEnabled === false}
                 />
               </label>
               <p className="muted-text hq-login-empty-hint">{t('admin.brandLoginNoticeEmptyHint')}</p>
             </div>
-          </div>
 
-          <aside className="hq-login-setup-preview" aria-label={t('admin.brandLoginPreview')}>
-            <h4>{t('admin.brandLoginPreview')}</h4>
-            <div className="hq-login-preview-panel" style={{ background: panelBg }}>
-              {form.loginNoticeEnabled !== false ? (
-                <section className="hq-login-preview-notice">
-                  <strong>{noticeTitlePreview}</strong>
-                  <p>{noticeBodyPreview}</p>
-                </section>
-              ) : (
-                <p className="muted-text">{t('admin.brandLoginNoticeOff')}</p>
-              )}
+            <div className="hq-login-setup-preview hq-login-preview-in-notice" aria-label={t('admin.brandLoginPreview')}>
+              <h4>{t('admin.brandLoginPreview')}</h4>
+              <div className="hq-login-preview-panel" style={{ background: panelBg }}>
+                <div className="hq-login-preview-logo">
+                  {form.logoAdmin ? (
+                    <img src={form.logoAdmin} alt="" />
+                  ) : (
+                    <strong>{form.productName}</strong>
+                  )}
+                </div>
+                {form.loginNoticeEnabled !== false ? (
+                  <section className="hq-login-preview-notice">
+                    <strong>{noticeTitlePreview}</strong>
+                    <p>{noticeBodyPreview}</p>
+                  </section>
+                ) : null}
+                <div className="hq-login-preview-form" aria-hidden>
+                  <span className="hq-login-preview-fake">{t('auth.email')}</span>
+                  <span className="hq-login-preview-fake">{t('auth.password')}</span>
+                  <span className="hq-login-preview-btn">{t('auth.loginButton')}</span>
+                </div>
+                {form.loginNoticeEnabled === false ? (
+                  <p className="muted-text hq-login-preview-off-note">{t('admin.brandLoginNoticeOff')}</p>
+                ) : null}
+              </div>
             </div>
-          </aside>
+          </div>
         </div>
       </section>
 
