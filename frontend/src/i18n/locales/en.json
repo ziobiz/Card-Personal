@@ -53,7 +53,7 @@
     "privacy": "Privacy Policy",
     "otpTitle": "Two-factor authentication",
     "otpTotpHint": "Enter the 6-digit code from your authenticator app.",
-    "otpCode": "Verification code",
+    "otpCode": "Verification code / OTP",
     "otpVerify": "Verify",
     "otpVerifying": "Verifying...",
     "otpInvalid": "Invalid verification code.",

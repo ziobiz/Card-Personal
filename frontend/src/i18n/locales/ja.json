@@ -50,7 +50,7 @@
     "privacy": "プライバシー",
     "otpTitle": "二要素認証",
     "otpTotpHint": "認証アプリに表示された6桁コードを入力してください。",
-    "otpCode": "認証コード",
+    "otpCode": "認証コード / OTP",
     "otpVerify": "認証する",
     "otpVerifying": "確認中...",
     "otpInvalid": "認証コードが正しくありません。",

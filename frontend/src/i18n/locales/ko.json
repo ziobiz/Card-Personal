@@ -53,7 +53,7 @@
     "privacy": "개인정보 처리방침",
     "otpTitle": "2단계 인증",
     "otpTotpHint": "인증 앱에 표시된 6자리 코드를 입력하세요.",
-    "otpCode": "인증번호",
+    "otpCode": "인증번호 / OTP",
     "otpVerify": "인증 확인",
     "otpVerifying": "확인 중...",
     "otpInvalid": "인증번호가 올바르지 않습니다.",
