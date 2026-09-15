@@ -566,7 +566,16 @@
     "navManuals": "Manuals",
     "navAccess": "Access",
     "hello": "Hello",
-    "helloHint": "Show or hide help text"
+    "helloHint": "Show or hide help text",
+    "brandLoginHero": "Admin login screen",
+    "brandLoginHeroHint": "Left background for the Crypto-style split login. Empty uses the default yellow/gold wave image.",
+    "brandLoginHeroImage": "Login background image",
+    "brandResetDefault": "Use default",
+    "brandUsingDefault": "Using default yellow/gold wave image",
+    "brandLoginMainText": "Background caption (optional)",
+    "brandLoginMainTextPh": "e.g. GLOBAL CARD PLATFORM",
+    "brandLoginNotice": "Show impersonation notice",
+    "brandHeroTooBig": "Background image is too large. Please upload a smaller file."
   },
   "earn": {
     "title": "Earn",

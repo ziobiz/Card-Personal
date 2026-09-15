@@ -19,9 +19,9 @@ const LOCALE_OPTIONS = [
   { code: 'lo', label: 'ລາວ' },
 ] as const;
 
-function fileToDataUrl(file: File): Promise<string> {
+function fileToDataUrl(file: File, maxBytes = 350_000): Promise<string> {
   return new Promise((resolve, reject) => {
-    if (file.size > 350_000) {
+    if (file.size > maxBytes) {
       reject(new Error('max350'));
       return;
     }
@@ -29,6 +29,50 @@ function fileToDataUrl(file: File): Promise<string> {
     reader.onload = () => resolve(String(reader.result || ''));
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(file);
+  });
+}
+
+/** Compress hero image to JPEG data URL for branding store */
+function fileToHeroDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (file.size > 4_000_000) {
+      reject(new Error('maxHero'));
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const maxW = 1920;
+        const scale = Math.min(1, maxW / img.width);
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('canvas'));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, w, h);
+        const data = canvas.toDataURL('image/jpeg', 0.82);
+        URL.revokeObjectURL(url);
+        if (data.length > 2_400_000) {
+          reject(new Error('maxHero'));
+          return;
+        }
+        resolve(data);
+      } catch (e) {
+        URL.revokeObjectURL(url);
+        reject(e);
+      }
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('img'));
+    };
+    img.src = url;
   });
 }
 
@@ -62,6 +106,17 @@ export default function AdminBrand() {
     } catch {
       setOk(false);
       setMsg(t('admin.brandFileTooBig'));
+    }
+  };
+
+  const onHeroFile = async (file?: File) => {
+    if (!file || !form) return;
+    try {
+      const url = await fileToHeroDataUrl(file);
+      setForm((s) => (s ? { ...s, loginHeroImage: url } : s));
+    } catch {
+      setOk(false);
+      setMsg(t('admin.brandHeroTooBig'));
     }
   };
 
@@ -143,6 +198,51 @@ export default function AdminBrand() {
               )}
             </label>
           ))}
+        </div>
+      </section>
+
+      <section className="card-surface hq-brand-card">
+        <h3>{t('admin.brandLoginHero')}</h3>
+        <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandLoginHeroHint')}</p>
+        <div className="hq-brand-logos">
+          <label className="hq-logo-slot hq-hero-slot">
+            <span>{t('admin.brandLoginHeroImage')}</span>
+            <div
+              className="hq-logo-preview hq-hero-preview"
+              style={{
+                backgroundImage: `url(${form.loginHeroImage || '/brand/admin-login-wave-default.jpg'})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            />
+            <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => void onHeroFile(e.target.files?.[0])} />
+            {form.loginHeroImage ? (
+              <button type="button" className="btn-outline" onClick={() => set('loginHeroImage', '')}>
+                {t('admin.brandResetDefault')}
+              </button>
+            ) : (
+              <em className="muted-text">{t('admin.brandUsingDefault')}</em>
+            )}
+          </label>
+        </div>
+        <div className="hq-brand-grid" style={{ marginTop: 12 }}>
+          <label className="hq-brand-span">
+            {t('admin.brandLoginMainText')}
+            <input
+              className="input"
+              value={form.loginMainText || ''}
+              onChange={(e) => set('loginMainText', e.target.value)}
+              placeholder={t('admin.brandLoginMainTextPh')}
+            />
+          </label>
+          <label className="hq-brand-span" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <input
+              type="checkbox"
+              checked={form.loginNoticeEnabled !== false}
+              onChange={(e) => setForm((s) => (s ? { ...s, loginNoticeEnabled: e.target.checked } : s))}
+            />
+            <span>{t('admin.brandLoginNotice')}</span>
+          </label>
         </div>
       </section>
 

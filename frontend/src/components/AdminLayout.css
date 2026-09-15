@@ -971,9 +971,23 @@
 .is-admin .hq-form-grid label,
 .is-admin .org-profile-grid > label,
 .is-admin .org-row > label,
-.is-admin .hq-brand label,
-.is-admin .hq-brand-grid > label,
 .is-admin .hq-filter label {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0;
+  font-size: 12px;
+  color: var(--pg-label);
+  min-height: 32px;
+  border: 1px solid #dde1e8;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.is-admin .hq-brand label,
+.is-admin .hq-brand-grid > label {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -981,6 +995,8 @@
   font-size: 12px;
   color: var(--pg-label);
   min-height: 0;
+  border: 0;
+  background: transparent;
 }
 
 .is-admin .hq-form-grid label > span,
@@ -988,33 +1004,56 @@
 .is-admin .org-profile-grid > label > span,
 .is-admin .hq-filter label > span {
   min-width: 0;
-  color: var(--pg-label);
-  line-height: 1.4;
+  color: #444;
+  line-height: 1.35;
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  background: #f3f5f7;
+  border-right: 1px solid #dde1e8;
+  font-weight: 600;
+  font-size: 12px;
 }
 
 .is-admin .hq-form-grid > label .input,
-.is-admin .hq-form-grid > label select.input {
-  width: 168px !important;
+.is-admin .hq-form-grid > label select.input,
+.is-admin .org-profile-grid > label > .input,
+.is-admin .org-profile-grid > label > select.input,
+.is-admin .org-profile-grid > label > .org-combo,
+.is-admin .org-profile-grid > label > .org-id-row,
+.is-admin .org-row > label > .input,
+.is-admin .org-row > label > select.input,
+.is-admin .org-row > label > .org-combo,
+.is-admin .org-row > label > .org-id-row {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  height: 100% !important;
+  min-height: 32px !important;
+  align-self: stretch;
 }
 
-.is-admin .org-profile-grid {
+.is-admin .org-profile-grid > label > .org-combo,
+.is-admin .org-profile-grid > label > .org-id-row,
+.is-admin .org-row > label > .org-combo,
+.is-admin .org-row > label > .org-id-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px 18px;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  background: var(--pg-input);
 }
 
-.is-admin .org-basic-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  width: 100%;
-}
-
-.is-admin .org-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 18px;
-  align-items: flex-end;
+.is-admin .org-profile-grid > label > .org-combo .input,
+.is-admin .org-profile-grid > label > .org-id-row .input,
+.is-admin .org-row > label > .org-combo .input,
+.is-admin .org-row > label > .org-id-row .input {
+  border: 1px solid var(--pg-input-border) !important;
+  height: 26px !important;
+  min-height: 26px !important;
 }
 
 .is-admin .org-combo,
@@ -1028,20 +1067,92 @@
   width: 150px !important;
 }
 
-.is-admin .org-combo .input:not(.input-dial),
-.is-admin .org-id-row .input {
-  width: 168px !important;
+.is-admin .org-addr .input {
+  min-width: 0 !important;
+  width: 100% !important;
 }
 
-.is-admin .org-addr .input {
-  min-width: 280px !important;
-  width: 320px !important;
+.is-admin .hq-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  align-items: stretch;
+  border: 1px solid #cfd5dd;
+  background: #fff;
+}
+
+.is-admin .org-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  border: 1px solid #cfd5dd;
+  background: #fff;
+}
+
+.is-admin .org-profile-grid.org-basic-grid,
+.is-admin .org-basic-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+}
+
+.is-admin .org-profile-grid.org-account-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  border: 1px solid #cfd5dd;
+}
+
+.is-admin .org-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  align-items: stretch;
+  border: 1px solid #cfd5dd;
+  background: #fff;
+}
+
+.is-admin .org-row > label:only-child,
+.is-admin .org-profile-grid > label.org-span-2,
+.is-admin .org-addr {
+  grid-column: 1 / -1;
 }
 
 .is-admin .org-biz-pair {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+
+.is-admin .hq-page .card-surface,
+.is-admin .reg-card,
+.is-admin .hq-brand-card,
+.is-admin .hq-sandbox-card,
+.is-admin .pp-card {
+  background: #fff;
+}
+
+.is-admin .hq-hero-preview {
+  width: 100%;
+  min-height: 120px;
+  height: 140px !important;
+  border: 1px solid #d5dae2;
+}
+
+.is-admin .hq-hero-slot {
+  max-width: 420px;
+}
+
+@media (max-width: 900px) {
+  .is-admin .hq-form-grid,
+  .is-admin .org-profile-grid,
+  .is-admin .org-row,
+  .is-admin .org-biz-pair {
+    grid-template-columns: 1fr;
+  }
 }
 
 .is-admin .reg-actions {

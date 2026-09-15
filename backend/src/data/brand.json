@@ -11,5 +11,10 @@
   "logoAdmin": "",
   "logoLogin": "",
   "favicon": "",
+  "loginHeroImage": "",
+  "loginMainText": "",
+  "loginNoticeEnabled": true,
+  "enabledLocales": ["ko", "en", "ja", "zh", "th"],
+  "defaultLocale": "en",
   "updatedAt": "2026-08-19T12:32:18.824Z"
 }

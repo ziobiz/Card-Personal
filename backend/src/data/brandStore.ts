@@ -39,6 +39,12 @@ export interface BrandConfig {
   logoAdmin: string;
   logoLogin: string;
   favicon: string;
+  /** Admin login left-panel hero (data URL or /path). Empty → default wave. */
+  loginHeroImage: string;
+  /** Optional overlay text on login hero (Crypto authMainText) */
+  loginMainText: string;
+  /** Show impersonation notice on admin login panel */
+  loginNoticeEnabled: boolean;
   /** Member/partner UI languages activated for this ASP tenant */
   enabledLocales: LocaleCode[];
   /** Fallback when browser lang is not enabled */
@@ -62,6 +68,9 @@ export const DEFAULT_BRAND: BrandConfig = {
   logoAdmin: '',
   logoLogin: '',
   favicon: '',
+  loginHeroImage: '',
+  loginMainText: '',
+  loginNoticeEnabled: true,
   enabledLocales: ['ko', 'en', 'ja', 'zh', 'th'],
   defaultLocale: 'en',
 };
@@ -128,6 +137,17 @@ function clipDataUrl(v: unknown, maxChars = 700_000): string | undefined {
   return v;
 }
 
+/** data URL, absolute http(s), or site-relative path */
+function clipHeroImage(v: unknown): string | undefined {
+  if (typeof v !== 'string') return undefined;
+  if (v === '') return '';
+  const s = v.trim();
+  if (s.startsWith('data:image/')) return clipDataUrl(s, 2_500_000);
+  if (/^https?:\/\//i.test(s) && s.length <= 2000) return s;
+  if (s.startsWith('/') && s.length <= 500 && !s.includes('..')) return s;
+  return undefined;
+}
+
 export const brandStore = {
   get(): BrandConfig {
     return {
@@ -163,6 +183,15 @@ export const brandStore = {
       if (partial[key] === undefined) continue;
       const img = clipDataUrl(partial[key]);
       if (img !== undefined) next[key] = img;
+    }
+    if (partial.loginHeroImage !== undefined) {
+      const hero = clipHeroImage(partial.loginHeroImage);
+      if (hero !== undefined) next.loginHeroImage = hero;
+    }
+    const mainText = clipText(partial.loginMainText, 240);
+    if (mainText != null) next.loginMainText = mainText;
+    if (typeof partial.loginNoticeEnabled === 'boolean') {
+      next.loginNoticeEnabled = partial.loginNoticeEnabled;
     }
     if (partial.enabledLocales !== undefined) {
       next.enabledLocales = normalizeLocales(partial.enabledLocales, DEFAULT_BRAND.enabledLocales);

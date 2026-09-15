@@ -517,7 +517,16 @@
     "navManuals": "手册",
     "navAccess": "访问权限",
     "hello": "帮助",
-    "helloHint": "显示或隐藏说明文字"
+    "helloHint": "显示或隐藏说明文字",
+    "brandLoginHero": "管理员登录画面",
+    "brandLoginHeroHint": "Crypto 风格左右分栏登录的左侧背景。留空则使用默认黄/金色波纹图。",
+    "brandLoginHeroImage": "登录背景图",
+    "brandResetDefault": "恢复默认",
+    "brandUsingDefault": "正在使用默认黄/金色波纹图",
+    "brandLoginMainText": "背景文案（可选）",
+    "brandLoginMainTextPh": "例如：GLOBAL CARD PLATFORM",
+    "brandLoginNotice": "显示冒充风险提示",
+    "brandHeroTooBig": "背景图过大，请上传更小的文件。"
   },
   "earn": {
     "title": "收益",

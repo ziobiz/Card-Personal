@@ -176,6 +176,9 @@ export interface BrandConfig {
   logoAdmin: string;
   logoLogin: string;
   favicon: string;
+  loginHeroImage?: string;
+  loginMainText?: string;
+  loginNoticeEnabled?: boolean;
   enabledLocales?: string[];
   defaultLocale?: string;
   tenantSlug?: string;
@@ -196,9 +199,20 @@ export const DEFAULT_BRAND: BrandConfig = {
   logoAdmin: '',
   logoLogin: '',
   favicon: '',
+  loginHeroImage: '',
+  loginMainText: '',
+  loginNoticeEnabled: true,
   enabledLocales: ['ko', 'en', 'ja', 'zh', 'th'],
   defaultLocale: 'en',
 };
+
+/** Default admin login left hero (yellow/gold wave) when branding empty */
+export const DEFAULT_LOGIN_HERO = '/brand/admin-login-wave-default.jpg';
+
+export function resolveLoginHero(brand: BrandConfig): string {
+  const v = (brand.loginHeroImage || '').trim();
+  return v || DEFAULT_LOGIN_HERO;
+}
 
 export async function fetchPublicBrand(slug?: string): Promise<BrandConfig> {
   const base = API || '';

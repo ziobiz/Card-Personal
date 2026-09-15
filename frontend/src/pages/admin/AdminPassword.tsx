@@ -2,22 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
-import LanguageSwitcher from '../../components/LanguageSwitcher';
-import { useBrand } from '../../brand/BrandContext';
-import '../../pages/Auth.css';
-
-function LockIcon({ light = false }: { light?: boolean }) {
-  return (
-    <svg width={light ? 22 : 18} height={light ? 22 : 18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <rect x="5" y="11" width="14" height="10" rx="2" />
-      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-    </svg>
-  );
-}
+import AdminAuthChrome from '../../components/AdminAuthChrome';
 
 export default function AdminPassword() {
   const { t } = useTranslation();
-  const { brand } = useBrand();
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -61,55 +49,37 @@ export default function AdminPassword() {
   const canSubmit = Boolean(password.trim() && confirm.trim()) && !loading;
 
   return (
-    <div className="wx-auth admin-wx-auth">
-      <header className="wx-auth-top">
-        {brand.logoAdmin || brand.logoLogin ? (
-          <img src={brand.logoAdmin || brand.logoLogin} alt={brand.productName} className="wx-mark-img" />
-        ) : (
-          <span className="wx-mark">{brand.productName}</span>
-        )}
-        <LanguageSwitcher admin />
-      </header>
-      <div className="wx-auth-body">
-        <div className="wx-auth-card">
-          <div className="wx-mail-badge">
-            <LockIcon light />
-          </div>
-          <h1>{t('partner.setPassword')}</h1>
-          <p className="auth-subtitle">{t('partner.setPasswordHint')}</p>
-          <form onSubmit={handleSubmit}>
-            {error ? <div className="auth-error">{error}</div> : null}
-            <div className="wx-field">
-              <LockIcon />
-              <input
-                className="input"
-                type="password"
-                placeholder={t('auth.password')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="new-password"
-              />
-            </div>
-            <div className="wx-field wx-field-submit">
-              <LockIcon />
-              <input
-                className="input"
-                type="password"
-                placeholder={t('admin.passwordConfirm')}
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                required
-                autoComplete="new-password"
-              />
-              <button type="submit" disabled={!canSubmit} className="wx-submit">
-                {loading ? t('admin.saving') : t('common.confirm')}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-      <p className="wx-copy">{brand.copyright}</p>
-    </div>
+    <AdminAuthChrome showNotice={false}>
+      <h1 className="ac-title">{t('partner.setPassword')}</h1>
+      <p className="ac-sub">{t('partner.setPasswordHint')}</p>
+      <form onSubmit={handleSubmit}>
+        {error ? <div className="ac-error">{error}</div> : null}
+        <label className="ac-field">
+          {t('auth.password')}
+          <input
+            className="input"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="new-password"
+          />
+        </label>
+        <label className="ac-field">
+          {t('admin.passwordConfirm')}
+          <input
+            className="input"
+            type="password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            required
+            autoComplete="new-password"
+          />
+        </label>
+        <button type="submit" disabled={!canSubmit} className="ac-submit">
+          {loading ? t('admin.saving') : t('common.confirm')}
+        </button>
+      </form>
+    </AdminAuthChrome>
   );
 }
