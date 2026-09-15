@@ -11,6 +11,30 @@ type IconName = 'gear' | 'cloud' | 'phone' | 'card' | 'user' | 'ops';
 type MenuGroup = { id: string; labelKey: string; icon: IconName; items: MenuItem[] };
 type OpenTab = { to: string; labelKey: string };
 
+const CRUMB_PATH: Record<string, string> = {
+  'admin.menuOps': '/admin/dashboard',
+  'admin.menuMain': '/admin/dashboard',
+  'admin.menuMerchant': '/admin/partners',
+  'admin.menuHq': '/admin/brand',
+  'admin.menuUsers': '/admin/operators',
+  'admin.navDashboard': '/admin/dashboard',
+  'admin.navPartners': '/admin/partners',
+  'admin.navPartnerReg': '/admin/partners/new',
+  'admin.navOrg': '/admin/org',
+  'admin.navFeeList': '/admin/fee-list',
+  'admin.navFeePolicy': '/admin/fee-policy',
+  'admin.navSettings': '/admin/settings',
+  'admin.navBrand': '/admin/brand',
+  'admin.navSandbox': '/admin/sandbox',
+  'admin.navHqOperators': '/admin/operators',
+  'admin.navPartnerOperators': '/admin/operators/partner',
+  'admin.navCustomers': '/admin/customers',
+  'admin.navCards': '/admin/cards',
+  'admin.navManuals': '/admin/manuals',
+  'admin.navAccess': '/admin/access',
+  'admin.myInfo': '/admin/me',
+};
+
 function SideIcon({ name }: { name: IconName }) {
   const common = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   if (name === 'gear') {
@@ -154,7 +178,7 @@ export default function AdminLayout() {
 
   const crumb = useMemo(() => {
     const map: Record<string, string[]> = {
-      '/admin/dashboard': ['admin.menuMain', 'admin.navDashboard'],
+      '/admin/dashboard': ['admin.menuOps', 'admin.navDashboard'],
       '/admin/partners': ['admin.menuMerchant', 'admin.navPartners'],
       '/admin/partners/new': ['admin.menuMerchant', 'admin.navPartnerReg'],
       '/admin/org': ['admin.menuMerchant', 'admin.navOrg'],
@@ -174,8 +198,18 @@ export default function AdminLayout() {
       '/admin/access': ['admin.menuUsers', 'admin.navAccess'],
       '/admin/me': ['admin.myInfo'],
     };
-    return map[loc.pathname] ?? ['admin.menuMain'];
+    return map[loc.pathname] ?? ['admin.menuOps', 'admin.navDashboard'];
   }, [loc.pathname]);
+
+  const crumbItems = useMemo(
+    () =>
+      crumb.map((k, i) => ({
+        key: k,
+        label: t(k),
+        to: i < crumb.length - 1 ? CRUMB_PATH[k] : undefined,
+      })),
+    [crumb, t]
+  );
 
   const title = t(crumb[crumb.length - 1] || 'admin.brand');
   const now = (() => {
@@ -369,15 +403,21 @@ export default function AdminLayout() {
             ))}
           </div>
           <div className="hq-crumbbar">
-            <span className="hq-crumb-left">&gt; {title}</span>
-            <span className="hq-crumb-right">
-              {crumb.map((k, i) => (
-                <span key={`${k}-${i}`}>
+            <h1 className="hq-crumb-left">{title}</h1>
+            <nav className="hq-crumb-right" aria-label="breadcrumb">
+              {crumbItems.map((item, i) => (
+                <span key={`${item.key}-${i}`} className="hq-crumb-part">
                   {i > 0 ? <span className="hq-crumb-sep">&gt;</span> : null}
-                  {t(k)}
+                  {item.to ? (
+                    <Link to={item.to} className="hq-crumb-link">
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <span className="hq-crumb-current">{item.label}</span>
+                  )}
                 </span>
               ))}
-            </span>
+            </nav>
           </div>
           <div className="hq-page">
             <Outlet />

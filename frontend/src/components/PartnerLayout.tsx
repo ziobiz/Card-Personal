@@ -55,7 +55,13 @@ export default function PartnerLayout() {
     setTabs((prev) => (prev.some((x) => x.to === loc.pathname) ? prev : [...prev, { to: loc.pathname, labelKey: titleKey }]));
   }, [loc.pathname, titleKey]);
 
-  const crumb = useMemo(() => [t('partner.portal'), t(titleKey)], [t, titleKey]);
+  const crumbItems = useMemo(
+    () => [
+      { key: 'partner.portal', label: t('partner.portal'), to: '/partner' as string | undefined },
+      { key: titleKey, label: t(titleKey), to: undefined as string | undefined },
+    ],
+    [t, titleKey]
+  );
 
   const visible = allowed ? PARTNER_MENUS.filter((m) => allowed.includes(m.menu)) : PARTNER_MENUS;
   if (!hasToken) {
@@ -186,15 +192,21 @@ export default function PartnerLayout() {
             ))}
           </div>
           <div className="hq-crumbbar">
-            <span className="hq-crumb-left">&gt; {t(titleKey)}</span>
-            <span className="hq-crumb-right">
-              {crumb.map((label, i) => (
-                <span key={`${label}-${i}`}>
+            <h1 className="hq-crumb-left">{t(titleKey)}</h1>
+            <nav className="hq-crumb-right" aria-label="breadcrumb">
+              {crumbItems.map((item, i) => (
+                <span key={`${item.key}-${i}`} className="hq-crumb-part">
                   {i > 0 ? <span className="hq-crumb-sep">&gt;</span> : null}
-                  {label}
+                  {item.to && i < crumbItems.length - 1 ? (
+                    <Link to={item.to} className="hq-crumb-link">
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <span className="hq-crumb-current">{item.label}</span>
+                  )}
                 </span>
               ))}
-            </span>
+            </nav>
           </div>
           <div className="hq-page">
             <Outlet />
