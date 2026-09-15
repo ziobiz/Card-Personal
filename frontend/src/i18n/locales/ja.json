@@ -520,14 +520,16 @@
     "hello": "ハロー",
     "helloHint": "案内文の表示/非表示",
     "brandLoginHero": "管理者ログイン画面",
-    "brandLoginHeroHint": "Crypto型分割ログインの左側背景です。空の場合はデフォルトの黄・ゴールド波画像を使います。",
+    "brandLoginHeroHint": "Crypto型分割ログインの左側背景です。空の場合は会員ログインと同じ背景を使います。",
     "brandLoginHeroImage": "ログイン背景画像",
     "brandResetDefault": "デフォルトに戻す",
-    "brandUsingDefault": "デフォルトの黄・ゴールド波画像を使用中",
+    "brandUsingDefault": "デフォルト: 会員ログインと同じ背景",
     "brandLoginMainText": "背景テキスト（任意）",
     "brandLoginMainTextPh": "例: GLOBAL CARD PLATFORM",
     "brandLoginNotice": "なりすまし注意を表示",
-    "brandHeroTooBig": "背景画像が大きすぎます。小さいファイルをアップロードしてください。"
+    "brandHeroTooBig": "背景画像が大きすぎます。小さいファイルをアップロードしてください。",
+    "brandLoginNoticeTitle": "なりすまし注意タイトル",
+    "brandLoginNoticeBody": "なりすまし注意本文"
   },
   "earn": {
     "title": "リワード",

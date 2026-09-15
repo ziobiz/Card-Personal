@@ -173,7 +173,7 @@ export default function OtpChallenge({
   );
 
   if (admin) {
-    return <AdminAuthChrome showNotice={false}>{formBody}</AdminAuthChrome>;
+    return <AdminAuthChrome>{formBody}</AdminAuthChrome>;
   }
 
   return (

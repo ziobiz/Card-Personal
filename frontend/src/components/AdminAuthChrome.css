@@ -69,10 +69,15 @@
 .ac-logo {
   display: flex;
   justify-content: center;
+  align-items: center;
+  width: 100%;
   margin: 4px 0 16px;
+  text-align: center;
 }
 
 .ac-logo img {
+  display: block;
+  margin: 0 auto;
   max-height: 52px;
   max-width: 220px;
   object-fit: contain;
@@ -85,6 +90,7 @@
   color: #1e293b;
   letter-spacing: 0.04em;
   margin: 4px 0 16px;
+  width: 100%;
 }
 
 .ac-notice {
@@ -113,6 +119,7 @@
 
 .ac-body {
   flex: 1;
+  width: 100%;
 }
 
 .ac-body h1,

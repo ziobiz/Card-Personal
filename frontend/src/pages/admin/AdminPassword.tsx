@@ -49,7 +49,7 @@ export default function AdminPassword() {
   const canSubmit = Boolean(password.trim() && confirm.trim()) && !loading;
 
   return (
-    <AdminAuthChrome showNotice={false}>
+    <AdminAuthChrome>
       <h1 className="ac-title">{t('partner.setPassword')}</h1>
       <p className="ac-sub">{t('partner.setPasswordHint')}</p>
       <form onSubmit={handleSubmit}>

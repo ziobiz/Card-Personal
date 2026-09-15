@@ -14,6 +14,8 @@
   "loginHeroImage": "",
   "loginMainText": "",
   "loginNoticeEnabled": true,
+  "loginNoticeTitle": "",
+  "loginNoticeBody": "",
   "enabledLocales": ["ko", "en", "ja", "zh", "th"],
   "defaultLocale": "en",
   "updatedAt": "2026-08-19T12:32:18.824Z"

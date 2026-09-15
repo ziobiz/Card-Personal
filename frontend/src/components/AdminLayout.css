@@ -1388,8 +1388,18 @@
 }
 
 .is-admin .wx-auth-top {
+  position: relative;
   background: #fff;
   border-bottom: 1px solid #d5dae2;
+  justify-content: flex-end;
+}
+
+.is-admin .wx-auth-top .wx-mark,
+.is-admin .wx-auth-top .wx-mark-img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .is-admin .wx-mark {

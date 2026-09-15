@@ -210,7 +210,7 @@ export default function AdminBrand() {
             <div
               className="hq-logo-preview hq-hero-preview"
               style={{
-                backgroundImage: `url(${form.loginHeroImage || '/brand/admin-login-wave-default.jpg'})`,
+                backgroundImage: `url(${form.loginHeroImage || '/user-hero-bg.png'})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               }}
@@ -242,6 +242,26 @@ export default function AdminBrand() {
               onChange={(e) => setForm((s) => (s ? { ...s, loginNoticeEnabled: e.target.checked } : s))}
             />
             <span>{t('admin.brandLoginNotice')}</span>
+          </label>
+          <label className="hq-brand-span">
+            {t('admin.brandLoginNoticeTitle')}
+            <input
+              className="input"
+              value={form.loginNoticeTitle || ''}
+              onChange={(e) => set('loginNoticeTitle', e.target.value)}
+              placeholder={t('partner.scamTitle')}
+            />
+          </label>
+          <label className="hq-brand-span">
+            {t('admin.brandLoginNoticeBody')}
+            <textarea
+              className="input"
+              rows={5}
+              value={form.loginNoticeBody || ''}
+              onChange={(e) => set('loginNoticeBody', e.target.value)}
+              placeholder={t('partner.scamBody')}
+              style={{ height: 'auto', minHeight: 96 }}
+            />
           </label>
         </div>
       </section>

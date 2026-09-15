@@ -441,10 +441,10 @@
     "brandSaved": "บันทึกแล้ว",
     "brandFileTooBig": "รูปต้องไม่เกิน 350KB",
     "brandLoginHero": "หน้าจอเข้าสู่ระบบแอดมิน",
-    "brandLoginHeroHint": "พื้นหลังด้านซ้ายของล็อกอินแบบ Crypto หากว่างจะใช้ภาพคลื่นเหลือง-ทองเริ่มต้น",
+    "brandLoginHeroHint": "พื้นหลังด้านซ้ายของล็อกอินแบบ Crypto หากว่างจะใช้ภาพเดียวกับล็อกอินสมาชิก",
     "brandLoginHeroImage": "ภาพพื้นหลังล็อกอิน",
     "brandResetDefault": "ใช้ค่าเริ่มต้น",
-    "brandUsingDefault": "กำลังใช้ภาพคลื่นเหลือง-ทองเริ่มต้น",
+    "brandUsingDefault": "ค่าเริ่มต้น: พื้นหลังเดียวกับล็อกอินสมาชิก",
     "brandLoginMainText": "ข้อความบนพื้นหลัง (ถ้ามี)",
     "brandLoginMainTextPh": "เช่น GLOBAL CARD PLATFORM",
     "brandLoginNotice": "แสดงคำเตือนการแอบอ้าง",
@@ -526,7 +526,9 @@
     "navManuals": "คู่มือ",
     "navAccess": "สิทธิ์เข้าถึง",
     "hello": "Hello",
-    "helloHint": "แสดง/ซ่อนข้อความช่วยเหลือ"
+    "helloHint": "แสดง/ซ่อนข้อความช่วยเหลือ",
+    "brandLoginNoticeTitle": "หัวข้อคำเตือนการแอบอ้าง",
+    "brandLoginNoticeBody": "เนื้อหาคำเตือนการแอบอ้าง"
   },
   "earn": {
     "title": "รับรางวัล",

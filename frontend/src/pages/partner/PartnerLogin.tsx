@@ -51,11 +51,11 @@ export default function PartnerLogin() {
       </header>
       <div className="tp-card">
         <div className="tp-alert">
-          <strong>{t('partner.scamTitle')}</strong>
-          <p>{t('partner.scamBody')}</p>
+          <strong>{(brand.loginNoticeTitle || '').trim() || t('partner.scamTitle')}</strong>
+          <p>{(brand.loginNoticeBody || '').trim() || t('partner.scamBody')}</p>
         </div>
-        <h1>{t('auth.login')}</h1>
         {brand.logoAdmin ? <img className="tp-logo" src={brand.logoAdmin} alt={brand.productName} /> : <p className="tp-brand">{brand.productName}</p>}
+        <h1>{t('auth.login')}</h1>
         {error ? <div className="auth-error">{error}</div> : null}
         <form onSubmit={handleSubmit}>
           <label>

@@ -39,12 +39,16 @@ export interface BrandConfig {
   logoAdmin: string;
   logoLogin: string;
   favicon: string;
-  /** Admin login left-panel hero (data URL or /path). Empty → default wave. */
+  /** Admin login left-panel hero (data URL or /path). Empty → member login hero. */
   loginHeroImage: string;
   /** Optional overlay text on login hero (Crypto authMainText) */
   loginMainText: string;
   /** Show impersonation notice on admin login panel */
   loginNoticeEnabled: boolean;
+  /** Editable notice title (empty → i18n partner.scamTitle) */
+  loginNoticeTitle: string;
+  /** Editable notice body (empty → i18n partner.scamBody) */
+  loginNoticeBody: string;
   /** Member/partner UI languages activated for this ASP tenant */
   enabledLocales: LocaleCode[];
   /** Fallback when browser lang is not enabled */
@@ -71,6 +75,8 @@ export const DEFAULT_BRAND: BrandConfig = {
   loginHeroImage: '',
   loginMainText: '',
   loginNoticeEnabled: true,
+  loginNoticeTitle: '',
+  loginNoticeBody: '',
   enabledLocales: ['ko', 'en', 'ja', 'zh', 'th'],
   defaultLocale: 'en',
 };
@@ -193,6 +199,10 @@ export const brandStore = {
     if (typeof partial.loginNoticeEnabled === 'boolean') {
       next.loginNoticeEnabled = partial.loginNoticeEnabled;
     }
+    const noticeTitle = clipText(partial.loginNoticeTitle, 120);
+    if (noticeTitle != null) next.loginNoticeTitle = noticeTitle;
+    const noticeBody = clipText(partial.loginNoticeBody, 2000);
+    if (noticeBody != null) next.loginNoticeBody = noticeBody;
     if (partial.enabledLocales !== undefined) {
       next.enabledLocales = normalizeLocales(partial.enabledLocales, DEFAULT_BRAND.enabledLocales);
     }

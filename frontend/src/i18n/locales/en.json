@@ -568,14 +568,16 @@
     "hello": "Hello",
     "helloHint": "Show or hide help text",
     "brandLoginHero": "Admin login screen",
-    "brandLoginHeroHint": "Left background for the Crypto-style split login. Empty uses the default yellow/gold wave image.",
+    "brandLoginHeroHint": "Left background for Crypto-style split login. Empty uses the same image as member login (icocard.net/login).",
     "brandLoginHeroImage": "Login background image",
     "brandResetDefault": "Use default",
-    "brandUsingDefault": "Using default yellow/gold wave image",
+    "brandUsingDefault": "Using default: same background as member login",
     "brandLoginMainText": "Background caption (optional)",
     "brandLoginMainTextPh": "e.g. GLOBAL CARD PLATFORM",
     "brandLoginNotice": "Show impersonation notice",
-    "brandHeroTooBig": "Background image is too large. Please upload a smaller file."
+    "brandHeroTooBig": "Background image is too large. Please upload a smaller file.",
+    "brandLoginNoticeTitle": "Impersonation notice title",
+    "brandLoginNoticeBody": "Impersonation notice body"
   },
   "earn": {
     "title": "Earn",

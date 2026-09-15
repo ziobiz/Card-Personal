@@ -7,17 +7,19 @@ import './AdminAuthChrome.css';
 
 type Props = {
   children: ReactNode;
-  /** Hide scam notice (e.g. OTP step still shows chrome) */
+  /** When false, hide notice (rare). Default true — Crypto OTP also shows notice. */
   showNotice?: boolean;
 };
 
-export default function AdminAuthChrome({ children, showNotice }: Props) {
+export default function AdminAuthChrome({ children, showNotice = true }: Props) {
   const { t } = useTranslation();
   const { brand } = useBrand();
   const hero = resolveLoginHero(brand);
-  const noticeOn = showNotice !== false && brand.loginNoticeEnabled !== false;
+  const noticeOn = showNotice && brand.loginNoticeEnabled !== false;
   const logo = brand.logoAdmin || brand.logoLogin;
   const mainText = (brand.loginMainText || '').trim();
+  const noticeTitle = (brand.loginNoticeTitle || '').trim() || t('partner.scamTitle');
+  const noticeBody = (brand.loginNoticeBody || '').trim() || t('partner.scamBody');
 
   return (
     <div className="ac-chrome is-admin">
@@ -39,8 +41,8 @@ export default function AdminAuthChrome({ children, showNotice }: Props) {
           )}
           {noticeOn ? (
             <section className="ac-notice" role="note">
-              <h3>{t('partner.scamTitle')}</h3>
-              <p>{t('partner.scamBody')}</p>
+              <h3>{noticeTitle}</h3>
+              <p>{noticeBody}</p>
             </section>
           ) : null}
           <div className="ac-body">{children}</div>

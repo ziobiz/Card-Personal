@@ -179,6 +179,8 @@ export interface BrandConfig {
   loginHeroImage?: string;
   loginMainText?: string;
   loginNoticeEnabled?: boolean;
+  loginNoticeTitle?: string;
+  loginNoticeBody?: string;
   enabledLocales?: string[];
   defaultLocale?: string;
   tenantSlug?: string;
@@ -202,12 +204,14 @@ export const DEFAULT_BRAND: BrandConfig = {
   loginHeroImage: '',
   loginMainText: '',
   loginNoticeEnabled: true,
+  loginNoticeTitle: '',
+  loginNoticeBody: '',
   enabledLocales: ['ko', 'en', 'ja', 'zh', 'th'],
   defaultLocale: 'en',
 };
 
-/** Default admin login left hero (yellow/gold wave) when branding empty */
-export const DEFAULT_LOGIN_HERO = '/brand/admin-login-wave-default.jpg';
+/** Default admin login left hero — same as https://icocard.net/login */
+export const DEFAULT_LOGIN_HERO = '/user-hero-bg.png';
 
 export function resolveLoginHero(brand: BrandConfig): string {
   const v = (brand.loginHeroImage || '').trim();
