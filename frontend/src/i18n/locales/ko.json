@@ -24,6 +24,8 @@
     "cardsManageShort": "관리",
     "account": "내 정보",
     "accountShort": "계정",
+    "wallet": "나의 지갑",
+    "walletShort": "지갑",
     "help": "도움말",
     "helpShort": "도움말"
   },
@@ -145,9 +147,9 @@
     }
   },
   "walletMode": {
-    "title": "지갑 연결 방식",
-    "lead": "카드 결제는 항상 우리 Smart Wallet의 WUSD/WEUR로 나갑니다. 연결 지갑은 서명·신원용입니다.",
-    "spendNote": "매장 결제 시 MetaMask가 뜨지 않습니다. BTC·솔라나·포인트는 브리지로 우리 레일로 입금합니다.",
+    "title": "지갑 연결",
+    "lead": "카드 결제는 항상 Smart Wallet의 WUSD/WEUR로 나갑니다. 연결 지갑은 서명·신원용입니다.",
+    "spendNote": "매장 결제 시 MetaMask가 뜨지 않습니다. BTC·솔라나·포인트는 브리지로 우리 레일에 입금합니다.",
     "embedded": "우리 지갑",
     "embeddedDesc": "앱이 EOA와 Wirex Smart Wallet을 발급·보관합니다.",
     "useEmbedded": "우리 지갑 사용",
@@ -223,6 +225,8 @@
     "moreActions": "전체 메뉴"
   },
   "wallet": {
+    "pageTitle": "나의 지갑",
+    "pageLead": "잔액·지갑 주소와 연결 방식을 관리합니다. 카드 결제는 Smart Wallet 잔액으로 진행됩니다.",
     "title": "월렛 잔액",
     "primaryWallet": "프라이머리 월렛 (스테이블코인)",
     "cardBalance": "카드 잔액",
@@ -232,7 +236,8 @@
     "depositNote": "WUSD, WEUR 통합 잔액을 카드로 충전하면 결제에 사용할 수 있습니다.",
     "cardWalletAddress": "카드 월렛 주소",
     "depositSuccess": "충전이 완료되었습니다.",
-    "depositModal": "카드 충전"
+    "depositModal": "카드 충전",
+    "manageLink": "나의 지갑에서 연결 관리"
   },
   "admin": {
     "loginTitle": "관리자 로그인",

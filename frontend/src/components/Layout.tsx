@@ -45,6 +45,14 @@ function IconActivity() {
     </svg>
   );
 }
+function IconWallet() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="3" y="6" width="18" height="13" rx="2" />
+      <path d="M3 10h18M16 14h2" />
+    </svg>
+  );
+}
 function IconAccount() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -90,6 +98,9 @@ export default function Layout() {
           <TNavLink to="/" end className={itemClass}>
             <IconHome /> {t('nav.home')}
           </TNavLink>
+          <TNavLink to="/wallet" className={itemClass}>
+            <IconWallet /> {t('nav.wallet')}
+          </TNavLink>
           <TNavLink to="/cards/issue" className={itemClass}>
             <IconIssue /> {t('nav.cardsIssue')}
           </TNavLink>
@@ -122,6 +133,10 @@ export default function Layout() {
           <IconHome />
           {t('nav.home')}
         </TNavLink>
+        <TNavLink to="/wallet" className={itemClass}>
+          <IconWallet />
+          {t('nav.walletShort')}
+        </TNavLink>
         <TNavLink to="/cards/issue" className={itemClass}>
           <IconIssue />
           {t('nav.cardsIssueShort')}
@@ -129,10 +144,6 @@ export default function Layout() {
         <TNavLink to="/cards/manage" className={itemClass}>
           <IconManage />
           {t('nav.cardsManageShort')}
-        </TNavLink>
-        <TNavLink to="/activity" className={itemClass}>
-          <IconActivity />
-          {t('nav.activity')}
         </TNavLink>
         <TNavLink to="/account" className={itemClass}>
           <IconAccount />

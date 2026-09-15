@@ -24,6 +24,8 @@
     "cardsManageShort": "Manage",
     "account": "My account",
     "accountShort": "Account",
+    "wallet": "My wallet",
+    "walletShort": "Wallet",
     "help": "Help",
     "helpShort": "Help"
   },
@@ -215,6 +217,8 @@
     "moreActions": "More"
   },
   "wallet": {
+    "pageTitle": "My wallet",
+    "pageLead": "Manage balances, addresses, and how your wallet is connected. Card spend uses the Smart Wallet balance.",
     "title": "Wallet Balance",
     "primaryWallet": "Primary wallet (stablecoins)",
     "cardBalance": "Card balance",
@@ -224,7 +228,8 @@
     "depositNote": "Add WUSD, WEUR to your card to spend.",
     "cardWalletAddress": "Card wallet address",
     "depositSuccess": "Deposit successful.",
-    "depositModal": "Top up card"
+    "depositModal": "Top up card",
+    "manageLink": "Manage connection in My wallet"
   },
   "admin": {
     "loginTitle": "Admin login",

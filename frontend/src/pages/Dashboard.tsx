@@ -78,11 +78,14 @@ export default function Dashboard() {
               <div className="stat-label">{t('wallet.primaryWallet')}</div>
               <div className="wallet-tokens">
                 {walletBalance.primary.map((tok) => (
-                  <TLink key={tok.symbol} to="/cards/manage" className="wallet-token-chip">
+                  <TLink key={tok.symbol} to="/wallet" className="wallet-token-chip">
                     {tok.symbol}: {tok.balance.toLocaleString()}
                   </TLink>
                 ))}
               </div>
+              <TLink to="/wallet" className="section-link" style={{ display: 'inline-block', marginTop: '0.65rem' }}>
+                {t('wallet.manageLink')}
+              </TLink>
             </>
           ) : (
             <p className="muted-text">{t('common.loading')}</p>

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api';
-import WalletModePanel from '../components/WalletModePanel';
 import { TLink } from '../components/TenantLink';
 
 type Onboard = {
@@ -85,7 +84,6 @@ export default function OnboardingPanel() {
 
   return (
     <>
-    <WalletModePanel current={info.walletMode || 'embedded'} allowed={info.allowedWalletModes} onChanged={() => void load()} />
     {info.mock || info.status === 'ready' ? null : (
     <section className="card-surface wx-onboard">
       <h3 className="section-title">{t('onboard.title')}</h3>

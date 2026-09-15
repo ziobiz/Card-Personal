@@ -35,6 +35,7 @@ import PartnerManual from './pages/partner/PartnerManual';
 import PartnerAccess from './pages/partner/PartnerAccess';
 import MemberOtp from './pages/MemberOtp';
 import Account from './pages/Account';
+import Wallet from './pages/Wallet';
 import Help from './pages/Help';
 import AdminManuals from './pages/admin/AdminManuals';
 import AdminAccess from './pages/admin/AdminAccess';
@@ -63,6 +64,7 @@ function MemberChildRoutes() {
       <Route path="cards/manage" element={<CardManage />} />
       <Route path="earn" element={<Earn />} />
       <Route path="activity" element={<Activity />} />
+      <Route path="wallet" element={<Wallet />} />
       <Route path="account" element={<Account />} />
       <Route path="help" element={<Help />} />
     </>

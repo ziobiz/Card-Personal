@@ -925,11 +925,13 @@
 
 /* —— Account / My info —— */
 .user-app .wx-account {
-  max-width: 560px;
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
 }
 
 .user-app .wx-account-card {
-  margin-bottom: 1rem;
+  margin-bottom: 1.1rem;
 }
 
 .user-app .wx-account-card .section-title {
@@ -943,9 +945,17 @@
 }
 
 .user-app .wx-account-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem 1rem;
+}
+
+.user-app .wx-account-form > .wx-account-actions,
+.user-app .wx-account-form > .wx-account-ok,
+.user-app .wx-account-form > .error,
+.user-app .wx-account-form > .auth-error,
+.user-app .wx-account-form > .btn-primary {
+  grid-column: 1 / -1;
 }
 
 .user-app .wx-account-field {
@@ -999,6 +1009,79 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
+}
+
+/* —— My Wallet page —— */
+.user-app .wx-wallet-page {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.user-app .wx-wallet-page-lead {
+  margin: 0 0 1rem;
+  max-width: 52rem;
+}
+
+.user-app .wx-wallet-summary {
+  margin-bottom: 1rem;
+}
+
+.user-app .wx-wallet-summary-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.user-app .wx-wallet-balance {
+  margin: 0.15rem 0 0;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.user-app .wx-wallet-summary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.user-app .wx-wallet-addrs {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.user-app .wx-wallet-addrs p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+.user-app .wx-wallet-addrs span {
+  min-width: 6.5rem;
+  color: #d8d8d8;
+}
+
+.user-app .wx-wallet-addrs code {
+  word-break: break-all;
+  color: #f0f0f0;
+  font-size: 0.78rem;
+}
+
+.user-app .wx-wallet-page .wx-wallet-modes {
+  margin-top: 0.35rem;
+}
+
+@media (max-width: 720px) {
+  .user-app .wx-account-form {
+    grid-template-columns: 1fr;
+  }
 }
 
 .user-app .wx-bottom a {

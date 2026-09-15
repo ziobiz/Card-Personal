@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { startRegistration } from '@simplewebauthn/browser';
 import { api, type MemberProfile } from '../api';
-import WalletModePanel from '../components/WalletModePanel';
+import { TLink } from '../components/TenantLink';
 
 export default function Account() {
   const { t } = useTranslation();
@@ -136,7 +136,6 @@ export default function Account() {
       <p className="muted-text" style={{ marginTop: 0 }}>
         {t('account.intro')}
       </p>
-      <WalletModePanel current={profile?.onboarding?.walletMode || 'embedded'} />
 
       <section className="card-surface wx-account-card">
         <h2 className="section-title">{t('account.loginSection')}</h2>
@@ -198,6 +197,9 @@ export default function Account() {
             <span>{t('account.wallet')}</span>
             <input className="input" value={profile?.walletAddress || ''} readOnly />
           </label>
+          <TLink to="/wallet" className="section-link" style={{ gridColumn: '1 / -1' }}>
+            {t('wallet.manageLink')}
+          </TLink>
           <button type="submit" className="btn-primary" disabled={profileSaving}>
             {profileSaving ? t('common.loading') : t('account.saveProfile')}
           </button>
