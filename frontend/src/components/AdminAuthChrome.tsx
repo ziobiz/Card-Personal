@@ -22,12 +22,12 @@ export default function AdminAuthChrome({ children, showNotice = true }: Props) 
   const noticeBody = (brand.loginNoticeBody || '').trim() || t('partner.scamBody');
 
   return (
-    <div className="ac-chrome is-admin">
+    <div className="ac-chrome is-admin" style={{ background: brand.loginPanelBg || undefined }}>
       <div className="ac-hero" style={{ backgroundImage: `url(${hero})` }} aria-hidden={!mainText}>
         <div className="ac-hero-shade" />
         {mainText ? <p className="ac-hero-text">{mainText}</p> : null}
       </div>
-      <div className="ac-panel">
+      <div className="ac-panel" style={{ background: brand.loginPanelBg || undefined }}>
         <div className="ac-panel-inner">
           <div className="ac-lang">
             <LanguageSwitcher admin />

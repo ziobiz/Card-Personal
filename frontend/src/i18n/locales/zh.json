@@ -438,6 +438,8 @@
     "brandSidebar": "侧栏",
     "brandAccent": "强调色",
     "brandLogoBg": "徽标背景",
+    "brandLoginPanelBg": "登录面板背景",
+    "brandColorsHint": "颜色请以 #000000 格式输入后生效（支持 #RGB / #RRGGBB）。",
     "brandSave": "保存品牌",
     "brandSaved": "已保存。",
     "brandFileTooBig": "图片需小于 350KB。",
@@ -529,7 +531,12 @@
     "brandLoginNotice": "显示冒充风险提示",
     "brandHeroTooBig": "背景图过大，请上传更小的文件。",
     "brandLoginNoticeTitle": "冒充风险提示标题",
-    "brandLoginNoticeBody": "冒充风险提示正文"
+    "brandLoginNoticeBody": "冒充风险提示正文",
+    "brandLoginBgBlock": "背景图",
+    "brandLoginNoticeBlock": "冒充风险提示文案",
+    "brandLoginPreview": "登录预览",
+    "brandLoginNoticeEmptyHint": "标题/正文留空时使用默认多语言提示。",
+    "brandLoginNoticeOff": "冒充风险提示已关闭。"
   },
   "earn": {
     "title": "收益",

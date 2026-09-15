@@ -36,6 +36,8 @@ export interface BrandConfig {
   sidebarBg: string;
   accentColor: string;
   logoBg: string;
+  /** Admin login right panel background (#rrggbb) */
+  loginPanelBg: string;
   logoAdmin: string;
   logoLogin: string;
   favicon: string;
@@ -66,9 +68,10 @@ export const DEFAULT_BRAND: BrandConfig = {
   copyright: 'Copyright © 2026 ICOCARD Service by ONTHELINE',
   supportEmail: '',
   headerBg: '#ffffff',
-  sidebarBg: '#2c3138',
-  accentColor: '#2c3138',
-  logoBg: '#2c3138',
+  sidebarBg: '#3a4049',
+  accentColor: '#6658dd',
+  logoBg: '#3a4049',
+  loginPanelBg: '#e2e5ea',
   logoAdmin: '',
   logoLogin: '',
   favicon: '',
@@ -130,8 +133,15 @@ function clipText(v: unknown, max = 200): string | undefined {
 
 function clipColor(v: unknown): string | undefined {
   if (typeof v !== 'string') return undefined;
-  const s = v.trim();
-  if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(s)) return s;
+  const s = v.trim().replace(/^#/, '');
+  if (/^[0-9a-fA-F]{3}$/.test(s)) {
+    return `#${s
+      .split('')
+      .map((c) => c + c)
+      .join('')
+      .toLowerCase()}`;
+  }
+  if (/^[0-9a-fA-F]{6}$/.test(s)) return `#${s.toLowerCase()}`;
   return undefined;
 }
 
@@ -181,7 +191,7 @@ export const brandStore = {
     if (copy != null) next.copyright = copy;
     const mail = clipText(partial.supportEmail, 80);
     if (mail != null) next.supportEmail = mail;
-    for (const key of ['headerBg', 'sidebarBg', 'accentColor', 'logoBg'] as const) {
+    for (const key of ['headerBg', 'sidebarBg', 'accentColor', 'logoBg', 'loginPanelBg'] as const) {
       const c = clipColor(partial[key]);
       if (c) next[key] = c;
     }

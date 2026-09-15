@@ -173,6 +173,8 @@ export interface BrandConfig {
   sidebarBg: string;
   accentColor: string;
   logoBg: string;
+  /** Admin login right panel background */
+  loginPanelBg?: string;
   logoAdmin: string;
   logoLogin: string;
   favicon: string;
@@ -197,9 +199,10 @@ export const DEFAULT_BRAND: BrandConfig = {
   copyright: 'Copyright © 2026 ICOCARD Service by ONTHELINE',
   supportEmail: '',
   headerBg: '#ffffff',
-  sidebarBg: '#2c3138',
-  accentColor: '#2c3138',
-  logoBg: '#2c3138',
+  sidebarBg: '#3a4049',
+  accentColor: '#6658dd',
+  logoBg: '#3a4049',
+  loginPanelBg: '#e2e5ea',
   logoAdmin: '',
   logoLogin: '',
   favicon: '',

@@ -438,6 +438,8 @@
     "brandSidebar": "แถบข้าง",
     "brandAccent": "สีเน้น",
     "brandLogoBg": "พื้นหลังโลโก้",
+    "brandLoginPanelBg": "พื้นหลังแผงล็อกอิน",
+    "brandColorsHint": "ใส่สีแบบ #000000 แล้วจะถูกนำไปใช้ (#RGB / #RRGGBB)",
     "brandSave": "บันทึกแบรนด์",
     "brandSaved": "บันทึกแล้ว",
     "brandFileTooBig": "รูปต้องไม่เกิน 350KB",
@@ -529,7 +531,12 @@
     "hello": "Hello",
     "helloHint": "แสดง/ซ่อนข้อความช่วยเหลือ",
     "brandLoginNoticeTitle": "หัวข้อคำเตือนการแอบอ้าง",
-    "brandLoginNoticeBody": "เนื้อหาคำเตือนการแอบอ้าง"
+    "brandLoginNoticeBody": "เนื้อหาคำเตือนการแอบอ้าง",
+    "brandLoginBgBlock": "ภาพพื้นหลัง",
+    "brandLoginNoticeBlock": "ข้อความคำเตือนการแอบอ้าง",
+    "brandLoginPreview": "ตัวอย่างหน้าล็อกอิน",
+    "brandLoginNoticeEmptyHint": "ถ้าเว้นหัวข้อ/เนื้อหาว่าง จะใช้ข้อความมาตรฐานตามภาษา",
+    "brandLoginNoticeOff": "ปิดคำเตือนการแอบอ้างแล้ว"
   },
   "earn": {
     "title": "รับรางวัล",

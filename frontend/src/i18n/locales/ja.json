@@ -439,6 +439,8 @@
     "brandSidebar": "サイドバー",
     "brandAccent": "アクセント",
     "brandLogoBg": "ロゴ背景",
+    "brandLoginPanelBg": "ログインパネル背景",
+    "brandColorsHint": "色は #000000 形式で入力すると反映されます（#RGB / #RRGGBB）。",
     "brandSave": "保存",
     "brandSaved": "保存しました。",
     "brandFileTooBig": "画像は350KB以下にしてください。",
@@ -530,7 +532,12 @@
     "brandLoginNotice": "なりすまし注意を表示",
     "brandHeroTooBig": "背景画像が大きすぎます。小さいファイルをアップロードしてください。",
     "brandLoginNoticeTitle": "なりすまし注意タイトル",
-    "brandLoginNoticeBody": "なりすまし注意本文"
+    "brandLoginNoticeBody": "なりすまし注意本文",
+    "brandLoginBgBlock": "背景画像",
+    "brandLoginNoticeBlock": "なりすまし注意文",
+    "brandLoginPreview": "ログインプレビュー",
+    "brandLoginNoticeEmptyHint": "タイトル・本文を空にすると既定の多言語案内が表示されます。",
+    "brandLoginNoticeOff": "なりすまし注意はオフです。"
   },
   "earn": {
     "title": "リワード",

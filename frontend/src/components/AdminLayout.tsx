@@ -1,16 +1,23 @@
 import { Link, NavLink, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { type LanguageCode } from '../i18n';
 import { useBrand } from '../brand/BrandContext';
 import { api } from '../api';
+import { normalizeHex } from '../lib/colorHex';
 import './AdminLayout.css';
 
 type MenuItem = { to: string; labelKey: string; menu: string };
 type IconName = 'gear' | 'cloud' | 'phone' | 'card' | 'user' | 'ops';
 type MenuGroup = { id: string; labelKey: string; icon: IconName; items: MenuItem[] };
 type OpenTab = { to: string; labelKey: string };
+
+export type AdminOutletContext = {
+  helpOn: boolean;
+  toggleHelp: () => void;
+  setPageActions: (node: ReactNode | null) => void;
+};
 
 const CRUMB_PATH: Record<string, string> = {
   'admin.menuOps': '/admin/dashboard',
@@ -107,6 +114,7 @@ export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [tablet, setTablet] = useState(false);
   const [helpOn, setHelpOn] = useState(() => localStorage.getItem('hq_help_on') === '1');
+  const [pageActions, setPageActions] = useState<ReactNode | null>(null);
   const [userOpen, setUserOpen] = useState(false);
   const [userMenuPos, setUserMenuPos] = useState<{ top: number; right: number } | null>(null);
   const [flyId, setFlyId] = useState<string | null>(null);
@@ -118,6 +126,10 @@ export default function AdminLayout() {
     { to: '/admin/partners', labelKey: 'admin.navPartners' },
   ]);
   const [allowed, setAllowed] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    setPageActions(null);
+  }, [loc.pathname]);
 
   useEffect(() => {
     api.admin
@@ -302,9 +314,18 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className={`hq-shell${collapsed ? ' is-collapsed' : ''}${tablet ? ' is-tablet' : ''}${helpOn ? ' is-help-on' : ''}`}>
+    <div
+      className={`hq-shell${collapsed ? ' is-collapsed' : ''}${tablet ? ' is-tablet' : ''}${helpOn ? ' is-help-on' : ''}`}
+      style={
+        {
+          ['--pg-side']: normalizeHex(brand.sidebarBg) || brand.sidebarBg || undefined,
+          ['--pg-accent']: normalizeHex(brand.accentColor) || brand.accentColor || undefined,
+          ['--pg-top']: normalizeHex(brand.headerBg) || brand.headerBg || undefined,
+        } as CSSProperties
+      }
+    >
       <aside className="hq-side">
-        <Link to="/admin/dashboard" className="hq-side-logo">
+        <Link to="/admin/dashboard" className="hq-side-logo" style={{ background: normalizeHex(brand.logoBg) || brand.logoBg || undefined }}>
           {brand.logoAdmin ? <img src={brand.logoAdmin} alt={brand.productName} /> : <span className="hq-side-logo-text">{brand.productName || 'ICOCARD'}</span>}
         </Link>
         <div className="hq-fold-wrap">
@@ -365,16 +386,6 @@ export default function AdminLayout() {
               </div>
             );
           })}
-        </div>
-        <div className="hq-side-foot">
-          <button
-            type="button"
-            className={`hq-hello${helpOn ? ' on' : ''}`}
-            onClick={toggleHelp}
-            title={t('admin.helloHint')}
-          >
-            {t('admin.hello')}
-          </button>
         </div>
       </aside>
       <div className="hq-main">
@@ -492,7 +503,18 @@ export default function AdminLayout() {
             </nav>
           </div>
           <div className="hq-page">
-            <Outlet />
+            <Outlet context={{ helpOn, toggleHelp, setPageActions } satisfies AdminOutletContext} />
+          </div>
+          <div className="hq-page-actions" aria-label="page actions">
+            <div className="hq-page-actions-extra">{pageActions}</div>
+            <button
+              type="button"
+              className={`hq-hello hq-hello-page${helpOn ? ' on' : ''}`}
+              onClick={toggleHelp}
+              title={t('admin.helloHint')}
+            >
+              {t('admin.hello')}
+            </button>
           </div>
         </div>
       </div>

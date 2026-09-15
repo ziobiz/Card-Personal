@@ -569,7 +569,7 @@
     "hello": "Hello",
     "helloHint": "Show or hide help text",
     "brandLoginHero": "Admin login screen",
-    "brandLoginHeroHint": "Left background for Crypto-style split login. Empty uses the same image as member login (icocard.net/login).",
+    "brandLoginHeroHint": "Configure the left hero image and impersonation notice. Preview on the right matches the live login panel.",
     "brandLoginHeroImage": "Login background image",
     "brandResetDefault": "Use default",
     "brandUsingDefault": "Using default: same background as member login",
@@ -578,7 +578,14 @@
     "brandLoginNotice": "Show impersonation notice",
     "brandHeroTooBig": "Background image is too large. Please upload a smaller file.",
     "brandLoginNoticeTitle": "Impersonation notice title",
-    "brandLoginNoticeBody": "Impersonation notice body"
+    "brandLoginNoticeBody": "Impersonation notice body",
+    "brandLoginBgBlock": "Background image",
+    "brandLoginNoticeBlock": "Impersonation notice text",
+    "brandLoginPreview": "Login preview",
+    "brandLoginNoticeEmptyHint": "Leave title/body empty to use the default localized notice.",
+    "brandLoginNoticeOff": "Impersonation notice is turned off.",
+    "brandColorsHint": "Enter colors as #000000 (#RGB / #RRGGBB). Values apply after save.",
+    "brandLoginPanelBg": "Login panel background"
   },
   "earn": {
     "title": "Earn",
