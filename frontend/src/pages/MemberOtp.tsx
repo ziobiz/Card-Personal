@@ -1,8 +1,8 @@
 import { startAuthentication, startRegistration } from '@simplewebauthn/browser';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { api } from '../api';
+import { api, resolveMemberLoginHero } from '../api';
 import OtpChallenge from '../components/OtpChallenge';
 import { FingerprintIcon } from '../components/BrandIcons';
 import LanguageSwitcher from '../components/LanguageSwitcher';
@@ -101,62 +101,59 @@ export default function MemberOtp() {
     }
   };
 
-  if (offerEnroll) {
-    return (
-      <div className="wx-auth">
-        <header className="wx-auth-top">
+  const memberChrome = (body: ReactNode) => (
+    <div className="wx-auth" style={{ backgroundImage: `url(${resolveMemberLoginHero(brand)})` }}>
+      <header className="wx-auth-top">
+        {brand.logoLogin ? (
+          <img src={brand.logoLogin} alt={brand.productName} className="wx-mark-img" />
+        ) : (
           <span className="wx-mark">{brand.productName}</span>
-          <LanguageSwitcher />
-        </header>
-        <div className="wx-auth-body">
-          <div className="wx-auth-card">
-            <div className="wx-mail-badge">
-              <FingerprintIcon size={24} />
-            </div>
-            <h1>{t('auth.biometricEnrollTitle')}</h1>
-            <p className="auth-subtitle">{t('auth.biometricEnrollHint')}</p>
-            {error ? <div className="auth-error">{error}</div> : null}
-            <button type="button" className="btn-primary" disabled={loading} onClick={enrollBiometric} style={{ marginTop: 8 }}>
-              {loading ? t('auth.otpVerifying') : t('auth.biometricEnrollBtn')}
-            </button>
-            <button
-              type="button"
-              className="wx-auth-alt"
-              onClick={() => navigate(go('/'))}
-              style={{ marginTop: 16, background: 'none', border: 'none', width: '100%' }}
-            >
-              {t('auth.biometricSkip')}
-            </button>
-          </div>
+        )}
+        <LanguageSwitcher />
+      </header>
+      <div className="wx-auth-body">{body}</div>
+    </div>
+  );
+
+  if (offerEnroll) {
+    return memberChrome(
+      <div className="wx-auth-card">
+        <div className="wx-mail-badge">
+          <FingerprintIcon size={24} />
         </div>
+        <h1>{t('auth.biometricEnrollTitle')}</h1>
+        <p className="auth-subtitle">{t('auth.biometricEnrollHint')}</p>
+        {error ? <div className="auth-error">{error}</div> : null}
+        <button type="button" className="btn-primary" disabled={loading} onClick={enrollBiometric} style={{ marginTop: 8 }}>
+          {loading ? t('auth.otpVerifying') : t('auth.biometricEnrollBtn')}
+        </button>
+        <button
+          type="button"
+          className="wx-auth-alt"
+          onClick={() => navigate(go('/'))}
+          style={{ marginTop: 16, background: 'none', border: 'none', width: '100%' }}
+        >
+          {t('auth.biometricSkip')}
+        </button>
       </div>
     );
   }
 
   if (method === 'choose') {
-    return (
-      <div className="wx-auth">
-        <header className="wx-auth-top">
-          <span className="wx-mark">{brand.productName}</span>
-          <LanguageSwitcher />
-        </header>
-        <div className="wx-auth-body">
-          <div className="wx-auth-card">
-            <div className="wx-mail-badge">
-              <FingerprintIcon size={24} />
-            </div>
-            <h1>{t('auth.secondFactorTitle')}</h1>
-            <p className="auth-subtitle">{t('auth.secondFactorHint')}</p>
-            {error ? <div className="auth-error">{error}</div> : null}
-            <button type="button" className="btn-primary" disabled={loading} onClick={runBiometricLogin}>
-              {loading ? t('auth.otpVerifying') : t('auth.biometricBtn')}
-            </button>
-            <button type="button" className="btn-secondary" style={{ marginTop: 10 }} onClick={() => setMethod('otp')}>
-              {t('auth.useOtpInstead')}
-            </button>
-          </div>
+    return memberChrome(
+      <div className="wx-auth-card">
+        <div className="wx-mail-badge">
+          <FingerprintIcon size={24} />
         </div>
-        <p className="wx-copy">{brand.copyright}</p>
+        <h1>{t('auth.secondFactorTitle')}</h1>
+        <p className="auth-subtitle">{t('auth.secondFactorHint')}</p>
+        {error ? <div className="auth-error">{error}</div> : null}
+        <button type="button" className="btn-primary" disabled={loading} onClick={runBiometricLogin}>
+          {loading ? t('auth.otpVerifying') : t('auth.biometricBtn')}
+        </button>
+        <button type="button" className="btn-secondary" style={{ marginTop: 10 }} onClick={() => setMethod('otp')}>
+          {t('auth.useOtpInstead')}
+        </button>
       </div>
     );
   }

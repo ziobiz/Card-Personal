@@ -136,11 +136,17 @@ export default function AdminBrand() {
     }
   };
 
-  const onHeroFile = async (file?: File) => {
+  const onHeroFile = async (kind: 'admin' | 'member', file?: File) => {
     if (!file || !form) return;
     try {
       const url = await fileToHeroDataUrl(file);
-      setForm((s) => (s ? { ...s, loginHeroImage: url } : s));
+      setForm((s) =>
+        s
+          ? kind === 'admin'
+            ? { ...s, loginHeroImage: url }
+            : { ...s, memberLoginHeroImage: url }
+          : s
+      );
     } catch {
       setOk(false);
       setMsg(t('admin.brandHeroTooBig'));
@@ -226,27 +232,71 @@ export default function AdminBrand() {
 
       <section className="card-surface hq-brand-card">
         <h3>{t('admin.brandLogos')}</h3>
+        <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandLogosSplitHint')}</p>
         <div className="hq-brand-logos">
-          {(
-            [
-              ['logoAdmin', t('admin.brandLogoAdmin')],
-              ['logoLogin', t('admin.brandLogoLogin')],
-              ['favicon', t('admin.brandFavicon')],
-            ] as const
-          ).map(([key, label]) => (
-            <label key={key} className="hq-logo-slot">
-              <span>{label}</span>
-              <div className="hq-logo-preview" style={{ background: form.logoBg }}>
-                {form[key] ? <img src={form[key]} alt="" /> : <em>{form.productName}</em>}
-              </div>
-              <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" onChange={(e) => onFile(key, e.target.files?.[0])} />
-              {form[key] && (
-                <button type="button" className="btn-outline" onClick={() => set(key, '')}>
-                  {t('admin.brandClear')}
-                </button>
-              )}
-            </label>
-          ))}
+          <label className="hq-logo-slot">
+            <span>{t('admin.brandLogoLogin')}</span>
+            <div className="hq-logo-preview" style={{ background: form.logoBg }}>
+              {form.logoLogin ? <img src={form.logoLogin} alt="" /> : <em>{form.productName}</em>}
+            </div>
+            <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" onChange={(e) => onFile('logoLogin', e.target.files?.[0])} />
+            {form.logoLogin && (
+              <button type="button" className="btn-outline" onClick={() => set('logoLogin', '')}>
+                {t('admin.brandClear')}
+              </button>
+            )}
+          </label>
+          <label className="hq-logo-slot">
+            <span>{t('admin.brandLogoAdmin')}</span>
+            <div className="hq-logo-preview" style={{ background: form.logoBg }}>
+              {form.logoAdmin ? <img src={form.logoAdmin} alt="" /> : <em>{form.productName}</em>}
+            </div>
+            <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" onChange={(e) => onFile('logoAdmin', e.target.files?.[0])} />
+            {form.logoAdmin && (
+              <button type="button" className="btn-outline" onClick={() => set('logoAdmin', '')}>
+                {t('admin.brandClear')}
+              </button>
+            )}
+          </label>
+          <label className="hq-logo-slot">
+            <span>{t('admin.brandFavicon')}</span>
+            <div className="hq-logo-preview" style={{ background: form.logoBg }}>
+              {form.favicon ? <img src={form.favicon} alt="" /> : <em>{form.productName}</em>}
+            </div>
+            <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" onChange={(e) => onFile('favicon', e.target.files?.[0])} />
+            {form.favicon && (
+              <button type="button" className="btn-outline" onClick={() => set('favicon', '')}>
+                {t('admin.brandClear')}
+              </button>
+            )}
+          </label>
+        </div>
+      </section>
+
+      <section className="card-surface hq-brand-card">
+        <h3>{t('admin.brandMemberLoginScreen')}</h3>
+        <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandMemberLoginHint')}</p>
+        <div className="hq-login-setup-block">
+          <h4>{t('admin.brandMemberLoginBg')}</h4>
+          <label className="hq-logo-slot hq-hero-slot">
+            <span>{t('admin.brandMemberLoginHeroImage')}</span>
+            <div
+              className="hq-logo-preview hq-hero-preview"
+              style={{
+                backgroundImage: `url(${form.memberLoginHeroImage || '/user-hero-bg.png'})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            />
+            <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => void onHeroFile('member', e.target.files?.[0])} />
+            {form.memberLoginHeroImage ? (
+              <button type="button" className="btn-outline" onClick={() => set('memberLoginHeroImage', '')}>
+                {t('admin.brandResetDefault')}
+              </button>
+            ) : (
+              <em className="muted-text">{t('admin.brandUsingDefaultMember')}</em>
+            )}
+          </label>
         </div>
       </section>
 
@@ -268,13 +318,13 @@ export default function AdminBrand() {
                     backgroundPosition: 'center',
                   }}
                 />
-                <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => void onHeroFile(e.target.files?.[0])} />
+                <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => void onHeroFile('admin', e.target.files?.[0])} />
                 {form.loginHeroImage ? (
                   <button type="button" className="btn-outline" onClick={() => set('loginHeroImage', '')}>
                     {t('admin.brandResetDefault')}
                   </button>
                 ) : (
-                  <em className="muted-text">{t('admin.brandUsingDefault')}</em>
+                  <em className="muted-text">{t('admin.brandUsingDefaultAdmin')}</em>
                 )}
               </label>
               <label className="hq-brand-span hq-login-field">

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { api } from '../api';
+import { api, resolveMemberLoginHero } from '../api';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import TurnstileWidget from '../components/TurnstileWidget';
 import { useBrand } from '../brand/BrandContext';
@@ -93,7 +93,10 @@ export default function Login() {
   };
 
   return (
-    <div className="wx-auth">
+    <div
+      className="wx-auth"
+      style={{ backgroundImage: `url(${resolveMemberLoginHero(brand)})` }}
+    >
       <header className="wx-auth-top">
         {brand.logoLogin ? (
           <img src={brand.logoLogin} alt={brand.productName} className="wx-mark-img" />

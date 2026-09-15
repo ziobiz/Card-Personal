@@ -178,7 +178,10 @@ export interface BrandConfig {
   logoAdmin: string;
   logoLogin: string;
   favicon: string;
+  /** Admin login left hero — independent of member */
   loginHeroImage?: string;
+  /** Member login page background — independent of admin */
+  memberLoginHeroImage?: string;
   loginMainText?: string;
   loginNoticeEnabled?: boolean;
   loginNoticeTitle?: string;
@@ -207,6 +210,7 @@ export const DEFAULT_BRAND: BrandConfig = {
   logoLogin: '',
   favicon: '',
   loginHeroImage: '',
+  memberLoginHeroImage: '',
   loginMainText: '',
   loginNoticeEnabled: true,
   loginNoticeTitle: '',
@@ -215,12 +219,24 @@ export const DEFAULT_BRAND: BrandConfig = {
   defaultLocale: 'en',
 };
 
-/** Default admin login left hero — same as https://icocard.net/login */
+/** System default login background image */
 export const DEFAULT_LOGIN_HERO = '/user-hero-bg.png';
 
-export function resolveLoginHero(brand: BrandConfig): string {
+/** Admin login left hero (does not fall back to member custom image) */
+export function resolveAdminLoginHero(brand: BrandConfig): string {
   const v = (brand.loginHeroImage || '').trim();
   return v || DEFAULT_LOGIN_HERO;
+}
+
+/** Member login / register background */
+export function resolveMemberLoginHero(brand: BrandConfig): string {
+  const v = (brand.memberLoginHeroImage || '').trim();
+  return v || DEFAULT_LOGIN_HERO;
+}
+
+/** @deprecated use resolveAdminLoginHero */
+export function resolveLoginHero(brand: BrandConfig): string {
+  return resolveAdminLoginHero(brand);
 }
 
 export async function fetchPublicBrand(slug?: string): Promise<BrandConfig> {

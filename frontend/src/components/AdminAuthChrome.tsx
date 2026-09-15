@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useBrand } from '../brand/BrandContext';
-import { resolveLoginHero } from '../api';
+import { resolveAdminLoginHero } from '../api';
 import './AdminAuthChrome.css';
 
 type Props = {
@@ -14,9 +14,9 @@ type Props = {
 export default function AdminAuthChrome({ children, showNotice = true }: Props) {
   const { t } = useTranslation();
   const { brand } = useBrand();
-  const hero = resolveLoginHero(brand);
+  const hero = resolveAdminLoginHero(brand);
   const noticeOn = showNotice && brand.loginNoticeEnabled !== false;
-  const logo = brand.logoAdmin || brand.logoLogin;
+  const logo = brand.logoAdmin;
   const mainText = (brand.loginMainText || '').trim();
   const noticeTitle = (brand.loginNoticeTitle || '').trim() || t('partner.scamTitle');
   const noticeBody = (brand.loginNoticeBody || '').trim() || t('partner.scamBody');

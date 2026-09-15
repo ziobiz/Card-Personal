@@ -41,9 +41,11 @@ export interface BrandConfig {
   logoAdmin: string;
   logoLogin: string;
   favicon: string;
-  /** Admin login left-panel hero (data URL or /path). Empty → member login hero. */
+  /** Admin login left-panel hero (data URL or /path). Empty → system default. */
   loginHeroImage: string;
-  /** Optional overlay text on login hero (Crypto authMainText) */
+  /** Member login page background (data URL or /path). Empty → /user-hero-bg.png */
+  memberLoginHeroImage: string;
+  /** Optional overlay text on admin login hero */
   loginMainText: string;
   /** Show impersonation notice on admin login panel */
   loginNoticeEnabled: boolean;
@@ -76,6 +78,7 @@ export const DEFAULT_BRAND: BrandConfig = {
   logoLogin: '',
   favicon: '',
   loginHeroImage: '',
+  memberLoginHeroImage: '',
   loginMainText: '',
   loginNoticeEnabled: true,
   loginNoticeTitle: '',
@@ -215,6 +218,10 @@ export const brandStore = {
     if (partial.loginHeroImage !== undefined) {
       const hero = clipHeroImage(partial.loginHeroImage);
       if (hero !== undefined) next.loginHeroImage = hero;
+    }
+    if (partial.memberLoginHeroImage !== undefined) {
+      const hero = clipHeroImage(partial.memberLoginHeroImage);
+      if (hero !== undefined) next.memberLoginHeroImage = hero;
     }
     const mainText = clipText(partial.loginMainText, 240);
     if (mainText != null) next.loginMainText = mainText;

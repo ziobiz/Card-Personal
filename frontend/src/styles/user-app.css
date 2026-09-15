@@ -67,7 +67,11 @@
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: #000 url('/user-hero-bg.png') center top / cover no-repeat;
+  background-color: #000;
+  background-image: url('/user-hero-bg.png');
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .wx-auth-top {
