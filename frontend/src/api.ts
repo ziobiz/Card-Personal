@@ -173,6 +173,7 @@ export interface BrandColorSet {
   logoBg: string;
   tabbarBg: string;
   tabbarText: string;
+  tabbarActive: string;
   foldBg: string;
   foldHover: string;
   accentColor: string;
@@ -226,6 +227,7 @@ export const DEFAULT_COLORS: BrandColorSet = {
   logoBg: '#1f232b',
   tabbarBg: '#4a4a4a',
   tabbarText: '#c8cdd4',
+  tabbarActive: '#3a3a3a',
   foldBg: '#3a4149',
   foldHover: '#454d56',
   accentColor: '#6658dd',
@@ -265,6 +267,7 @@ export const DEFAULT_BRAND: BrandConfig = {
         logoBg: '#e5e7eb',
         tabbarBg: '#9ca3af',
         tabbarText: '#1f2937',
+        tabbarActive: '#6b7280',
         foldBg: '#d1d5db',
         foldHover: '#c4c9d1',
         accentColor: '#4f46e5',
@@ -283,6 +286,7 @@ export const DEFAULT_BRAND: BrandConfig = {
         logoBg: '#0a0c10',
         tabbarBg: '#2a2f38',
         tabbarText: '#c8cdd4',
+        tabbarActive: '#1a1d24',
         foldBg: '#2a3038',
         foldHover: '#353c46',
         accentColor: '#818cf8',

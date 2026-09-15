@@ -46,11 +46,13 @@ export interface BrandColorSet {
   tabbarBg: string;
   /** 탭바 글자색 */
   tabbarText: string;
+  /** 탭바에서 클릭·선택된 탭 */
+  tabbarActive: string;
   /** 접기 버튼 배경 */
   foldBg: string;
   /** 접기 버튼 호버 */
   foldHover: string;
-  /** 활성 서브메뉴 강조 */
+  /** 왼쪽 메뉴 클릭 선택(하위 활성) */
   accentColor: string;
   /** 로그인 패널 배경 */
   loginPanelBg: string;
@@ -108,6 +110,7 @@ export const COLOR_KEYS = [
   'logoBg',
   'tabbarBg',
   'tabbarText',
+  'tabbarActive',
   'foldBg',
   'foldHover',
   'accentColor',
@@ -127,6 +130,7 @@ export const DEFAULT_COLORS: BrandColorSet = {
   logoBg: '#1f232b',
   tabbarBg: '#4a4a4a',
   tabbarText: '#c8cdd4',
+  tabbarActive: '#3a3a3a',
   foldBg: '#3a4149',
   foldHover: '#454d56',
   accentColor: '#6658dd',
@@ -144,6 +148,7 @@ export const LIGHT_COLORS: BrandColorSet = {
   logoBg: '#e5e7eb',
   tabbarBg: '#9ca3af',
   tabbarText: '#1f2937',
+  tabbarActive: '#6b7280',
   foldBg: '#d1d5db',
   foldHover: '#c4c9d1',
   accentColor: '#4f46e5',
@@ -161,6 +166,7 @@ export const DARK_COLORS: BrandColorSet = {
   logoBg: '#0a0c10',
   tabbarBg: '#2a2f38',
   tabbarText: '#c8cdd4',
+  tabbarActive: '#1a1d24',
   foldBg: '#2a3038',
   foldHover: '#353c46',
   accentColor: '#818cf8',
@@ -283,6 +289,7 @@ function load(): BrandConfig {
     if (!parsed.sidebarText) colors.sidebarText = DEFAULT_COLORS.sidebarText;
     if (!parsed.tabbarBg) colors.tabbarBg = DEFAULT_COLORS.tabbarBg;
     if (!parsed.tabbarText) colors.tabbarText = DEFAULT_COLORS.tabbarText;
+    if (!parsed.tabbarActive) colors.tabbarActive = DEFAULT_COLORS.tabbarActive;
     if (!parsed.foldBg) colors.foldBg = DEFAULT_COLORS.foldBg;
     if (!parsed.foldHover) colors.foldHover = DEFAULT_COLORS.foldHover;
 

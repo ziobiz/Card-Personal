@@ -26,6 +26,7 @@ const COLOR_KEYS = [
   'sidebarBg',
   'sidebarHover',
   'sidebarActive',
+  'accentColor',
   'sidebarSub',
   'sidebarText',
   'logoBg',
@@ -34,7 +35,7 @@ const COLOR_KEYS = [
   'headerBg',
   'tabbarBg',
   'tabbarText',
-  'accentColor',
+  'tabbarActive',
   'loginPanelBg',
 ] as const;
 
@@ -53,6 +54,7 @@ function ensureColorFields(b: BrandConfig): BrandConfig {
     sidebarText: b.sidebarText || DEFAULT_BRAND.sidebarText,
     tabbarBg: b.tabbarBg || DEFAULT_BRAND.tabbarBg,
     tabbarText: b.tabbarText || DEFAULT_BRAND.tabbarText,
+    tabbarActive: b.tabbarActive || DEFAULT_BRAND.tabbarActive,
     foldBg: b.foldBg || DEFAULT_BRAND.foldBg,
     foldHover: b.foldHover || DEFAULT_BRAND.foldHover,
     loginPanelBg: b.loginPanelBg || DEFAULT_BRAND.loginPanelBg,
@@ -339,6 +341,7 @@ export default function AdminBrand() {
     sidebarBg: { title: t('admin.brandSidebar'), hint: t('admin.brandSidebarHint') },
     sidebarHover: { title: t('admin.brandSidebarHover'), hint: t('admin.brandSidebarHoverHint') },
     sidebarActive: { title: t('admin.brandSidebarActive'), hint: t('admin.brandSidebarActiveHint') },
+    accentColor: { title: t('admin.brandAccent'), hint: t('admin.brandAccentHint') },
     sidebarSub: { title: t('admin.brandSidebarSub'), hint: t('admin.brandSidebarSubHint') },
     sidebarText: { title: t('admin.brandSidebarText'), hint: t('admin.brandSidebarTextHint') },
     logoBg: { title: t('admin.brandLogoBg'), hint: t('admin.brandLogoBgHint') },
@@ -347,7 +350,7 @@ export default function AdminBrand() {
     headerBg: { title: t('admin.brandHeader'), hint: t('admin.brandHeaderHint') },
     tabbarBg: { title: t('admin.brandTabbar'), hint: t('admin.brandTabbarHint') },
     tabbarText: { title: t('admin.brandTabbarText'), hint: t('admin.brandTabbarTextHint') },
-    accentColor: { title: t('admin.brandAccent'), hint: t('admin.brandAccentHint') },
+    tabbarActive: { title: t('admin.brandTabbarActive'), hint: t('admin.brandTabbarActiveHint') },
     loginPanelBg: { title: t('admin.brandLoginPanelBg'), hint: t('admin.brandLoginPanelBgHint') },
   };
 
@@ -702,13 +705,14 @@ export default function AdminBrand() {
           <span style={{ background: form.sidebarBg }}>{t('admin.brandSidebar')}</span>
           <span style={{ background: form.sidebarHover }}>{t('admin.brandSidebarHover')}</span>
           <span style={{ background: form.sidebarActive }}>{t('admin.brandSidebarActive')}</span>
+          <span style={{ background: form.accentColor }}>{t('admin.brandAccent')}</span>
           <span style={{ background: form.sidebarSub }}>{t('admin.brandSidebarSub')}</span>
           <span style={{ background: form.sidebarText, color: '#111' }}>{t('admin.brandSidebarText')}</span>
           <span style={{ background: form.foldBg }}>{t('admin.brandFoldBg')}</span>
           <span style={{ background: form.foldHover }}>{t('admin.brandFoldHover')}</span>
           <span style={{ background: form.tabbarBg }}>{t('admin.brandTabbar')}</span>
           <span style={{ background: form.tabbarText, color: '#111' }}>{t('admin.brandTabbarText')}</span>
-          <span style={{ background: form.accentColor }}>{t('admin.brandAccent')}</span>
+          <span style={{ background: form.tabbarActive }}>{t('admin.brandTabbarActive')}</span>
           <span style={{ background: panelBg, color: '#333' }}>{t('admin.brandLoginPanelBg')}</span>
         </div>
       </section>

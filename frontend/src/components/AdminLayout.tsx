@@ -333,6 +333,7 @@ export default function AdminLayout() {
           ['--pg-fold-hover']: normalizeHex(brand.foldHover || '') || brand.foldHover || undefined,
           ['--pg-tabbar']: normalizeHex(brand.tabbarBg || '') || brand.tabbarBg || undefined,
           ['--pg-tabbar-text']: normalizeHex(brand.tabbarText || '') || brand.tabbarText || undefined,
+          ['--pg-tab-on']: normalizeHex(brand.tabbarActive || '') || brand.tabbarActive || undefined,
           ['--pg-accent']: normalizeHex(brand.accentColor) || brand.accentColor || undefined,
           ['--pg-top']: normalizeHex(brand.headerBg) || brand.headerBg || undefined,
         } as CSSProperties
