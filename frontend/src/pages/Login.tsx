@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import TurnstileWidget from '../components/TurnstileWidget';
 import { useBrand } from '../brand/BrandContext';
 import { useAuth } from '../hooks/useAuth';
 import { useTenantNav, TLink } from '../components/TenantLink';
@@ -26,8 +27,11 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [backendOk, setBackendOk] = useState<boolean | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [tsReset, setTsReset] = useState(0);
   const navigate = useNavigate();
   const go = useTenantNav();
+  const needTurnstile = Boolean(brand.turnstileEnabled);
 
   useEffect(() => {
     const apiBase =
@@ -39,7 +43,11 @@ export default function Login() {
       .catch(() => setBackendOk(false));
   }, []);
 
-  const canSubmit = Boolean(email.trim() && password.trim()) && !loading && backendOk !== false;
+  const canSubmit =
+    Boolean(email.trim() && password.trim()) &&
+    !loading &&
+    backendOk !== false &&
+    (!needTurnstile || Boolean(turnstileToken));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,8 +60,13 @@ export default function Login() {
       setLoading(false);
       return;
     }
+    if (needTurnstile && !turnstileToken) {
+      setError(t('auth.turnstileRequired'));
+      setLoading(false);
+      return;
+    }
     try {
-      const r = await api.auth.login(trimmedEmail, trimmedPassword);
+      const r = await api.auth.login(trimmedEmail, trimmedPassword, turnstileToken || undefined);
       if (r.mustSetupOtp && r.enrollToken) {
         sessionStorage.setItem('memberOtpEnroll', r.enrollToken);
         sessionStorage.removeItem('memberBiometricAvailable');
@@ -72,6 +85,8 @@ export default function Login() {
     } catch (err) {
       const msg = (err as Error).message;
       setError(msg === 'tenant_mismatch' ? t('auth.tenantMismatch') : msg === 'tenant_not_found' ? t('auth.tenantNotFound') : msg);
+      setTurnstileToken('');
+      setTsReset((n) => n + 1);
     } finally {
       setLoading(false);
     }
@@ -127,6 +142,7 @@ export default function Login() {
                 {loading ? t('auth.loggingIn') : t('auth.submit')}
               </button>
             </div>
+            <TurnstileWidget onToken={setTurnstileToken} resetKey={tsReset} />
           </form>
           <TLink to="/register" className="wx-auth-alt">
             {t('auth.goRegister')}

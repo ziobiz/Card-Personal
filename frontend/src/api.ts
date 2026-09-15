@@ -181,6 +181,8 @@ export interface BrandConfig {
   loginNoticeEnabled?: boolean;
   loginNoticeTitle?: string;
   loginNoticeBody?: string;
+  turnstileSiteKey?: string;
+  turnstileEnabled?: boolean;
   enabledLocales?: string[];
   defaultLocale?: string;
   tenantSlug?: string;
@@ -243,7 +245,7 @@ export const api = {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       }),
-    login: (email: string, password: string) =>
+    login: (email: string, password: string, turnstileToken?: string) =>
       request<{
         token?: string;
         user?: User;
@@ -254,7 +256,7 @@ export const api = {
         biometricAvailable?: boolean;
       }>('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, turnstileToken }),
       }),
     verifyOtp: (code: string) =>
       request<{ token: string; user?: User; offerBiometric?: boolean }>('/auth/otp/verify', {
@@ -371,7 +373,7 @@ export const api = {
       request<Card>(`/cards/${cardId}/close`, { method: 'PUT' }),
   },
   admin: {
-    login: (email: string, password: string) =>
+    login: (email: string, password: string, turnstileToken?: string) =>
       request<{
         token?: string;
         user: { email: string; isAdmin: boolean };
@@ -381,7 +383,7 @@ export const api = {
         enrollToken?: string;
       }>('/admin/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, turnstileToken }),
       }),
     changePassword: (password: string) =>
       request<{
@@ -711,7 +713,7 @@ export const api = {
       }),
   },
   partnerPortal: {
-    login: (email: string, password: string) =>
+    login: (email: string, password: string, turnstileToken?: string) =>
       request<{
         token: string;
         otpRequired?: boolean;
@@ -719,7 +721,7 @@ export const api = {
         mustChangePassword?: boolean;
         operator: { id: string; email: string; name: string; role: string };
         partner: { id: string; name: string; companyName?: string };
-      }>('/partner-portal/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+      }>('/partner-portal/login', { method: 'POST', body: JSON.stringify({ email, password, turnstileToken }) }),
     verifyOtp: (code: string) => {
       const token = localStorage.getItem('partnerToken');
       return request<{ token: string; mustChangePassword?: boolean }>('/partner-portal/otp/verify', {

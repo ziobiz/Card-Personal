@@ -33,6 +33,7 @@ import { HQ_MENU_KEYS, PARTNER_MENU_KEYS } from '../lib/accessMenus.js';
 import { resolveOperatorMenus } from '../lib/resolveAccess.js';
 import { canManageHqAccess, defaultGroupId, hqActor, partnerHasSuper, writeAudit } from '../lib/accessActor.js';
 import { manualsFor } from '../lib/manualCatalog.js';
+import { requireTurnstile } from '../lib/turnstile.js';
 
 const router = Router();
 
@@ -54,7 +55,8 @@ function verifyAdminEnroll(token: string): string | null {
   }
 }
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
+  if (!(await requireTurnstile(req, res))) return;
   const { email, password } = req.body || {};
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password required' });

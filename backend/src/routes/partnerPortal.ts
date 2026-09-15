@@ -14,6 +14,7 @@ import { PARTNER_MENU_KEYS } from '../lib/accessMenus.js';
 import { canUseMenu, resolveOperatorMenus } from '../lib/resolveAccess.js';
 import { canManagePartnerAccess, defaultGroupId, partnerActor, writeAudit } from '../lib/accessActor.js';
 import { manualsFor } from '../lib/manualCatalog.js';
+import { requireTurnstile } from '../lib/turnstile.js';
 
 const router = Router();
 
@@ -64,7 +65,8 @@ function requirePartnerPortal(req: Request, res: Response, next: NextFunction): 
   next();
 }
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
+  if (!(await requireTurnstile(req, res))) return;
   const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });

@@ -67,7 +67,8 @@
     "biometricEnrollHint": "次回から Face ID/指紋で素早く認証できます。",
     "biometricEnrollBtn": "生体認証を登録",
     "biometricEnrollFailed": "生体認証の登録に失敗しました。",
-    "biometricSkip": "後で"
+    "biometricSkip": "後で",
+    "turnstileRequired": "Cloudflareのセキュリティ確認を完了してください。"
   },
   "account": {
     "title": "マイ情報",

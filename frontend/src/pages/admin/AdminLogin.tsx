@@ -3,20 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
 import AdminAuthChrome from '../../components/AdminAuthChrome';
+import TurnstileWidget from '../../components/TurnstileWidget';
+import { useBrand } from '../../brand/BrandContext';
 
 type Step = 'credentials' | 'otp';
 
 export default function AdminLogin() {
   const { t } = useTranslation();
+  const { brand } = useBrand();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [tsReset, setTsReset] = useState(0);
   const [step, setStep] = useState<Step>('credentials');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const otpLock = useRef(false);
   const otpInputRef = useRef<HTMLInputElement | null>(null);
+  const needTurnstile = Boolean(brand.turnstileEnabled);
 
   useEffect(() => {
     if (step === 'otp') {
@@ -52,10 +58,14 @@ export default function AdminLogin() {
   const handleCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
     if (step !== 'credentials') return;
+    if (needTurnstile && !turnstileToken) {
+      setError(t('auth.turnstileRequired'));
+      return;
+    }
     setError('');
     setLoading(true);
     try {
-      const r = await api.admin.login(email.trim(), password);
+      const r = await api.admin.login(email.trim(), password, turnstileToken || undefined);
       if (r.mustChangePassword && r.token) {
         localStorage.setItem('token', r.token);
         localStorage.setItem('adminMustChangePassword', '1');
@@ -78,6 +88,8 @@ export default function AdminLogin() {
       else navigate('/admin/dashboard');
     } catch (err) {
       setError((err as Error).message);
+      setTurnstileToken('');
+      setTsReset((n) => n + 1);
     } finally {
       setLoading(false);
     }
@@ -89,7 +101,11 @@ export default function AdminLogin() {
     if (next.length === 6) void verifyOtp(next);
   };
 
-  const canSubmit = Boolean(email.trim() && password.trim()) && !loading && step === 'credentials';
+  const canSubmit =
+    Boolean(email.trim() && password.trim()) &&
+    !loading &&
+    step === 'credentials' &&
+    (!needTurnstile || Boolean(turnstileToken));
 
   return (
     <AdminAuthChrome>
@@ -121,9 +137,12 @@ export default function AdminLogin() {
         </label>
 
         {step === 'credentials' ? (
-          <button type="submit" className="ac-submit" disabled={!canSubmit}>
-            {loading ? t('auth.loggingIn') : t('auth.loginButton')}
-          </button>
+          <>
+            <TurnstileWidget onToken={setTurnstileToken} resetKey={tsReset} />
+            <button type="submit" className="ac-submit" disabled={!canSubmit}>
+              {loading ? t('auth.loggingIn') : t('auth.loginButton')}
+            </button>
+          </>
         ) : (
           <label className="ac-field ac-otp-field">
             {t('auth.otpCode')}

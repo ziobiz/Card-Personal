@@ -70,7 +70,8 @@
     "biometricEnrollHint": "Use Face ID/fingerprint for faster logins next time.",
     "biometricEnrollBtn": "Enable biometrics",
     "biometricEnrollFailed": "Could not enable biometrics.",
-    "biometricSkip": "Skip for now"
+    "biometricSkip": "Skip for now",
+    "turnstileRequired": "Please complete the Cloudflare security check."
   },
   "account": {
     "title": "My account",

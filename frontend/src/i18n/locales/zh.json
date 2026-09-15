@@ -70,7 +70,8 @@
     "biometricEnrollHint": "下次登录可用 Face ID/指纹更快验证。",
     "biometricEnrollBtn": "启用生物识别",
     "biometricEnrollFailed": "启用生物识别失败。",
-    "biometricSkip": "稍后"
+    "biometricSkip": "稍后",
+    "turnstileRequired": "请完成 Cloudflare 安全验证。"
   },
   "account": {
     "title": "我的信息",

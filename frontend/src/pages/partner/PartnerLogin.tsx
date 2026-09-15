@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
+import TurnstileWidget from '../../components/TurnstileWidget';
 import { useBrand } from '../../brand/BrandContext';
 import '../../components/PartnerPortal.css';
 
@@ -14,13 +15,20 @@ export default function PartnerLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [tsReset, setTsReset] = useState(0);
+  const needTurnstile = Boolean(brand.turnstileEnabled);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (needTurnstile && !turnstileToken) {
+      setError(t('auth.turnstileRequired'));
+      return;
+    }
     setError('');
     setLoading(true);
     try {
-      const r = await api.partnerPortal.login(email.trim(), password);
+      const r = await api.partnerPortal.login(email.trim(), password, turnstileToken || undefined);
       localStorage.setItem('partnerToken', r.token);
       if (r.otpRequired) localStorage.setItem('partnerOtpPending', '1');
       else localStorage.removeItem('partnerOtpPending');
@@ -39,6 +47,8 @@ export default function PartnerLogin() {
       navigate('/partner');
     } catch (err) {
       setError((err as Error).message);
+      setTurnstileToken('');
+      setTsReset((n) => n + 1);
     } finally {
       setLoading(false);
     }
@@ -66,7 +76,8 @@ export default function PartnerLogin() {
             {t('auth.password')}
             <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
           </label>
-          <button type="submit" className="btn-primary tp-submit" disabled={loading}>
+          <TurnstileWidget onToken={setTurnstileToken} resetKey={tsReset} />
+          <button type="submit" className="btn-primary tp-submit" disabled={loading || (needTurnstile && !turnstileToken)}>
             {loading ? t('auth.loggingIn') : t('auth.loginButton')}
           </button>
         </form>

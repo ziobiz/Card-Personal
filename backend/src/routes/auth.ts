@@ -9,6 +9,7 @@ import { wirexService } from '../services/wirex/wirexService.js';
 import { generateOtpSecret, otpAuthUrl, verifyTotp } from '../lib/totp.js';
 import { getSecuritySettings, maskEmail } from '../lib/otpPolicy.js';
 import { webauthnService } from '../lib/webauthn.js';
+import { requireTurnstile } from '../lib/turnstile.js';
 
 const router = Router();
 
@@ -132,7 +133,8 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
+  if (!(await requireTurnstile(req, res))) return;
   const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
   const password = typeof req.body.password === 'string' ? req.body.password : '';
   if (!email || !password) {

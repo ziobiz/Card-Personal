@@ -94,4 +94,7 @@ export const config = {
   webauthnOrigin: process.env.WEBAUTHN_ORIGIN || 'http://localhost:3000',
   /** 임베디드 EOA 암호화 키 — ASP 테넌트마다 다르게 설정 */
   walletEncKey: process.env.WALLET_ENC_KEY || process.env.JWT_SECRET || 'dev-wallet-enc-change-me',
+  /** Cloudflare Turnstile (봇 방어). Secret은 서버 env만 — 깃에 넣지 않음 */
+  turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || '',
+  turnstileSecretKey: process.env.TURNSTILE_SECRET_KEY || '',
 };

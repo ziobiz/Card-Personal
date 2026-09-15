@@ -55,13 +55,18 @@ app.get('/api/health', (_, res) => {
 });
 app.get('/api/brand', (req, res) => {
   const base = brandStore.publicView();
+  const turnstile = {
+    turnstileSiteKey: config.turnstileSiteKey || '',
+    turnstileEnabled: Boolean(config.turnstileSiteKey && config.turnstileSecretKey),
+  };
   const slug = typeof req.query.slug === 'string' ? req.query.slug.trim() : '';
-  if (!slug) return res.json(base);
+  if (!slug) return res.json({ ...base, ...turnstile });
   const p = partnerStore.getBySlug(slug);
-  if (!p) return res.json(base);
+  if (!p) return res.json({ ...base, ...turnstile });
   const name = p.solutionName || p.companyName || p.name;
   res.json({
     ...base,
+    ...turnstile,
     productName: name,
     cardBrandName: name.slice(0, 24),
     operatorName: p.companyName || p.name,
