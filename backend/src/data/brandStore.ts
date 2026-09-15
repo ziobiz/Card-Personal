@@ -55,9 +55,9 @@ export const DEFAULT_BRAND: BrandConfig = {
   cardBrandName: 'ICOCARD',
   copyright: 'Copyright © 2026 ICOCARD Service by ONTHELINE',
   supportEmail: '',
-  headerBg: '#e9eaee',
+  headerBg: '#ffffff',
   sidebarBg: '#2c3138',
-  accentColor: '#6658dd',
+  accentColor: '#2c3138',
   logoBg: '#2c3138',
   logoAdmin: '',
   logoLogin: '',
@@ -85,12 +85,18 @@ function load(): BrandConfig {
     const enabledLocales = normalizeLocales(parsed.enabledLocales, DEFAULT_BRAND.enabledLocales);
     let defaultLocale = (parsed.defaultLocale as LocaleCode) || DEFAULT_BRAND.defaultLocale;
     if (!enabledLocales.includes(defaultLocale)) defaultLocale = enabledLocales[0];
-    return {
+    const next = {
       ...DEFAULT_BRAND,
       ...parsed,
       enabledLocales,
       defaultLocale,
     };
+    const legacy = new Set(['#604010', '#c4a484', '#6658dd', '#6b5ce7', '#6aa3e8', '#2b2f36', '#3d434c', '#1c1f24']);
+    if (legacy.has((next.headerBg || '').toLowerCase())) next.headerBg = DEFAULT_BRAND.headerBg;
+    if (legacy.has((next.sidebarBg || '').toLowerCase())) next.sidebarBg = DEFAULT_BRAND.sidebarBg;
+    if (legacy.has((next.accentColor || '').toLowerCase())) next.accentColor = DEFAULT_BRAND.accentColor;
+    if (legacy.has((next.logoBg || '').toLowerCase())) next.logoBg = DEFAULT_BRAND.logoBg;
+    return next;
   } catch {
     return { ...DEFAULT_BRAND, enabledLocales: [...DEFAULT_BRAND.enabledLocales] };
   }
