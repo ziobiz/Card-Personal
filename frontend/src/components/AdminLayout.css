@@ -1,9 +1,10 @@
 /* PG HQ console — ontheline / ziobiz PG tokens */
 .is-admin {
-  --pg-side: #2c3138;
-  --pg-side-hover: #343b42;
-  --pg-side-active: #252a30;
-  /* PG tab strip tone (sampled ~#4a4a4a) */
+  /* left sidebar: pastel dark gray (independent of tabbar / body) */
+  --pg-side: #3a4049;
+  --pg-side-hover: #454c56;
+  --pg-side-active: #323840;
+  /* PG tab strip tone (right content chrome only) */
   --pg-tabbar: #4a4a4a;
   --pg-tab-on: #3a3a3a;
   --pg-accent: #6658dd;
@@ -418,37 +419,53 @@
   letter-spacing: 0;
 }
 
-/* 접기 줄 = 탭바 동일 높이/동일선 */
+/* 접기: 사이드바 바탕색만 사용(오른쪽 탭바와 연동 금지), PG처럼 가운데 정렬 */
 .is-admin .hq-fold-wrap {
   display: flex;
   align-items: center;
+  justify-content: center;
   height: var(--hq-tab-h);
   min-height: var(--hq-tab-h);
-  padding: 0 10px;
-  background: var(--pg-tabbar);
-  border-bottom: 1px solid #2a2f35;
+  padding: 5px 10px;
+  background: var(--pg-side);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   flex-shrink: 0;
   box-sizing: border-box;
 }
 
 .is-admin .hq-fold {
-  width: auto;
+  width: 100%;
   min-width: 0;
   height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   background: transparent;
-  border: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   color: #e8eaed;
   font-size: 13px;
   font-weight: 500;
-  border-radius: 0;
+  border-radius: 3px;
   cursor: pointer;
-  line-height: 26px;
-  padding: 0 4px;
+  line-height: 1;
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 
 .is-admin .hq-fold:hover {
   color: #fff;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.is-admin .hq-shell.is-collapsed .hq-fold-wrap {
+  padding: 5px 6px;
+}
+
+.is-admin .hq-shell.is-collapsed .hq-fold {
+  padding: 0;
+  font-size: 14px;
 }
 
 .is-admin .hq-nav {
