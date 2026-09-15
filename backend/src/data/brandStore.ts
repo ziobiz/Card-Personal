@@ -70,9 +70,9 @@ export const DEFAULT_BRAND: BrandConfig = {
   copyright: 'Copyright © 2026 ICOCARD Service by ONTHELINE',
   supportEmail: '',
   headerBg: '#ffffff',
-  sidebarBg: '#4a5160',
+  sidebarBg: '#2c3138',
   accentColor: '#6658dd',
-  logoBg: '#4a5160',
+  logoBg: '#1f232b',
   loginPanelBg: '#e2e5ea',
   logoAdmin: '',
   logoLogin: '',
@@ -124,6 +124,7 @@ function load(): BrandConfig {
       '#2c3138',
       '#3a4049',
       '#252a30',
+      '#4a5160',
     ]);
     if (legacy.has((next.headerBg || '').toLowerCase())) next.headerBg = DEFAULT_BRAND.headerBg;
     if (legacy.has((next.sidebarBg || '').toLowerCase())) next.sidebarBg = DEFAULT_BRAND.sidebarBg;

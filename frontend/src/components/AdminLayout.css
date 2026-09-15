@@ -1,11 +1,10 @@
-/* PG HQ console — ontheline / ziobiz PG tokens */
+/* PG HQ console — ontheline / ziobiz PG tokens (sampled from PG sidebar) */
 .is-admin {
-  /* left sidebar: pastel gray (no near-black) */
-  --pg-side: #4a5160;
-  --pg-side-hover: #555d6d;
-  --pg-side-active: #3f4654;
-  --pg-side-sub: #434a58;
-  /* PG tab strip tone (right content chrome only) */
+  --pg-side: #2c3138;
+  --pg-side-logo: #1f232b;
+  --pg-side-hover: #353b45;
+  --pg-side-active: #252a32;
+  --pg-side-sub: #242933;
   --pg-tabbar: #4a4a4a;
   --pg-tab-on: #3a3a3a;
   --pg-accent: #6658dd;
@@ -22,7 +21,13 @@
   --hq-menu-fs: 13px;
   --hq-section-fs: 13px;
   --pg-top: #e8e8e8;
-  --pg-top: #e8e8e8;
+  /* Hello button (PG toolbar) */
+  --pg-hello: #f9c5d1;
+  --pg-hello-border: #e8919f;
+  --pg-hello-text: #a3203a;
+  --pg-hello-off: #e9ecef;
+  --pg-hello-off-border: #ced4da;
+  --pg-hello-off-text: #6c757d;
   min-height: 100vh;
   background: #ffffff;
   color: var(--pg-text);
@@ -368,7 +373,7 @@
   width: 220px;
   min-width: 220px;
   background: var(--pg-side);
-  color: #c8cdd4;
+  color: #d1d5db;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -382,9 +387,10 @@
   justify-content: center;
   height: var(--hq-top-h);
   min-height: var(--hq-top-h);
-  padding: 0 12px;
+  padding: 0 14px;
   text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--pg-side-logo);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
 }
 
@@ -422,16 +428,16 @@
   letter-spacing: 0;
 }
 
-/* 접기: 사이드바 바탕색만 사용(오른쪽 탭바와 연동 금지), PG처럼 가운데 정렬 */
+/* 접기: PG — 가운데 정렬, 사이드바 톤 */
 .is-admin .hq-fold-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
   height: var(--hq-tab-h);
   min-height: var(--hq-tab-h);
-  padding: 5px 10px;
+  padding: 6px 12px;
   background: var(--pg-side);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
   box-sizing: border-box;
 }
@@ -444,12 +450,12 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: #3a4149;
+  border: 1px solid #4a525c;
   color: #e8eaed;
   font-size: 13px;
   font-weight: 500;
-  border-radius: 3px;
+  border-radius: 4px;
   cursor: pointer;
   line-height: 1;
   padding: 0 8px;
@@ -458,8 +464,8 @@
 
 .is-admin .hq-fold:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.32);
+  background: #454d56;
+  border-color: #5a636e;
 }
 
 .is-admin .hq-shell.is-collapsed .hq-fold-wrap {
@@ -486,7 +492,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
   padding: 10px 16px 14px;
   background: #ffffff;
@@ -502,97 +508,64 @@
   gap: 8px;
 }
 
-/* PG toolbar button size (sampled ~32px H, 4px radius) */
-.is-admin .hq-page-actions .btn-primary,
-.is-admin .hq-page-actions .btn-secondary,
-.is-admin .hq-page-actions .btn-outline,
+/* PG Hello — 활성: 파스텔 핑크 / 비활성: 회색톤 (툴바 동일 사이즈) */
 .is-admin .hq-hello-page {
-  box-sizing: border-box;
-  height: 32px !important;
-  min-height: 32px !important;
-  padding: 0 12px !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  line-height: 30px !important;
-  border-radius: 4px !important;
-  box-shadow: none !important;
+  min-width: 56px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--pg-hello-off-border);
+  border-radius: 4px;
+  background: var(--pg-hello-off);
+  color: var(--pg-hello-off-text);
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
+  line-height: 1;
 }
 
-/* PG default action: white + gray border + black text */
+.is-admin .hq-hello-page:hover {
+  background: #dee2e6;
+  color: #495057;
+  border-color: #adb5bd;
+}
+
+.is-admin .hq-hello-page.on {
+  background: var(--pg-hello);
+  border-color: var(--pg-hello-border);
+  color: var(--pg-hello-text);
+}
+
+.is-admin .hq-hello-page.on:hover {
+  background: #f7b4c4;
+  border-color: #e07a8e;
+  color: #8f1a30;
+}
+
 .is-admin .hq-page-actions .btn-primary,
 .is-admin .hq-page-actions .btn-secondary,
 .is-admin .hq-page-actions .btn-outline {
-  background: #ffffff !important;
-  color: #222222 !important;
-  border: 1px solid #b8bdc6 !important;
+  min-height: 28px !important;
+  height: 28px !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  background: #fff !important;
+  color: #222 !important;
+  border: 1px solid #c5cad3 !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
 }
 
 .is-admin .hq-page-actions .btn-primary:hover,
 .is-admin .hq-page-actions .btn-secondary:hover,
 .is-admin .hq-page-actions .btn-outline:hover {
-  background: #f4f5f7 !important;
+  background: #f7f8fa !important;
   color: #111 !important;
 }
 
 .is-admin .hq-page-actions .btn-primary:disabled {
   opacity: 0.55;
   cursor: not-allowed;
-}
-
-/* PG Hello — inactive: gray; active (.on): pastel red/pink */
-.is-admin .hq-hello-page {
-  min-width: 52px;
-  background: #e8eaed !important;
-  border: 1px solid #c5cad3 !important;
-  color: #6b7280 !important;
-}
-
-.is-admin .hq-hello-page:hover {
-  background: #dde1e6 !important;
-  color: #4b5563 !important;
-}
-
-.is-admin .hq-hello-page.on {
-  background: #f6c1cb !important;
-  border: 1px solid #e89aa8 !important;
-  color: #8b3a4a !important;
-  font-weight: 600 !important;
-}
-
-.is-admin .hq-hello-page.on:hover {
-  background: #f3b3bf !important;
-  border-color: #e08a9a !important;
-  color: #7a2f3e !important;
-}
-
-/* Align toolbar buttons to same PG size/tone */
-.is-admin .hq-toolbar .btn-primary,
-.is-admin .hq-toolbar .btn-secondary,
-.is-admin .hq-toolbar .btn-outline,
-.is-admin .hq-page .btn-secondary,
-.is-admin .hq-page .btn-outline,
-.is-admin .hq-page .btn-compact {
-  height: 32px !important;
-  min-height: 32px !important;
-  padding: 0 12px !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  border-radius: 4px !important;
-  background: #ffffff !important;
-  color: #222222 !important;
-  border: 1px solid #b8bdc6 !important;
-  box-shadow: none !important;
-}
-
-.is-admin .hq-toolbar .btn-primary:hover,
-.is-admin .hq-toolbar .btn-secondary:hover,
-.is-admin .hq-toolbar .btn-outline:hover,
-.is-admin .hq-page .btn-secondary:hover,
-.is-admin .hq-page .btn-outline:hover,
-.is-admin .hq-page .btn-compact:hover {
-  background: #f4f5f7 !important;
-  color: #111 !important;
 }
 
 .is-admin .hq-shell.is-collapsed .hq-nav {
@@ -607,16 +580,16 @@
   display: flex;
   width: 100%;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-align: left;
   background: transparent;
-  color: #d5dae2;
+  color: #d1d5db;
   border: 0;
   border-left: 3px solid transparent;
-  padding: 11px 14px;
+  padding: 12px 16px;
   font-size: var(--hq-menu-fs);
   font-weight: 400;
-  line-height: 1.35;
+  line-height: 1.4;
   cursor: pointer;
 }
 
@@ -629,7 +602,7 @@
 .is-admin .hq-group-title.is-active {
   background: var(--pg-side-active);
   color: #fff;
-  border-left-color: #9aa3ae;
+  border-left-color: transparent;
 }
 
 .is-admin .hq-shell.is-collapsed .hq-group-label,
@@ -639,7 +612,7 @@
 
 .is-admin .hq-shell.is-collapsed .hq-group-title {
   justify-content: center;
-  padding: 10px 6px;
+  padding: 12px 6px;
   border-left-width: 0;
 }
 
@@ -648,18 +621,22 @@
   width: 16px;
   height: 16px;
   flex-shrink: 0;
+  color: #c8cdd4;
 }
 
 .is-admin .hq-group-label {
   flex: 1;
   font-size: var(--hq-menu-fs);
   font-weight: 400;
+  color: inherit;
 }
 
 .is-admin .hq-caret {
   margin-left: auto;
-  font-size: var(--hq-menu-fs);
-  color: #7a838e;
+  font-size: 12px;
+  color: #9aa3ad;
+  width: 12px;
+  text-align: center;
 }
 
 .is-admin .hq-caret.is-open {
@@ -668,16 +645,18 @@
 
 .is-admin .hq-sub {
   background: var(--pg-side-sub);
+  padding: 2px 0 6px;
 }
 
 .is-admin .hq-sub a {
   display: block;
-  padding: 10px 14px 10px 40px;
+  padding: 10px 16px 10px 44px;
   color: #c8cdd4 !important;
   text-decoration: none;
   font-size: var(--hq-menu-fs);
   font-weight: 400;
-  line-height: 1.35;
+  line-height: 1.4;
+  border-left: 3px solid transparent;
 }
 
 .is-admin .hq-sub a:hover {
