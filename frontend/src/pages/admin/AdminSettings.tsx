@@ -106,11 +106,6 @@ export default function AdminSettings() {
         },
         feePolicy: {
           treasuryWalletAddress: form.treasuryWalletAddress || undefined,
-          cardIssuanceFee: form.cardIssuanceFee,
-          cardTopUpFeePercent: form.cardTopUpFeePercent,
-          cardUsageFeePerTransaction: form.cardUsageFeePerTransaction,
-          cardMonthlyFee: form.cardMonthlyFee,
-          partnerMonthlyFee: form.partnerMonthlyFee,
         },
         security: {
           otpRequiredAdmin: form.otpRequiredAdmin,
@@ -137,224 +132,124 @@ export default function AdminSettings() {
 
   if (loading) {
     return (
-      <div className="app-container">
+      <div className="app-container hq-sandbox">
         <p className="muted-text">{t('common.loading')}</p>
       </div>
     );
   }
 
   return (
-    <div className="app-container">
-      <div className="page-header">
-        <h1 className="page-title">{t('admin.titleSettings')}</h1>
-        <Link to="/admin/dashboard" className="btn-outline">
-          {t('admin.backDashboard')}
-        </Link>
-      </div>
-
-      <form onSubmit={handleSubmit} className="card-surface admin-settings-form">
+    <form onSubmit={handleSubmit} className="app-container hq-sandbox">
+      <section className="card-surface hq-sandbox-card">
         <h3 className="section-title">{t('admin.sectionWirex')}</h3>
-        <p className="muted-text admin-settings-desc">{t('admin.settingsDesc')}</p>
-        <label className="admin-settings-label">
-          {t('admin.environment')}
-          <select
-            className="input"
-            value={form.environment}
-            onChange={(e) => {
-              const environment = e.target.value as 'sandbox' | 'production';
-              setForm((f) => ({
-                ...f,
-                environment,
-                apiBase: environment === 'production' ? 'https://api-baas.wirexapp.com' : 'https://api-baas.wirexapp.tech',
-                chainId: environment === 'production' ? '8453' : '84532',
-              }));
-            }}
-          >
-            <option value="sandbox">{t('admin.optSandbox')}</option>
-            <option value="production">{t('admin.optProduction')}</option>
-          </select>
-        </label>
-
-        <label className="admin-settings-label">
-          API Base URL
-          <input
-            type="url"
-            className="input"
-            value={form.apiBase}
-            onChange={(e) => setForm((f) => ({ ...f, apiBase: e.target.value }))}
-            placeholder="https://api-baas.wirexapp.tech"
-          />
-        </label>
-
-        <label className="admin-settings-label">
-          Chain ID
-          <input
-            type="text"
-            className="input"
-            value={form.chainId}
-            onChange={(e) => setForm((f) => ({ ...f, chainId: e.target.value }))}
-            placeholder="84532 (Sandbox) / 8453 (Production)"
-          />
-        </label>
-
-        <label className="admin-settings-label">
-          Client ID
-          <input
-            type="text"
-            className="input"
-            value={form.clientId}
-            onChange={(e) => setForm((f) => ({ ...f, clientId: e.target.value }))}
-            placeholder={t('admin.clientIdHint')}
-          />
-        </label>
-
-        <label className="admin-settings-label">
-          Client Secret
-          <input
-            type="password"
-            className="input"
-            value={form.clientSecret}
-            onChange={(e) => setForm((f) => ({ ...f, clientSecret: e.target.value }))}
-            placeholder={t('admin.clientSecretHint')}
-          />
-        </label>
-
-        <h3 className="section-title" style={{ marginTop: '2rem' }}>{t('admin.walletHqDefault')}</h3>
-        <p className="muted-text admin-settings-desc">{t('admin.walletHqHint')}</p>
+        <p className="hq-card-hint">{t('admin.settingsDesc')}</p>
+        <div className="hq-form-grid">
+          <label>
+            <span>{t('admin.environment')}</span>
+            <select
+              className="input"
+              value={form.environment}
+              onChange={(e) => {
+                const environment = e.target.value as 'sandbox' | 'production';
+                setForm((f) => ({
+                  ...f,
+                  environment,
+                  apiBase: environment === 'production' ? 'https://api-baas.wirexapp.com' : 'https://api-baas.wirexapp.tech',
+                  chainId: environment === 'production' ? '8453' : '84532',
+                }));
+              }}
+            >
+              <option value="sandbox">{t('admin.optSandbox')}</option>
+              <option value="production">{t('admin.optProduction')}</option>
+            </select>
+          </label>
+          <label>
+            <span>API Base URL</span>
+            <input type="url" className="input" value={form.apiBase} onChange={(e) => setForm((f) => ({ ...f, apiBase: e.target.value }))} />
+          </label>
+          <label>
+            <span>Chain ID</span>
+            <input type="text" className="input" value={form.chainId} onChange={(e) => setForm((f) => ({ ...f, chainId: e.target.value }))} />
+          </label>
+          <label>
+            <span>Client ID</span>
+            <input type="text" className="input" value={form.clientId} onChange={(e) => setForm((f) => ({ ...f, clientId: e.target.value }))} placeholder={t('admin.clientIdHint')} />
+          </label>
+          <label>
+            <span>Client Secret</span>
+            <input type="password" className="input" value={form.clientSecret} onChange={(e) => setForm((f) => ({ ...f, clientSecret: e.target.value }))} placeholder={t('admin.clientSecretHint')} />
+          </label>
+        </div>
         <label className="admin-settings-checkbox">
-          <input type="checkbox" checked={form.walletEmbedded} onChange={(e) => setForm((f) => ({ ...f, walletEmbedded: e.target.checked }))} />
-          {t('walletMode.embedded')}
-        </label>
-        <label className="admin-settings-checkbox">
-          <input type="checkbox" checked={form.walletExternal} onChange={(e) => setForm((f) => ({ ...f, walletExternal: e.target.checked }))} />
-          {t('walletMode.external')}
-        </label>
-        <label className="admin-settings-checkbox">
-          <input type="checkbox" checked={form.walletBridge} onChange={(e) => setForm((f) => ({ ...f, walletBridge: e.target.checked }))} />
-          {t('walletMode.bridge')}
-        </label>
-
-        <h3 className="section-title" style={{ marginTop: '2rem' }}>{t('admin.sectionOtp')}</h3>
-        <p className="muted-text admin-settings-desc">{t('admin.otpPolicyDesc')}</p>
-        <label className="admin-settings-checkbox">
-          <input
-            type="checkbox"
-            checked={form.otpRequiredAdmin}
-            onChange={(e) => setForm((f) => ({ ...f, otpRequiredAdmin: e.target.checked }))}
-          />
-          {t('admin.otpRequiredAdmin')}
-        </label>
-        <label className="admin-settings-checkbox">
-          <input
-            type="checkbox"
-            checked={form.otpRequiredMember}
-            onChange={(e) => setForm((f) => ({ ...f, otpRequiredMember: e.target.checked }))}
-          />
-          {t('admin.otpRequiredMember')}
-        </label>
-        <label className="admin-settings-checkbox">
-          <input
-            type="checkbox"
-            checked={form.otpRequiredOrg}
-            onChange={(e) => setForm((f) => ({ ...f, otpRequiredOrg: e.target.checked }))}
-          />
-          {t('admin.otpRequiredOrg')}
-        </label>
-
-        <h3 className="section-title" style={{ marginTop: '2rem' }}>{t('admin.sectionFees')}</h3>
-        <p className="muted-text admin-settings-desc">{t('admin.feesDesc')}</p>
-        <label className="admin-settings-label">
-          {t('admin.treasuryWallet')}
-          <input
-            type="text"
-            className="input"
-            value={form.treasuryWalletAddress}
-            onChange={(e) => setForm((f) => ({ ...f, treasuryWalletAddress: e.target.value }))}
-            placeholder="0x..."
-          />
-        </label>
-        <label className="admin-settings-label">
-          {t('admin.feeIssue')}
-          <input
-            type="number"
-            className="input"
-            value={form.cardIssuanceFee}
-            onChange={(e) => setForm((f) => ({ ...f, cardIssuanceFee: parseFloat(e.target.value) || 0 }))}
-            min={0}
-            step={0.1}
-          />
-        </label>
-        <label className="admin-settings-label">
-          {t('admin.feeTopup')}
-          <input
-            type="number"
-            className="input"
-            value={form.cardTopUpFeePercent}
-            onChange={(e) => setForm((f) => ({ ...f, cardTopUpFeePercent: parseFloat(e.target.value) || 0 }))}
-            min={0}
-            step={0.1}
-          />
-        </label>
-        <label className="admin-settings-label">
-          {t('admin.feeUsage')}
-          <input
-            type="number"
-            className="input"
-            value={form.cardUsageFeePerTransaction}
-            onChange={(e) => setForm((f) => ({ ...f, cardUsageFeePerTransaction: parseFloat(e.target.value) || 0 }))}
-            min={0}
-            step={0.01}
-          />
-        </label>
-        <label className="admin-settings-label">
-          {t('admin.feeMonthly')}
-          <input
-            type="number"
-            className="input"
-            value={form.cardMonthlyFee}
-            onChange={(e) => setForm((f) => ({ ...f, cardMonthlyFee: parseFloat(e.target.value) || 0 }))}
-            min={0}
-            step={0.1}
-          />
-        </label>
-        <label className="admin-settings-label">
-          {t('admin.feePartner')}
-          <input
-            type="number"
-            className="input"
-            value={form.partnerMonthlyFee}
-            onChange={(e) => setForm((f) => ({ ...f, partnerMonthlyFee: parseFloat(e.target.value) || 0 }))}
-            min={0}
-            step={1}
-          />
-        </label>
-
-        <label className="admin-settings-checkbox">
-          <input
-            type="checkbox"
-            checked={form.useMockWirex}
-            onChange={(e) => setForm((f) => ({ ...f, useMockWirex: e.target.checked }))}
-          />
+          <input type="checkbox" checked={form.useMockWirex} onChange={(e) => setForm((f) => ({ ...f, useMockWirex: e.target.checked }))} />
           <span>{t('admin.useMock')}</span>
         </label>
+      </section>
 
-        {settings?.updatedAt && (
-          <p className="muted-text admin-settings-updated">
-            {t('admin.lastSaved')}
-            {new Date(settings.updatedAt).toLocaleString()}
-          </p>
-        )}
-
-        {message && (
-          <div className={saveOk ? 'admin-settings-success' : 'auth-error'}>{message}</div>
-        )}
-
-        <div className="admin-settings-actions">
-          <button type="submit" disabled={saving} className="btn-primary">
-            {saving ? t('admin.saving') : t('admin.save')}
-          </button>
+      <section className="card-surface hq-sandbox-card">
+        <h3 className="section-title">{t('admin.walletHqDefault')}</h3>
+        <p className="hq-card-hint">{t('admin.walletHqHint')}</p>
+        <div className="hq-form-grid">
+          <label className="admin-settings-checkbox">
+            <input type="checkbox" checked={form.walletEmbedded} onChange={(e) => setForm((f) => ({ ...f, walletEmbedded: e.target.checked }))} />
+            {t('walletMode.embedded')}
+          </label>
+          <label className="admin-settings-checkbox">
+            <input type="checkbox" checked={form.walletExternal} onChange={(e) => setForm((f) => ({ ...f, walletExternal: e.target.checked }))} />
+            {t('walletMode.external')}
+          </label>
+          <label className="admin-settings-checkbox">
+            <input type="checkbox" checked={form.walletBridge} onChange={(e) => setForm((f) => ({ ...f, walletBridge: e.target.checked }))} />
+            {t('walletMode.bridge')}
+          </label>
         </div>
-      </form>
-    </div>
+      </section>
+
+      <section className="card-surface hq-sandbox-card">
+        <h3 className="section-title">{t('admin.sectionOtp')}</h3>
+        <p className="hq-card-hint">{t('admin.otpPolicyDesc')}</p>
+        <div className="hq-form-grid">
+          <label className="admin-settings-checkbox">
+            <input type="checkbox" checked={form.otpRequiredAdmin} onChange={(e) => setForm((f) => ({ ...f, otpRequiredAdmin: e.target.checked }))} />
+            {t('admin.otpRequiredAdmin')}
+          </label>
+          <label className="admin-settings-checkbox">
+            <input type="checkbox" checked={form.otpRequiredMember} onChange={(e) => setForm((f) => ({ ...f, otpRequiredMember: e.target.checked }))} />
+            {t('admin.otpRequiredMember')}
+          </label>
+          <label className="admin-settings-checkbox">
+            <input type="checkbox" checked={form.otpRequiredOrg} onChange={(e) => setForm((f) => ({ ...f, otpRequiredOrg: e.target.checked }))} />
+            {t('admin.otpRequiredOrg')}
+          </label>
+        </div>
+      </section>
+
+      <section className="card-surface hq-sandbox-card">
+        <h3 className="section-title">{t('admin.sectionFees')}</h3>
+        <p className="hq-card-hint">{t('admin.settingsFeeHint')}</p>
+        <div className="hq-form-grid">
+          <label>
+            <span>{t('admin.treasuryWallet')}</span>
+            <input type="text" className="input" value={form.treasuryWalletAddress} onChange={(e) => setForm((f) => ({ ...f, treasuryWalletAddress: e.target.value }))} placeholder="0x..." />
+          </label>
+        </div>
+        <div className="hq-toolbar" style={{ justifyContent: 'flex-start' }}>
+          <Link to="/admin/fee-policy" className="btn-secondary">{t('admin.navFeePolicy')}</Link>
+        </div>
+      </section>
+
+      {settings?.updatedAt ? (
+        <p className="muted-text">
+          {t('admin.lastSaved')}
+          {new Date(settings.updatedAt).toLocaleString()}
+        </p>
+      ) : null}
+      {message ? <div className={saveOk ? 'admin-settings-success' : 'auth-error'}>{message}</div> : null}
+      <div className="reg-actions">
+        <button type="submit" disabled={saving} className="btn-primary">
+          {saving ? t('admin.saving') : t('admin.save')}
+        </button>
+      </div>
+    </form>
   );
 }

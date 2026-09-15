@@ -153,6 +153,47 @@ router.put('/password', (req, res) => {
   res.json({ ok: true, mustChangePassword: false });
 });
 
+router.get('/staff', requirePartnerPortal, (req, res) => {
+  const partnerId = req.auth!.partnerId!;
+  const me = operatorStore.getById(req.auth!.userId);
+  const items = operatorStore
+    .list('PARTNER')
+    .filter((o) => o.partnerId === partnerId)
+    .map((o) => operatorStore.publicView(o));
+  res.json({ items, total: items.length, canAdd: me?.role !== 'STAFF' });
+});
+
+router.post('/staff', requirePartnerPortal, (req, res) => {
+  const me = operatorStore.getById(req.auth!.userId);
+  if (!me || me.role === 'STAFF') return res.status(403).json({ error: 'Admin role required to add users' });
+  try {
+    const op = operatorStore.create({
+      email: String(req.body?.email || ''),
+      name: String(req.body?.name || ''),
+      password: String(req.body?.password || ''),
+      scope: 'PARTNER',
+      role: req.body?.role === 'STAFF' ? 'STAFF' : 'ADMIN',
+      partnerId: me.partnerId,
+      mustChangePassword: true,
+    });
+    res.status(201).json({ operator: operatorStore.publicView(op) });
+  } catch (e) {
+    res.status(400).json({ error: (e as Error).message });
+  }
+});
+
+router.put('/staff/:id', requirePartnerPortal, (req, res) => {
+  const me = operatorStore.getById(req.auth!.userId);
+  if (!me || me.role === 'STAFF') return res.status(403).json({ error: 'Admin role required' });
+  const target = operatorStore.getById(req.params.id);
+  if (!target || target.partnerId !== me.partnerId) return res.status(404).json({ error: 'Not found' });
+  const updated = operatorStore.update(target.id, {
+    status: req.body?.status === 'suspended' ? 'suspended' : req.body?.status === 'active' ? 'active' : undefined,
+    role: req.body?.role === 'STAFF' || req.body?.role === 'ADMIN' ? req.body.role : undefined,
+  });
+  res.json(operatorStore.publicView(updated!));
+});
+
 router.get('/overview', requirePartnerPortal, (req, res) => {
   const partner = partnerStore.getById(req.auth!.partnerId!);
   if (!partner) return res.status(404).json({ error: 'Partner not found' });

@@ -5,6 +5,7 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import { createHash, randomBytes } from 'crypto';
 import { requireAdmin } from '../middleware/auth.js';
 import { store } from '../data/store.js';
 import { config } from '../config.js';
@@ -387,6 +388,7 @@ router.get('/members', (req, res) => {
     partnerName: u.partnerId ? partnerStore.getById(u.partnerId)?.companyName || partnerStore.getById(u.partnerId)?.name : undefined,
     country: u.country,
     kycStatus: u.kycStatus,
+    otpEnabled: Boolean(u.otpEnabled),
     status: u.status || 'active',
     createdAt: u.createdAt,
   }));
@@ -398,6 +400,18 @@ router.put('/members/:id', (req, res) => {
   const user = store.updateMember(req.params.id, { status });
   if (!user) return res.status(404).json({ error: 'Not found' });
   res.json({ id: user.id, status: user.status || 'active' });
+});
+
+router.post('/members/:id/reset-password', (req, res) => {
+  const user = store.getUserById(req.params.id);
+  if (!user) return res.status(404).json({ error: 'Not found' });
+  const password = typeof req.body?.password === 'string' && req.body.password.length >= 6
+    ? req.body.password
+    : randomBytes(5).toString('hex');
+  const hash = createHash('sha256').update(password + config.jwtSecret).digest('hex');
+  store.updatePassword(user.id, hash);
+  store.updateOtp(user.id, { otpSecret: null, otpEnabled: false });
+  res.json({ ok: true, email: user.email, password, warning: 'Shown once. Customer must change after login.' });
 });
 
 router.get('/cards', async (_, res) => {

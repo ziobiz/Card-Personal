@@ -390,6 +390,11 @@ export const api = {
       request<{ ok: boolean }>(`/admin/operators/${id}/reset-otp`, { method: 'POST' }),
     resetMemberOtp: (id: string) =>
       request<{ ok: boolean }>(`/admin/members/${id}/reset-otp`, { method: 'POST' }),
+    resetMemberPassword: (id: string, password?: string) =>
+      request<{ ok: boolean; email: string; password: string }>(`/admin/members/${id}/reset-password`, {
+        method: 'POST',
+        body: JSON.stringify({ password }),
+      }),
     getUsers: () =>
       request<{ items: { id: string; email: string; wirexUserId?: string; createdAt: string; source?: string; partnerId?: string }[]; total: number }>('/admin/users'),
     getOperators: (scope?: 'HQ' | 'PARTNER') =>
@@ -401,7 +406,7 @@ export const api = {
     updateOperator: (id: string, data: { name?: string; role?: string; status?: string; password?: string }) =>
       request(`/admin/operators/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     getMembers: (source?: 'direct' | 'partner') =>
-      request<{ items: Array<{ id: string; email: string; wirexUserId?: string; source: string; partnerId?: string; partnerName?: string; country?: string; kycStatus?: string; status: string; createdAt: string }>; total: number }>(
+      request<{ items: Array<{ id: string; email: string; wirexUserId?: string; source: string; partnerId?: string; partnerName?: string; country?: string; kycStatus?: string; otpEnabled?: boolean; status: string; createdAt: string }>; total: number }>(
         `/admin/members${source ? `?source=${source}` : ''}`
       ),
     updateMember: (id: string, data: { status?: string }) =>
@@ -727,6 +732,21 @@ export const api = {
         issuer?: string;
         note?: string;
       }>('/partner-portal/overview', {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+    },
+    staff: () => {
+      const token = localStorage.getItem('partnerToken');
+      return request<{ items: Array<{ id: string; email: string; name: string; role: string; status: string; createdAt: string }>; total: number; canAdd: boolean }>(
+        '/partner-portal/staff',
+        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
+      );
+    },
+    addStaff: (data: { email: string; name: string; password: string; role?: string }) => {
+      const token = localStorage.getItem('partnerToken');
+      return request('/partner-portal/staff', {
+        method: 'POST',
+        body: JSON.stringify(data),
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
     },

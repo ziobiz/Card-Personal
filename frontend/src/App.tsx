@@ -30,6 +30,7 @@ import PartnerOtp from './pages/partner/PartnerOtp';
 import PartnerHome from './pages/partner/PartnerHome';
 import PartnerApi from './pages/partner/PartnerApi';
 import PartnerFees from './pages/partner/PartnerFees';
+import PartnerStaff from './pages/partner/PartnerStaff';
 import PartnerManual from './pages/partner/PartnerManual';
 import MemberOtp from './pages/MemberOtp';
 import Account from './pages/Account';
@@ -87,6 +88,7 @@ export default function App() {
           <Route index element={<PartnerHome />} />
           <Route path="api" element={<PartnerApi />} />
           <Route path="fees" element={<PartnerFees />} />
+          <Route path="staff" element={<PartnerStaff />} />
           <Route path="manual" element={<PartnerManual />} />
         </Route>
         <Route
@@ -125,8 +127,9 @@ export default function App() {
           <Route path="users" element={<Navigate to="/admin/operators" replace />} />
           <Route path="operators" element={<AdminOperators scope="HQ" />} />
           <Route path="operators/partner" element={<AdminOperators scope="PARTNER" />} />
-          <Route path="members" element={<AdminMembers source="direct" />} />
-          <Route path="members/partner" element={<AdminMembers source="partner" />} />
+          <Route path="customers" element={<AdminMembers />} />
+          <Route path="members" element={<Navigate to="/admin/customers" replace />} />
+          <Route path="members/partner" element={<Navigate to="/admin/customers" replace />} />
           <Route path="cards" element={<AdminCards />} />
           <Route path="partners/new" element={<AdminPartnerRegister />} />
           <Route path="partners" element={<AdminPartners />} />

@@ -120,15 +120,7 @@ export default function AdminLayout() {
       items: [
         { to: '/admin/operators', labelKey: 'admin.navHqOperators' },
         { to: '/admin/operators/partner', labelKey: 'admin.navPartnerOperators' },
-      ],
-    },
-    {
-      id: 'members',
-      labelKey: 'admin.menuMembers',
-      icon: 'card',
-      items: [
-        { to: '/admin/members', labelKey: 'admin.navDirectMembers' },
-        { to: '/admin/members/partner', labelKey: 'admin.navPartnerMembers' },
+        { to: '/admin/customers', labelKey: 'admin.navCustomers' },
       ],
     },
     {
@@ -155,8 +147,9 @@ export default function AdminLayout() {
       '/admin/sandbox': ['admin.menuHq', 'admin.navSandbox'],
       '/admin/operators': ['admin.menuUsers', 'admin.navHqOperators'],
       '/admin/operators/partner': ['admin.menuUsers', 'admin.navPartnerOperators'],
-      '/admin/members': ['admin.menuMembers', 'admin.navDirectMembers'],
-      '/admin/members/partner': ['admin.menuMembers', 'admin.navPartnerMembers'],
+      '/admin/customers': ['admin.menuUsers', 'admin.navCustomers'],
+      '/admin/members': ['admin.menuUsers', 'admin.navCustomers'],
+      '/admin/members/partner': ['admin.menuUsers', 'admin.navCustomers'],
       '/admin/users': ['admin.menuUsers', 'admin.navHqOperators'],
       '/admin/cards': ['admin.menuOps', 'admin.navCards'],
       '/admin/me': ['admin.myInfo'],

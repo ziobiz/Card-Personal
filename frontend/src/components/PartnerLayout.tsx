@@ -26,6 +26,7 @@ export default function PartnerLayout() {
           <NavLink to="/partner" end>{t('partner.navHome')}</NavLink>
           <NavLink to="/partner/api">{t('partner.navApi')}</NavLink>
           <NavLink to="/partner/fees">{t('partner.navFees')}</NavLink>
+          <NavLink to="/partner/staff">{t('partner.navStaff')}</NavLink>
           <NavLink to="/partner/manual">{t('partner.navManual')}</NavLink>
         </nav>
         <LanguageSwitcher admin />

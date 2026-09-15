@@ -158,7 +158,16 @@
     "walletHqHint": "Merchants set to Follow HQ use these modes. Disabled modes are blocked in the member app and Partner API.",
     "isolationHqHint": "Wirex sees ICOCARD only. Partners never receive Wirex keys.",
     "standaloneWirexSaved": "Standalone Wirex keys stored encrypted.",
-    "opsOnly": "Operations only"
+    "opsOnly": "Operations only",
+    "navCustomers": "Customers",
+    "customersDesc": "Individuals who use the card. Each customer is a single account. Reset password and OTP here.",
+    "settingsFeeHint": "Set the treasury wallet here. Create HQ fee policies under Merchant → Fee policy, then choose Follow HQ or Custom when registering a merchant.",
+    "otpOn": "On",
+    "otpOff": "Off",
+    "resetPwBtn": "Reset password",
+    "resetPwConfirm": "Reset password for {{email}}?",
+    "resetPwOnce": "Temporary password for {{email}}: {{password}} (shown once)",
+    "navHqOperators": "HQ"
   },
   "partner": {
     "ourKeysNotWirex": "Authenticate with HQ-issued MID / API Key / Secret. Do not use Wirex keys.",
@@ -176,7 +185,10 @@
     "manual6": "A sub-solution is the member app at /s/{slug}. Keys are issued by HQ, never Wirex.",
     "standaloneHint": "Standalone: operations only. No ICOCARD Partner API keys. Tenant Wirex keys are stored encrypted by HQ.",
     "noReseller": "Standalone disables the reseller API. Operate via the member app only.",
-    "manual7": "Standalone sub-solution uses the merchant Wirex contract for operations only. No reseller keys. Wirex sees that merchant."
+    "manual7": "Standalone sub-solution uses the merchant Wirex contract for operations only. No reseller keys. Wirex sees that merchant.",
+    "navStaff": "Users",
+    "staffHint": "Partners can add staff to operate the dashboard. This is not a card customer.",
+    "staffNoAdd": "Only an admin can add users."
   },
   "walletMode": {
     "title": "Wallet connection",

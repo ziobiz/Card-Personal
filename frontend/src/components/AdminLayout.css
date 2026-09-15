@@ -1874,3 +1874,251 @@
   color: #fff !important;
   background: rgba(196, 164, 132, 0.14) !important;
 }
+
+/* Console content: light workspace. Sidebar + top bar stay dark. */
+.is-admin .hq-content {
+  background: #eef1f6 !important;
+}
+
+.is-admin .hq-tabbar {
+  background: #fff !important;
+  border-bottom: 1px solid #d5dae2 !important;
+}
+
+.is-admin .hq-tab,
+.is-admin .hq-tab a {
+  color: #5b616a !important;
+}
+
+.is-admin .hq-tab.on,
+.is-admin .hq-tab.on a {
+  color: #1a1d21 !important;
+  background: #f4f6f8 !important;
+  box-shadow: inset 0 -2px 0 #6658dd !important;
+  border-bottom: 2px solid #6658dd !important;
+}
+
+.is-admin .hq-tab-x {
+  color: #8a9099 !important;
+}
+
+.is-admin .hq-tab-x:hover {
+  color: #1a1d21 !important;
+}
+
+.is-admin .hq-crumbbar {
+  background: #fff !important;
+  color: #1a1d21 !important;
+  border-bottom: 1px solid #e5e8ee;
+}
+
+.is-admin .hq-crumb-left {
+  color: #1a1d21 !important;
+}
+
+.is-admin .hq-crumb-right,
+.is-admin .hq-crumb-sep {
+  color: #6b717a !important;
+}
+
+.is-admin .hq-page {
+  background: #f4f6f8 !important;
+  color: #1a1d21 !important;
+}
+
+.is-admin .hq-page,
+.is-admin .hq-page .muted-text,
+.is-admin .hq-page .section-title,
+.is-admin .hq-page label,
+.is-admin .hq-page p,
+.is-admin .hq-page h1,
+.is-admin .hq-page h2,
+.is-admin .hq-page h3,
+.is-admin .hq-page .page-title {
+  color: #1a1d21 !important;
+}
+
+.is-admin .hq-page .muted-text,
+.is-admin .hq-page .hq-card-hint,
+.is-admin .hq-card-hint {
+  color: #5b616a !important;
+}
+
+.is-admin .hq-page .card-surface,
+.is-admin .hq-page .stat-card,
+.is-admin .hq-brand-card,
+.is-admin .reg-card {
+  background: #fff !important;
+  border: 1px solid #d5dae2 !important;
+  color: #1a1d21 !important;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.is-admin .hq-page .card-surface > .section-title,
+.is-admin .hq-page .card-surface > h3:first-child {
+  background: #f7f8fa !important;
+  color: #1a1d21 !important;
+  border-bottom: 1px solid #e5e8ee !important;
+}
+
+.is-admin .hq-page .stat-label {
+  color: #5b616a !important;
+}
+
+.is-admin .hq-page .stat-value {
+  color: #1a1d21 !important;
+}
+
+.is-admin .hq-page .input,
+.is-admin .hq-page select.input,
+.is-admin .hq-page .admin-status-select,
+.is-admin .hq-page textarea,
+.is-admin .hq-page .org-profile-grid .input,
+.is-admin .hq-page .org-profile-grid select.input {
+  background: #fff !important;
+  color: #1a1d21 !important;
+  border: 1px solid #c5cad3 !important;
+}
+
+.is-admin .hq-page .input:focus,
+.is-admin .hq-page select.input:focus {
+  border-color: #6658dd !important;
+}
+
+.is-admin .hq-req .input,
+.is-admin .hq-req select.input,
+.is-admin .hq-req .org-combo .input {
+  background: #fff8f3 !important;
+  border-color: #d4b89a !important;
+}
+
+.is-admin .hq-page .admin-table {
+  color: #1a1d21 !important;
+}
+
+.is-admin .hq-page .admin-table th {
+  background: #f0f2f5 !important;
+  color: #334155 !important;
+  border-color: #d5dae2 !important;
+}
+
+.is-admin .hq-page .admin-table td {
+  color: #1a1d21 !important;
+  border-color: #e5e8ee !important;
+}
+
+.is-admin .hq-page .admin-table tbody tr:hover {
+  background: #f7f8fa !important;
+}
+
+.is-admin .hq-page .btn-secondary,
+.is-admin .hq-page .btn-outline,
+.is-admin .hq-page .btn-compact {
+  background: #fff !important;
+  color: #1a1d21 !important;
+  border: 1px solid #c5cad3 !important;
+}
+
+.is-admin .hq-page .btn-secondary:hover,
+.is-admin .hq-page .btn-outline:hover {
+  background: #f4f6f8 !important;
+  color: #111 !important;
+}
+
+.is-admin .hq-form-grid label,
+.is-admin .hq-filter label,
+.is-admin .org-profile-grid > label,
+.is-admin .org-row > label,
+.is-admin .hq-brand label {
+  color: #334155 !important;
+}
+
+.is-admin .hq-filter {
+  background: #fff !important;
+  border: 1px solid #d5dae2 !important;
+}
+
+.is-admin .hq-group-head {
+  background: #eef1f6 !important;
+  color: #1a1d21 !important;
+}
+
+.is-admin .hq-page .stat-link,
+.is-admin .hq-page a.primary-link,
+.is-admin .hq-page .section-link,
+.is-admin .mono,
+.is-admin code {
+  color: #5b4634 !important;
+}
+
+.is-admin .hq-kv,
+.is-admin .hq-sandbox-form label,
+.is-admin .hq-sandbox-asp-list {
+  color: #5b616a !important;
+}
+
+.is-admin .hq-kv strong {
+  color: #1a1d21 !important;
+}
+
+.is-admin .hq-pill.ok {
+  background: #e7f6ec !important;
+  color: #1b7a45 !important;
+}
+
+.is-admin .hq-pill.warn {
+  background: #fff6e5 !important;
+  color: #9a6400 !important;
+}
+
+.is-admin .hq-pill.bad {
+  background: #fdecec !important;
+  color: #a12222 !important;
+}
+
+.is-admin .hq-smoke-steps li {
+  background: #f4f6f8 !important;
+  color: #1a1d21 !important;
+}
+
+.is-admin .pg-modal {
+  background: #fff !important;
+  border: 1px solid #d5dae2 !important;
+  color: #1a1d21 !important;
+}
+
+.is-admin .pg-modal-head {
+  background: #f7f8fa !important;
+  color: #1a1d21 !important;
+  border-bottom: 1px solid #e5e8ee !important;
+}
+
+.is-admin .pg-modal-close {
+  color: #5b616a !important;
+}
+
+.is-admin .pg-modal-hint,
+.is-admin .pg-confirm-body {
+  color: #334155 !important;
+}
+
+.is-admin .auth-error {
+  background: #fdecec !important;
+  border: 1px solid #f3b4b4 !important;
+  color: #a12222 !important;
+}
+
+.is-admin .admin-settings-success {
+  color: #1b7a45 !important;
+}
+
+.is-admin .hq-sandbox .hq-form-grid > label .input,
+.is-admin .hq-sandbox .hq-form-grid > label select.input {
+  width: min(280px, 100%);
+}
+
+.is-admin .admin-settings-form {
+  max-width: none;
+}
