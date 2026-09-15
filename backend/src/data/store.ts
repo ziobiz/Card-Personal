@@ -206,7 +206,7 @@ export const store = {
       smartWalletAddress?: string;
       eoaKeyEnc?: string | null;
       walletMode?: AppUser['walletMode'];
-      wirexUserId?: string;
+      wirexUserId?: string | null;
       kycStatus?: AppUser['kycStatus'];
       onboardingStatus?: AppUser['onboardingStatus'];
       onboardingError?: string | null;
@@ -219,7 +219,8 @@ export const store = {
     if (data.eoaKeyEnc === null) delete user.eoaKeyEnc;
     else if (data.eoaKeyEnc !== undefined) user.eoaKeyEnc = data.eoaKeyEnc;
     if (data.walletMode !== undefined) user.walletMode = data.walletMode;
-    if (data.wirexUserId !== undefined) user.wirexUserId = data.wirexUserId;
+    if (data.wirexUserId === null || data.wirexUserId === '') delete user.wirexUserId;
+    else if (data.wirexUserId !== undefined) user.wirexUserId = data.wirexUserId;
     if (data.kycStatus !== undefined) user.kycStatus = data.kycStatus;
     if (data.onboardingStatus !== undefined) user.onboardingStatus = data.onboardingStatus;
     if (data.onboardingError === null) delete user.onboardingError;

@@ -45,9 +45,15 @@ async function request<T>(
     clearTimeout(timeoutId);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      let msg = data.hint ? `${data.error} (${data.hint})` : data.error || `HTTP ${res.status}`;
+      let msg =
+        data.message ||
+        (data.hint ? `${data.error} (${data.hint})` : data.error) ||
+        `HTTP ${res.status}`;
       if (data._debug) msg += ` [받은이메일:${data._debug.receivedEmail}, 사용자수:${data._debug.usersCount}]`;
-      throw new Error(msg);
+      const err = new Error(msg) as Error & { status?: number; body?: unknown };
+      err.status = res.status;
+      err.body = data;
+      throw err;
     }
     return data as T;
   } catch (e) {
@@ -434,8 +440,17 @@ export const api = {
         ok: boolean;
         steps: { step: string; ok: boolean; detail?: unknown }[];
         kycUrl?: string | null;
+        kycError?: string | null;
         card?: unknown;
-        onboarding: { status: string; error: string | null; eoa: string; smartWallet: string; walletMode?: string };
+        onboarding: {
+          status: string;
+          error: string | null;
+          eoa: string;
+          smartWallet: string;
+          walletMode?: string;
+          kycStatus?: string;
+          wirexUserId?: string | null;
+        };
       }>('/user/onboard', { method: 'POST', body: JSON.stringify(data ?? {}) }, 180000),
     walletChallenge: () =>
       request<{ nonce: string; message: string; expiresAt: number }>('/user/wallet/challenge'),

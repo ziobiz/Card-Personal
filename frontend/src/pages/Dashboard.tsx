@@ -5,26 +5,33 @@ import OnboardingPanel from './OnboardingPanel';
 import { TLink } from '../components/TenantLink';
 
 export default function Dashboard() {
-  const [kycUrl, setKycUrl] = useState<string | null>(null);
-  const [kycLoading, setKycLoading] = useState(false);
-
-  const handleKycClick = async () => {
-    setKycLoading(true);
-    try {
-      const { url } = await api.kyc.getVerificationLink();
-      if (url) window.location.href = url;
-    } finally {
-      setKycLoading(false);
-    }
-  };
-
   const { t } = useTranslation();
+  const [kycNeeded, setKycNeeded] = useState(false);
+  const [kycLoading, setKycLoading] = useState(false);
+  const [kycErr, setKycErr] = useState('');
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [walletBalance, setWalletBalance] = useState<{
     primary: TokenBalance[];
     cardSummaries: { cardId: string; panLast4: string; balance: number; currency: string }[];
   } | null>(null);
+
+  const handleKycClick = async () => {
+    setKycLoading(true);
+    setKycErr('');
+    try {
+      const { url, message } = await api.kyc.getVerificationLink();
+      if (url) {
+        window.location.assign(url);
+        return;
+      }
+      setKycErr(message || t('dashboard.kycOpenFail'));
+    } catch (e) {
+      setKycErr((e as Error).message || t('dashboard.kycOpenFail'));
+    } finally {
+      setKycLoading(false);
+    }
+  };
 
   useEffect(() => {
     api.cards
@@ -39,7 +46,15 @@ export default function Dashboard() {
   }, [cards]);
 
   useEffect(() => {
-    api.kyc.getVerificationLink().then((r) => setKycUrl(r.url || null)).catch(() => {});
+    api.user
+      .onboarding()
+      .then((r) => {
+        const st = r.status || '';
+        setKycNeeded(
+          st === 'registered' || st === 'kyc' || (r.kycStatus !== 'verified' && Boolean(r.wirexUserId))
+        );
+      })
+      .catch(() => setKycNeeded(false));
   }, []);
 
   const totalUsd =
@@ -49,12 +64,17 @@ export default function Dashboard() {
   return (
     <div className="app-container wx-home">
       <OnboardingPanel />
-      {kycUrl && (
+      {kycNeeded && (
         <div className="card-surface wx-kyc">
           <span>{t('dashboard.kycNeeded')}</span>
-          <button onClick={handleKycClick} disabled={kycLoading} className="btn-primary btn-compact">
+          <button type="button" onClick={() => void handleKycClick()} disabled={kycLoading} className="btn-primary btn-compact">
             {kycLoading ? t('common.loading') : t('dashboard.kycCta')}
           </button>
+          {kycErr ? (
+            <p className="auth-error" style={{ margin: '0.5rem 0 0', width: '100%' }}>
+              {kycErr}
+            </p>
+          ) : null}
         </div>
       )}
       <div className="wx-home-hero">

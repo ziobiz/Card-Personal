@@ -122,7 +122,8 @@
     "noCards": "No cards issued yet",
     "issueCard": "Issue virtual card",
     "kycNeeded": "Identity verification is required.",
-    "kycCta": "Verify KYC"
+    "kycCta": "Verify KYC",
+    "kycOpenFail": "Could not open the KYC link. Tap Continue on Home, then try again."
   },
   "onboard": {
     "title": "Card setup",
@@ -130,6 +131,10 @@
     "continue": "Continue",
     "running": "Working...",
     "failed": "Onboarding failed.",
+    "progressOk": "Progress updated.",
+    "kycOpening": "Opening KYC…",
+    "kycNoLink": "No KYC link yet. Tap Continue to finish Wirex registration, then try again.",
+    "kycRetry": "Open KYC link again",
     "step": {
       "wallet": "Embedded wallet",
       "onchain": "On-chain Smart Wallet",

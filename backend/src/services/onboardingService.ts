@@ -29,6 +29,12 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+/** Mock 모드에서 남은 placeholder ID — 라이브/샌드박스 API에 쓰면 KYC가 깨짐 */
+function isPlaceholderWirexId(id?: string | null) {
+  if (!id) return true;
+  return /^mock[-_]/i.test(id);
+}
+
 export function publicOnboarding(user: AppUser) {
   return {
     status: user.onboardingStatus || 'none',
@@ -124,6 +130,7 @@ export const onboardingService = {
     ok: boolean;
     steps: OnboardStep[];
     kycUrl?: string | null;
+    kycError?: string | null;
     card?: unknown;
     onboarding: ReturnType<typeof publicOnboarding>;
   }> {
@@ -187,6 +194,11 @@ export const onboardingService = {
       }
 
       let wirexUserId = store.getUserById(userId)!.wirexUserId;
+      if (isPlaceholderWirexId(wirexUserId)) {
+        steps.push({ step: 'clearPlaceholderWirexId', ok: true, detail: wirexUserId || null });
+        store.updateOnboarding(userId, { wirexUserId: null, onboardingStatus: 'onchain' });
+        wirexUserId = undefined;
+      }
       if (!wirexUserId) {
         wirexUserId = await registerApi(user0.email, user0.country || 'GB', eoa, user0.partnerId);
         steps.push({ step: 'registerUser', ok: true, detail: wirexUserId });
@@ -199,6 +211,7 @@ export const onboardingService = {
       }
 
       let kycUrl: string | null = null;
+      let kycError: string | null = null;
       try {
         kycUrl = await wx.getVerificationLink({
           walletAddress: eoa,
@@ -206,9 +219,12 @@ export const onboardingService = {
           userId: wirexUserId,
         });
         steps.push({ step: 'kycLink', ok: Boolean(kycUrl), detail: kycUrl });
-        if (kycUrl) store.updateOnboarding(userId, { onboardingStatus: 'kyc' });
+        if (kycUrl) store.updateOnboarding(userId, { onboardingStatus: 'kyc', onboardingError: null });
+        else kycError = 'Wirex returned empty KYC verification link';
       } catch (e) {
-        steps.push({ step: 'kycLink', ok: false, detail: (e as Error).message });
+        kycError = (e as Error).message;
+        steps.push({ step: 'kycLink', ok: false, detail: kycError });
+        store.updateOnboarding(userId, { onboardingError: kycError });
       }
 
       let visaActive = false;
@@ -236,11 +252,17 @@ export const onboardingService = {
       }
 
       if (opts?.mint !== false) {
-        try {
-          const mint = await sandboxHelper.mintWusd(eoa, 20);
-          steps.push({ step: 'mintWusd', ok: true, detail: mint });
-        } catch (e) {
-          steps.push({ step: 'mintWusd', ok: false, detail: (e as Error).message });
+        const startStatus = user0.onboardingStatus || 'none';
+        const skipMint = ['registered', 'kyc', 'ready'].includes(startStatus);
+        if (skipMint) {
+          steps.push({ step: 'mintWusd', ok: true, detail: 'skipped — already past wallet setup' });
+        } else {
+          try {
+            const mint = await sandboxHelper.mintWusd(eoa, 20);
+            steps.push({ step: 'mintWusd', ok: true, detail: mint });
+          } catch (e) {
+            steps.push({ step: 'mintWusd', ok: false, detail: (e as Error).message });
+          }
         }
       }
 
@@ -288,12 +310,18 @@ export const onboardingService = {
       const registered = steps.some((s) => s.step === 'registerUser' && s.ok);
       const cardOk = !opts?.issueCard || steps.some((s) => s.step === 'issueVirtualCard' && s.ok);
       const kycReady = Boolean(kycUrl) || latest.kycStatus === 'verified';
+      // 카드 발급 전이면 KYC 링크(또는 완료)까지가 성공 기준 — 조용히 ok:true 만 주면 UI가 멈춘 것처럼 보임
+      const ok = registered && cardOk && (opts?.issueCard ? kycReady || Boolean(card) : kycReady);
+      if (!ok && kycError && !latest.onboardingError) {
+        store.updateOnboarding(userId, { onboardingError: kycError });
+      }
       return {
-        ok: registered && (cardOk || kycReady),
+        ok,
         steps,
         kycUrl,
+        kycError,
         card,
-        onboarding: publicOnboarding(latest),
+        onboarding: publicOnboarding(store.getUserById(userId)!),
       };
     } catch (e) {
       const msg = (e as Error).message;
