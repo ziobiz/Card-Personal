@@ -373,7 +373,7 @@
   width: 220px;
   min-width: 220px;
   background: var(--pg-side);
-  color: #d1d5db;
+  color: var(--pg-side-text, #d1d5db);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -583,7 +583,7 @@
   gap: 12px;
   text-align: left;
   background: transparent;
-  color: #d1d5db;
+  color: var(--pg-side-text, #d1d5db);
   border: 0;
   border-left: 3px solid transparent;
   padding: 12px 16px;
@@ -651,7 +651,7 @@
 .is-admin .hq-sub a {
   display: block;
   padding: 10px 16px 10px 44px;
-  color: #c8cdd4 !important;
+  color: var(--pg-side-text, #c8cdd4) !important;
   text-decoration: none;
   font-size: var(--hq-menu-fs);
   font-weight: 400;
@@ -2055,6 +2055,7 @@
 
 .is-admin .hq-brand-swatch {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 16px;
   padding: 12px;
@@ -2068,6 +2069,112 @@
   padding: 6px 10px;
   color: #fff;
   font-size: 12px;
+  border-radius: 4px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.is-admin .hq-tone-bar {
+  margin: 0 0 16px;
+}
+
+.is-admin .hq-tone-apply {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.is-admin .hq-tone-label {
+  font-weight: 700;
+  color: #333;
+  margin-right: 4px;
+}
+
+.is-admin .hq-tone-reset {
+  margin-left: auto;
+}
+
+.is-admin .hq-tone-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px solid #e5e8ee;
+  border-radius: 6px;
+  background: #fafbfc;
+}
+
+.is-admin .hq-tone-slots > .hq-card-hint {
+  grid-column: 1 / -1;
+  margin: 0 0 4px;
+}
+
+.is-admin .hq-tone-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #e0e4ea;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.is-admin .hq-tone-slot label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+.is-admin .hq-tone-slot .input {
+  width: 100% !important;
+}
+
+.is-admin .hq-tone-slot-swatches {
+  display: flex;
+  gap: 4px;
+  min-height: 14px;
+}
+
+.is-admin .hq-tone-slot-swatches i {
+  display: block;
+  width: 18px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.is-admin .hq-brand-colors-labeled {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px 18px;
+}
+
+.is-admin .hq-color-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+
+.is-admin .hq-color-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #222;
+}
+
+.is-admin .hq-color-hint {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.4;
+  min-height: 2.8em;
+}
+
+.is-admin .hq-brand-colors-labeled .hq-color-row .input {
+  width: 110px !important;
 }
 
 .is-admin .wx-field {

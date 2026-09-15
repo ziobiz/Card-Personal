@@ -595,6 +595,35 @@ router.put('/brand', (req, res) => {
   res.json(updated);
 });
 
+/** Restore factory PG chrome colors (presets kept) */
+router.post('/brand/colors/reset', (_req, res) => {
+  res.json(brandStore.resetColors());
+});
+
+/** Apply named preset slot 0–2 to current colors */
+router.post('/brand/colors/apply-preset', (req, res) => {
+  const slot = Number(req.body?.slot);
+  if (!Number.isFinite(slot) || slot < 0 || slot > 2) {
+    return res.status(400).json({ error: 'slot must be 0, 1, or 2' });
+  }
+  res.json(brandStore.applyPreset(slot));
+});
+
+/** Save current colors into preset slot with optional name */
+router.post('/brand/colors/save-preset', (req, res) => {
+  const slot = Number(req.body?.slot);
+  if (!Number.isFinite(slot) || slot < 0 || slot > 2) {
+    return res.status(400).json({ error: 'slot must be 0, 1, or 2' });
+  }
+  const name = typeof req.body?.name === 'string' ? req.body.name : undefined;
+  res.json(brandStore.savePreset(slot, name));
+});
+
+/** Apply factory default colors (same as reset) */
+router.post('/brand/colors/apply-default', (_req, res) => {
+  res.json(brandStore.resetColors());
+});
+
 /** Sellable package / white-label deployment profile (no Wirex secrets) */
 router.get('/package', (_, res) => {
   res.json(packageManifest.publicView());

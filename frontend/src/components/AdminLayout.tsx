@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { type LanguageCode } from '../i18n';
 import { useBrand } from '../brand/BrandContext';
 import { api } from '../api';
-import { normalizeHex } from '../lib/colorHex';
+import { contrastText, normalizeHex } from '../lib/colorHex';
 import './AdminLayout.css';
 
 type MenuItem = { to: string; labelKey: string; menu: string };
@@ -320,8 +320,13 @@ export default function AdminLayout() {
         {
           ['--pg-side']: normalizeHex(brand.sidebarBg) || brand.sidebarBg || undefined,
           ['--pg-side-logo']: normalizeHex(brand.logoBg) || brand.logoBg || undefined,
+          ['--pg-side-hover']: normalizeHex(brand.sidebarHover || '') || brand.sidebarHover || undefined,
+          ['--pg-side-active']: normalizeHex(brand.sidebarActive || '') || brand.sidebarActive || undefined,
+          ['--pg-side-sub']: normalizeHex(brand.sidebarSub || '') || brand.sidebarSub || undefined,
+          ['--pg-tabbar']: normalizeHex(brand.tabbarBg || '') || brand.tabbarBg || undefined,
           ['--pg-accent']: normalizeHex(brand.accentColor) || brand.accentColor || undefined,
           ['--pg-top']: normalizeHex(brand.headerBg) || brand.headerBg || undefined,
+          ['--pg-side-text']: contrastText(brand.sidebarBg || '#2c3138'),
         } as CSSProperties
       }
     >

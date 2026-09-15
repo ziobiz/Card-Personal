@@ -26,18 +26,39 @@ export const LOCALE_CATALOG = [
 
 export type LocaleCode = (typeof LOCALE_CATALOG)[number];
 
-export interface BrandConfig {
+/** UI chrome colors (admin shell + login panel) */
+export interface BrandColorSet {
+  /** 상단바 */
+  headerBg: string;
+  /** 사이드바 기본색 */
+  sidebarBg: string;
+  /** 메뉴 호버 */
+  sidebarHover: string;
+  /** 메뉴 선택·펼침 */
+  sidebarActive: string;
+  /** 사이드 서브메뉴 배경 */
+  sidebarSub: string;
+  /** 로고 영역 배경 */
+  logoBg: string;
+  /** 상단바 아래 메뉴바(탭바) */
+  tabbarBg: string;
+  /** 활성 서브메뉴 강조 */
+  accentColor: string;
+  /** 로그인 패널 배경 */
+  loginPanelBg: string;
+}
+
+export interface BrandColorPreset {
+  name: string;
+  colors: BrandColorSet;
+}
+
+export interface BrandConfig extends BrandColorSet {
   productName: string;
   operatorName: string;
   cardBrandName: string;
   copyright: string;
   supportEmail: string;
-  headerBg: string;
-  sidebarBg: string;
-  accentColor: string;
-  logoBg: string;
-  /** Admin login right panel background (#rrggbb) */
-  loginPanelBg: string;
   logoAdmin: string;
   logoLogin: string;
   favicon: string;
@@ -57,7 +78,102 @@ export interface BrandConfig {
   enabledLocales: LocaleCode[];
   /** Fallback when browser lang is not enabled */
   defaultLocale: LocaleCode;
+  /**
+   * Named color tones (3 slots).
+   * Slot 0/1 prefilled Light/Dark; slot 2 empty until user saves.
+   */
+  colorPresets: BrandColorPreset[];
   updatedAt?: string;
+}
+
+export const COLOR_KEYS = [
+  'headerBg',
+  'sidebarBg',
+  'sidebarHover',
+  'sidebarActive',
+  'sidebarSub',
+  'logoBg',
+  'tabbarBg',
+  'accentColor',
+  'loginPanelBg',
+] as const;
+
+export type ColorKey = (typeof COLOR_KEYS)[number];
+
+/** Factory default — PG charcoal (초기화 대상) */
+export const DEFAULT_COLORS: BrandColorSet = {
+  headerBg: '#ffffff',
+  sidebarBg: '#2c3138',
+  sidebarHover: '#353b45',
+  sidebarActive: '#252a32',
+  sidebarSub: '#242933',
+  logoBg: '#1f232b',
+  tabbarBg: '#4a4a4a',
+  accentColor: '#6658dd',
+  loginPanelBg: '#e2e5ea',
+};
+
+/** Preset slot 0 — light */
+export const LIGHT_COLORS: BrandColorSet = {
+  headerBg: '#ffffff',
+  sidebarBg: '#f3f4f6',
+  sidebarHover: '#e5e7eb',
+  sidebarActive: '#d1d5db',
+  sidebarSub: '#e8eaed',
+  logoBg: '#e5e7eb',
+  tabbarBg: '#9ca3af',
+  accentColor: '#4f46e5',
+  loginPanelBg: '#f8f9fb',
+};
+
+/** Preset slot 1 — dark */
+export const DARK_COLORS: BrandColorSet = {
+  headerBg: '#1a1d24',
+  sidebarBg: '#15181e',
+  sidebarHover: '#22262f',
+  sidebarActive: '#0f1115',
+  sidebarSub: '#0c0e12',
+  logoBg: '#0a0c10',
+  tabbarBg: '#2a2f38',
+  accentColor: '#818cf8',
+  loginPanelBg: '#2c3138',
+};
+
+export const PRESET_SLOT_COUNT = 3;
+
+export function defaultColorPresets(): BrandColorPreset[] {
+  return [
+    { name: '밝은색', colors: { ...LIGHT_COLORS } },
+    { name: '어두운색', colors: { ...DARK_COLORS } },
+    { name: '', colors: { ...DEFAULT_COLORS } },
+  ];
+}
+
+function pickColors(src: Partial<BrandColorSet> | undefined, fallback: BrandColorSet): BrandColorSet {
+  const out = { ...fallback };
+  if (!src) return out;
+  for (const key of COLOR_KEYS) {
+    const c = clipColor(src[key]);
+    if (c) out[key] = c;
+  }
+  return out;
+}
+
+function normalizePresets(raw: unknown): BrandColorPreset[] {
+  const seeded = defaultColorPresets();
+  if (!Array.isArray(raw)) return seeded;
+  const out: BrandColorPreset[] = [];
+  for (let i = 0; i < PRESET_SLOT_COUNT; i++) {
+    const item = raw[i] as Partial<BrandColorPreset> | undefined;
+    if (!item || typeof item !== 'object') {
+      out.push(seeded[i]);
+      continue;
+    }
+    const name = typeof item.name === 'string' ? item.name.trim().slice(0, 40) : seeded[i].name;
+    const colors = pickColors(item.colors, seeded[i].colors);
+    out.push({ name, colors });
+  }
+  return out;
 }
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -69,11 +185,7 @@ export const DEFAULT_BRAND: BrandConfig = {
   cardBrandName: 'ICOCARD',
   copyright: 'Copyright © 2026 ICOCARD Service by ONTHELINE',
   supportEmail: '',
-  headerBg: '#ffffff',
-  sidebarBg: '#2c3138',
-  accentColor: '#6658dd',
-  logoBg: '#1f232b',
-  loginPanelBg: '#e2e5ea',
+  ...DEFAULT_COLORS,
   logoAdmin: '',
   logoLogin: '',
   favicon: '',
@@ -85,6 +197,7 @@ export const DEFAULT_BRAND: BrandConfig = {
   loginNoticeBody: '',
   enabledLocales: ['ko', 'en', 'ja', 'zh', 'th'],
   defaultLocale: 'en',
+  colorPresets: defaultColorPresets(),
 };
 
 function normalizeLocales(raw: unknown, fallback: LocaleCode[]): LocaleCode[] {
@@ -100,30 +213,62 @@ function normalizeLocales(raw: unknown, fallback: LocaleCode[]): LocaleCode[] {
 }
 
 function load(): BrandConfig {
-  if (!existsSync(FILE)) return { ...DEFAULT_BRAND, enabledLocales: [...DEFAULT_BRAND.enabledLocales] };
+  if (!existsSync(FILE)) {
+    return {
+      ...DEFAULT_BRAND,
+      enabledLocales: [...DEFAULT_BRAND.enabledLocales],
+      colorPresets: defaultColorPresets(),
+    };
+  }
   try {
-    const parsed = JSON.parse(readFileSync(FILE, 'utf-8')) as Partial<BrandConfig>;
+    const parsed = JSON.parse(readFileSync(FILE, 'utf-8')) as Partial<BrandConfig> & {
+      colorPresets?: unknown;
+    };
     const enabledLocales = normalizeLocales(parsed.enabledLocales, DEFAULT_BRAND.enabledLocales);
     let defaultLocale = (parsed.defaultLocale as LocaleCode) || DEFAULT_BRAND.defaultLocale;
     if (!enabledLocales.includes(defaultLocale)) defaultLocale = enabledLocales[0];
-    const next = {
-      ...DEFAULT_BRAND,
-      ...parsed,
-      enabledLocales,
-      defaultLocale,
-    };
-    // Migrate pre-PG tones to PG sidebar (#2c3138) / logo (#1f232b) / purple accent
-    const headerLegacy = new Set(['#604010', '#c4a484', '#2c3138', '#4a5160', '#3a4049']);
+    const colors = pickColors(parsed, DEFAULT_COLORS);
+
+    // Migrate pre-PG tones once for legacy flat fields
+    const headerLegacy = new Set(['#604010', '#c4a484', '#4a5160', '#3a4049']);
     const sidebarLegacy = new Set(['#4a5160', '#3a4049', '#3d434c', '#2b2f36', '#252a30', '#1c1f24']);
     const accentLegacy = new Set(['#6b5ce7', '#6aa3e8', '#604010', '#c4a484']);
-    const logoLegacy = new Set(['#4a5160', '#3a4049', '#2c3138', '#252a30', '#3d434c', '#2b2f36']);
-    if (headerLegacy.has((next.headerBg || '').toLowerCase())) next.headerBg = DEFAULT_BRAND.headerBg;
-    if (sidebarLegacy.has((next.sidebarBg || '').toLowerCase())) next.sidebarBg = DEFAULT_BRAND.sidebarBg;
-    if (accentLegacy.has((next.accentColor || '').toLowerCase())) next.accentColor = DEFAULT_BRAND.accentColor;
-    if (logoLegacy.has((next.logoBg || '').toLowerCase())) next.logoBg = DEFAULT_BRAND.logoBg;
-    return next;
+    const logoLegacy = new Set(['#4a5160', '#3a4049', '#252a30', '#3d434c', '#2b2f36']);
+    if (headerLegacy.has(colors.headerBg.toLowerCase())) colors.headerBg = DEFAULT_COLORS.headerBg;
+    if (sidebarLegacy.has(colors.sidebarBg.toLowerCase())) {
+      Object.assign(colors, {
+        sidebarBg: DEFAULT_COLORS.sidebarBg,
+        sidebarHover: DEFAULT_COLORS.sidebarHover,
+        sidebarActive: DEFAULT_COLORS.sidebarActive,
+        sidebarSub: DEFAULT_COLORS.sidebarSub,
+      });
+    }
+    if (accentLegacy.has(colors.accentColor.toLowerCase())) colors.accentColor = DEFAULT_COLORS.accentColor;
+    if (logoLegacy.has(colors.logoBg.toLowerCase())) colors.logoBg = DEFAULT_COLORS.logoBg;
+
+    // Fill missing new fields from defaults when old brand.json lacks them
+    if (!parsed.sidebarHover) colors.sidebarHover = DEFAULT_COLORS.sidebarHover;
+    if (!parsed.sidebarActive) colors.sidebarActive = DEFAULT_COLORS.sidebarActive;
+    if (!parsed.sidebarSub) colors.sidebarSub = DEFAULT_COLORS.sidebarSub;
+    if (!parsed.tabbarBg) colors.tabbarBg = DEFAULT_COLORS.tabbarBg;
+
+    const hadPresets = Array.isArray(parsed.colorPresets) && parsed.colorPresets.length > 0;
+    const colorPresets = hadPresets ? normalizePresets(parsed.colorPresets) : defaultColorPresets();
+
+    return {
+      ...DEFAULT_BRAND,
+      ...parsed,
+      ...colors,
+      enabledLocales,
+      defaultLocale,
+      colorPresets,
+    };
   } catch {
-    return { ...DEFAULT_BRAND, enabledLocales: [...DEFAULT_BRAND.enabledLocales] };
+    return {
+      ...DEFAULT_BRAND,
+      enabledLocales: [...DEFAULT_BRAND.enabledLocales],
+      colorPresets: defaultColorPresets(),
+    };
   }
 }
 
@@ -171,11 +316,21 @@ function clipHeroImage(v: unknown): string | undefined {
   return undefined;
 }
 
+function snapshotColors(src: BrandConfig): BrandColorSet {
+  const out = { ...DEFAULT_COLORS };
+  for (const key of COLOR_KEYS) out[key] = src[key] || DEFAULT_COLORS[key];
+  return out;
+}
+
 export const brandStore = {
   get(): BrandConfig {
     return {
       ...cached,
       enabledLocales: [...cached.enabledLocales],
+      colorPresets: cached.colorPresets.map((p) => ({
+        name: p.name,
+        colors: { ...p.colors },
+      })),
     };
   },
 
@@ -183,10 +338,59 @@ export const brandStore = {
     return this.get();
   },
 
+  getDefaultColors(): BrandColorSet {
+    return { ...DEFAULT_COLORS };
+  },
+
+  /** Restore factory PG colors (presets kept) */
+  resetColors(): BrandConfig {
+    Object.assign(cached, DEFAULT_COLORS);
+    cached.updatedAt = new Date().toISOString();
+    save();
+    return this.get();
+  },
+
+  /** Apply a preset slot (0–2) to current colors */
+  applyPreset(slot: number): BrandConfig {
+    const i = Math.floor(Number(slot));
+    if (i < 0 || i >= PRESET_SLOT_COUNT) return this.get();
+    const preset = cached.colorPresets[i] || defaultColorPresets()[i];
+    Object.assign(cached, pickColors(preset.colors, DEFAULT_COLORS));
+    cached.updatedAt = new Date().toISOString();
+    save();
+    return this.get();
+  },
+
+  /** Save current colors into a named preset slot */
+  savePreset(slot: number, name?: string): BrandConfig {
+    const i = Math.floor(Number(slot));
+    if (i < 0 || i >= PRESET_SLOT_COUNT) return this.get();
+    const presets = cached.colorPresets.map((p) => ({
+      name: p.name,
+      colors: { ...p.colors },
+    }));
+    while (presets.length < PRESET_SLOT_COUNT) {
+      presets.push(defaultColorPresets()[presets.length]);
+    }
+    const nextName =
+      typeof name === 'string' && name.trim()
+        ? name.trim().slice(0, 40)
+        : presets[i].name || `Tone ${i + 1}`;
+    presets[i] = { name: nextName, colors: snapshotColors(cached) };
+    cached.colorPresets = presets;
+    cached.updatedAt = new Date().toISOString();
+    save();
+    return this.get();
+  },
+
   update(partial: Partial<BrandConfig>): BrandConfig {
     const next: BrandConfig = {
       ...cached,
       enabledLocales: [...cached.enabledLocales],
+      colorPresets: cached.colorPresets.map((p) => ({
+        name: p.name,
+        colors: { ...p.colors },
+      })),
     };
     const name = clipText(partial.productName, 40);
     if (name != null) next.productName = name || DEFAULT_BRAND.productName;
@@ -198,7 +402,7 @@ export const brandStore = {
     if (copy != null) next.copyright = copy;
     const mail = clipText(partial.supportEmail, 80);
     if (mail != null) next.supportEmail = mail;
-    for (const key of ['headerBg', 'sidebarBg', 'accentColor', 'logoBg', 'loginPanelBg'] as const) {
+    for (const key of COLOR_KEYS) {
       const c = clipColor(partial[key]);
       if (c) next[key] = c;
     }
@@ -235,6 +439,9 @@ export const brandStore = {
     }
     if (!next.enabledLocales.includes(next.defaultLocale)) {
       next.defaultLocale = next.enabledLocales[0];
+    }
+    if (partial.colorPresets !== undefined) {
+      next.colorPresets = normalizePresets(partial.colorPresets);
     }
     next.updatedAt = new Date().toISOString();
     cached = next;

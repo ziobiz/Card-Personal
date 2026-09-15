@@ -163,18 +163,29 @@ export interface WalletBalance {
   cardSummaries: { cardId: string; panLast4: string; balance: number; currency: string }[];
 }
 
-export interface BrandConfig {
+export interface BrandColorSet {
+  headerBg: string;
+  sidebarBg: string;
+  sidebarHover: string;
+  sidebarActive: string;
+  sidebarSub: string;
+  logoBg: string;
+  tabbarBg: string;
+  accentColor: string;
+  loginPanelBg: string;
+}
+
+export interface BrandColorPreset {
+  name: string;
+  colors: BrandColorSet;
+}
+
+export interface BrandConfig extends BrandColorSet {
   productName: string;
   operatorName: string;
   cardBrandName: string;
   copyright: string;
   supportEmail: string;
-  headerBg: string;
-  sidebarBg: string;
-  accentColor: string;
-  logoBg: string;
-  /** Admin login right panel background */
-  loginPanelBg?: string;
   logoAdmin: string;
   logoLogin: string;
   favicon: string;
@@ -192,8 +203,22 @@ export interface BrandConfig {
   defaultLocale?: string;
   tenantSlug?: string;
   deliveryMode?: string;
+  /** 3 named color tones (Light / Dark / custom) */
+  colorPresets?: BrandColorPreset[];
   updatedAt?: string;
 }
+
+export const DEFAULT_COLORS: BrandColorSet = {
+  headerBg: '#ffffff',
+  sidebarBg: '#2c3138',
+  sidebarHover: '#353b45',
+  sidebarActive: '#252a32',
+  sidebarSub: '#242933',
+  logoBg: '#1f232b',
+  tabbarBg: '#4a4a4a',
+  accentColor: '#6658dd',
+  loginPanelBg: '#e2e5ea',
+};
 
 export const DEFAULT_BRAND: BrandConfig = {
   productName: 'ICOCARD',
@@ -201,11 +226,7 @@ export const DEFAULT_BRAND: BrandConfig = {
   cardBrandName: 'ICOCARD',
   copyright: 'Copyright © 2026 ICOCARD Service by ONTHELINE',
   supportEmail: '',
-  headerBg: '#ffffff',
-  sidebarBg: '#2c3138',
-  accentColor: '#6658dd',
-  logoBg: '#1f232b',
-  loginPanelBg: '#e2e5ea',
+  ...DEFAULT_COLORS,
   logoAdmin: '',
   logoLogin: '',
   favicon: '',
@@ -217,6 +238,40 @@ export const DEFAULT_BRAND: BrandConfig = {
   loginNoticeBody: '',
   enabledLocales: ['ko', 'en', 'ja', 'zh', 'th'],
   defaultLocale: 'en',
+  colorPresets: [
+    {
+      name: '밝은색',
+      colors: {
+        headerBg: '#ffffff',
+        sidebarBg: '#f3f4f6',
+        sidebarHover: '#e5e7eb',
+        sidebarActive: '#d1d5db',
+        sidebarSub: '#e8eaed',
+        logoBg: '#e5e7eb',
+        tabbarBg: '#9ca3af',
+        accentColor: '#4f46e5',
+        loginPanelBg: '#f8f9fb',
+      },
+    },
+    {
+      name: '어두운색',
+      colors: {
+        headerBg: '#1a1d24',
+        sidebarBg: '#15181e',
+        sidebarHover: '#22262f',
+        sidebarActive: '#0f1115',
+        sidebarSub: '#0c0e12',
+        logoBg: '#0a0c10',
+        tabbarBg: '#2a2f38',
+        accentColor: '#818cf8',
+        loginPanelBg: '#2c3138',
+      },
+    },
+    {
+      name: '',
+      colors: { ...DEFAULT_COLORS },
+    },
+  ],
 };
 
 /** System default login background image */
@@ -635,6 +690,20 @@ export const api = {
     getBrand: () => request<BrandConfig>('/admin/brand'),
     updateBrand: (data: Partial<BrandConfig>) =>
       request<BrandConfig>('/admin/brand', { method: 'PUT', body: JSON.stringify(data) }),
+    resetBrandColors: () =>
+      request<BrandConfig>('/admin/brand/colors/reset', { method: 'POST', body: '{}' }),
+    applyBrandDefaultColors: () =>
+      request<BrandConfig>('/admin/brand/colors/apply-default', { method: 'POST', body: '{}' }),
+    applyBrandColorPreset: (slot: number) =>
+      request<BrandConfig>('/admin/brand/colors/apply-preset', {
+        method: 'POST',
+        body: JSON.stringify({ slot }),
+      }),
+    saveBrandColorPreset: (slot: number, name?: string) =>
+      request<BrandConfig>('/admin/brand/colors/save-preset', {
+        method: 'POST',
+        body: JSON.stringify({ slot, name }),
+      }),
     sandboxStatus: () =>
       request<{
         environment: string;

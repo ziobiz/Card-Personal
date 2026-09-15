@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { api, type BrandConfig } from '../../api';
+import { api, DEFAULT_BRAND, DEFAULT_COLORS, type BrandConfig } from '../../api';
 import { useBrand } from '../../brand/BrandContext';
 import { normalizeHex } from '../../lib/colorHex';
 import type { AdminOutletContext } from '../../components/AdminLayout';
@@ -22,7 +22,38 @@ const LOCALE_OPTIONS = [
   { code: 'lo', label: 'ລາວ' },
 ] as const;
 
-const COLOR_KEYS = ['headerBg', 'sidebarBg', 'accentColor', 'logoBg', 'loginPanelBg'] as const;
+const COLOR_KEYS = [
+  'sidebarBg',
+  'sidebarHover',
+  'sidebarActive',
+  'logoBg',
+  'headerBg',
+  'tabbarBg',
+  'sidebarSub',
+  'accentColor',
+  'loginPanelBg',
+] as const;
+
+type ColorKey = (typeof COLOR_KEYS)[number];
+
+function ensureColorFields(b: BrandConfig): BrandConfig {
+  const presets = b.colorPresets?.length
+    ? b.colorPresets
+    : DEFAULT_BRAND.colorPresets || [];
+  return {
+    ...DEFAULT_BRAND,
+    ...b,
+    sidebarHover: b.sidebarHover || DEFAULT_BRAND.sidebarHover,
+    sidebarActive: b.sidebarActive || DEFAULT_BRAND.sidebarActive,
+    sidebarSub: b.sidebarSub || DEFAULT_BRAND.sidebarSub,
+    tabbarBg: b.tabbarBg || DEFAULT_BRAND.tabbarBg,
+    loginPanelBg: b.loginPanelBg || DEFAULT_BRAND.loginPanelBg,
+    colorPresets: presets.map((p, i) => ({
+      name: p?.name ?? '',
+      colors: { ...(DEFAULT_BRAND.colorPresets?.[i]?.colors || DEFAULT_COLORS), ...(p?.colors || {}) },
+    })),
+  };
+}
 
 function fileToDataUrl(file: File, maxBytes = 350_000): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -93,14 +124,7 @@ export default function AdminBrand() {
   useEffect(() => {
     api.admin
       .getBrand()
-      .then((b) =>
-        setForm({
-          ...b,
-          enabledLocales: b.enabledLocales?.length ? b.enabledLocales : ['ko', 'en', 'ja', 'zh', 'th'],
-          defaultLocale: b.defaultLocale || 'en',
-          loginPanelBg: b.loginPanelBg || '#e2e5ea',
-        })
-      )
+      .then((b) => setForm(ensureColorFields(b)))
       .catch(() => setForm(null));
   }, []);
 
@@ -108,21 +132,27 @@ export default function AdminBrand() {
     setForm((s) => (s ? { ...s, [k]: v } : s));
   };
 
-  const setColor = (key: (typeof COLOR_KEYS)[number], raw: string) => {
+  const setColor = (key: ColorKey, raw: string) => {
     setHexDraft((d) => ({ ...d, [key]: raw }));
     const hex = normalizeHex(raw);
     if (hex) set(key, hex);
   };
 
-  const commitColor = (key: (typeof COLOR_KEYS)[number]) => {
+  const commitColor = (key: ColorKey) => {
     const raw = hexDraft[key] ?? form?.[key] ?? '';
     const hex = normalizeHex(String(raw));
     if (hex) {
       set(key, hex);
       setHexDraft((d) => ({ ...d, [key]: hex }));
     } else if (form) {
-      setHexDraft((d) => ({ ...d, [key]: form[key] || '' }));
+      setHexDraft((d) => ({ ...d, [key]: String(form[key] || '') }));
     }
+  };
+
+  const applyForm = (next: BrandConfig) => {
+    setForm(ensureColorFields(next));
+    setHexDraft({});
+    reload();
   };
 
   const onFile = async (k: 'logoAdmin' | 'logoLogin' | 'favicon', file?: File) => {
@@ -160,13 +190,7 @@ export default function AdminBrand() {
     setMsg('');
     try {
       const next = await api.admin.updateBrand(form);
-      setForm({
-        ...next,
-        enabledLocales: next.enabledLocales?.length ? next.enabledLocales : form.enabledLocales,
-        defaultLocale: next.defaultLocale || form.defaultLocale,
-        loginPanelBg: next.loginPanelBg || form.loginPanelBg || '#e2e5ea',
-      });
-      reload();
+      applyForm(next);
       setOk(true);
       setMsg(t('admin.brandSaved'));
     } catch (err) {
@@ -175,6 +199,86 @@ export default function AdminBrand() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const applyDefaultTone = async () => {
+    setSaving(true);
+    setMsg('');
+    try {
+      const next = await api.admin.applyBrandDefaultColors();
+      applyForm(next);
+      setOk(true);
+      setMsg(t('admin.brandToneApplied'));
+    } catch (err) {
+      setOk(false);
+      setMsg((err as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const applyPreset = async (slot: number) => {
+    setSaving(true);
+    setMsg('');
+    try {
+      const next = await api.admin.applyBrandColorPreset(slot);
+      applyForm(next);
+      setOk(true);
+      setMsg(t('admin.brandToneApplied'));
+    } catch (err) {
+      setOk(false);
+      setMsg((err as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const resetColors = async () => {
+    setSaving(true);
+    setMsg('');
+    try {
+      const next = await api.admin.resetBrandColors();
+      applyForm(next);
+      setOk(true);
+      setMsg(t('admin.brandColorsReset'));
+    } catch (err) {
+      setOk(false);
+      setMsg((err as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const savePresetSlot = async (slot: number) => {
+    if (!form) return;
+    setSaving(true);
+    setMsg('');
+    try {
+      // Persist current manual colors first, then snapshot into slot
+      await api.admin.updateBrand(form);
+      const name = form.colorPresets?.[slot]?.name || '';
+      const next = await api.admin.saveBrandColorPreset(slot, name);
+      applyForm(next);
+      setOk(true);
+      setMsg(t('admin.brandToneSaved'));
+    } catch (err) {
+      setOk(false);
+      setMsg((err as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const renamePreset = (slot: number, name: string) => {
+    setForm((s) => {
+      if (!s) return s;
+      const presets = [...(s.colorPresets || ensureColorFields(s).colorPresets || [])];
+      while (presets.length < 3) {
+        presets.push({ name: '', colors: { ...DEFAULT_COLORS } });
+      }
+      presets[slot] = { ...presets[slot], name };
+      return { ...s, colorPresets: presets };
+    });
   };
 
   useEffect(() => {
@@ -192,13 +296,19 @@ export default function AdminBrand() {
   const noticeBodyPreview = (form.loginNoticeBody || '').trim() || t('partner.scamBody');
   const panelBg = normalizeHex(form.loginPanelBg || '') || form.loginPanelBg || '#e2e5ea';
 
-  const colorLabels: Record<(typeof COLOR_KEYS)[number], string> = {
-    headerBg: t('admin.brandHeader'),
-    sidebarBg: t('admin.brandSidebar'),
-    accentColor: t('admin.brandAccent'),
-    logoBg: t('admin.brandLogoBg'),
-    loginPanelBg: t('admin.brandLoginPanelBg'),
+  const colorLabels: Record<ColorKey, { title: string; hint: string }> = {
+    sidebarBg: { title: t('admin.brandSidebar'), hint: t('admin.brandSidebarHint') },
+    sidebarHover: { title: t('admin.brandSidebarHover'), hint: t('admin.brandSidebarHoverHint') },
+    sidebarActive: { title: t('admin.brandSidebarActive'), hint: t('admin.brandSidebarActiveHint') },
+    logoBg: { title: t('admin.brandLogoBg'), hint: t('admin.brandLogoBgHint') },
+    headerBg: { title: t('admin.brandHeader'), hint: t('admin.brandHeaderHint') },
+    tabbarBg: { title: t('admin.brandTabbar'), hint: t('admin.brandTabbarHint') },
+    sidebarSub: { title: t('admin.brandSidebarSub'), hint: t('admin.brandSidebarSubHint') },
+    accentColor: { title: t('admin.brandAccent'), hint: t('admin.brandAccentHint') },
+    loginPanelBg: { title: t('admin.brandLoginPanelBg'), hint: t('admin.brandLoginPanelBgHint') },
   };
+
+  const presets = form.colorPresets?.length ? form.colorPresets : DEFAULT_BRAND.colorPresets || [];
 
   return (
     <form id="hq-brand-form" className="hq-brand" onSubmit={save}>
@@ -437,13 +547,64 @@ export default function AdminBrand() {
       <section className="card-surface hq-brand-card">
         <h3>{t('admin.brandColors')}</h3>
         <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandColorsHint')}</p>
-        <div className="hq-brand-colors">
+
+        <div className="hq-tone-bar">
+          <div className="hq-tone-apply">
+            <span className="hq-tone-label">{t('admin.brandToneApply')}</span>
+            <button type="button" className="btn-outline" disabled={saving} onClick={() => void applyDefaultTone()}>
+              {t('admin.brandToneDefault')}
+            </button>
+            {[0, 1, 2].map((slot) => (
+              <button
+                key={slot}
+                type="button"
+                className="btn-outline"
+                disabled={saving}
+                onClick={() => void applyPreset(slot)}
+                title={presets[slot]?.name || t('admin.brandToneSlot', { n: slot + 1 })}
+              >
+                {presets[slot]?.name?.trim() || t('admin.brandToneSlot', { n: slot + 1 })}
+              </button>
+            ))}
+            <button type="button" className="btn-outline hq-tone-reset" disabled={saving} onClick={() => void resetColors()}>
+              {t('admin.brandColorsResetBtn')}
+            </button>
+          </div>
+        </div>
+
+        <div className="hq-tone-slots">
+          <p className="hq-card-hint">{t('admin.brandToneSaveHint')}</p>
+          {[0, 1, 2].map((slot) => (
+            <div key={slot} className="hq-tone-slot">
+              <label>
+                {t('admin.brandToneSlot', { n: slot + 1 })}
+                <input
+                  className="input"
+                  value={presets[slot]?.name || ''}
+                  placeholder={slot === 0 ? 'Light' : slot === 1 ? 'Dark' : t('admin.brandToneNamePh')}
+                  onChange={(e) => renamePreset(slot, e.target.value)}
+                />
+              </label>
+              <div className="hq-tone-slot-swatches" aria-hidden>
+                {COLOR_KEYS.slice(0, 6).map((key) => (
+                  <i key={key} style={{ background: presets[slot]?.colors?.[key] || form[key] }} />
+                ))}
+              </div>
+              <button type="button" className="btn-outline" disabled={saving} onClick={() => void savePresetSlot(slot)}>
+                {t('admin.brandToneSaveCurrent')}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="hq-brand-colors hq-brand-colors-labeled">
           {COLOR_KEYS.map((key) => {
-            const value = normalizeHex(form[key] || '') || form[key] || '#000000';
+            const value = normalizeHex(String(form[key] || '')) || String(form[key] || '#000000');
             const draft = hexDraft[key] ?? value;
             return (
-              <label key={key}>
-                {colorLabels[key]}
+              <label key={key} className="hq-color-field">
+                <span className="hq-color-title">{colorLabels[key].title}</span>
+                <span className="hq-color-hint">{colorLabels[key].hint}</span>
                 <span className="hq-color-row">
                   <input
                     type="color"
@@ -472,8 +633,12 @@ export default function AdminBrand() {
           }}
         >
           <span style={{ background: form.logoBg }}>{form.productName}</span>
-          <span style={{ background: form.sidebarBg }}>{t('admin.menuMerchant')}</span>
-          <span style={{ background: form.accentColor }}>{t('admin.navFeePolicy')}</span>
+          <span style={{ background: form.sidebarBg }}>{t('admin.brandSidebar')}</span>
+          <span style={{ background: form.sidebarHover }}>{t('admin.brandSidebarHover')}</span>
+          <span style={{ background: form.sidebarActive }}>{t('admin.brandSidebarActive')}</span>
+          <span style={{ background: form.sidebarSub }}>{t('admin.brandSidebarSub')}</span>
+          <span style={{ background: form.tabbarBg }}>{t('admin.brandTabbar')}</span>
+          <span style={{ background: form.accentColor }}>{t('admin.brandAccent')}</span>
           <span style={{ background: panelBg, color: '#333' }}>{t('admin.brandLoginPanelBg')}</span>
         </div>
       </section>
