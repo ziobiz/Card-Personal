@@ -166,6 +166,7 @@ async function execute(userId: string, opts?: { issueCard?: boolean; mint?: bool
     try {
       const user0 = store.getUserById(userId);
       if (!user0) throw new Error('User not found');
+      const startedStatus = user0.onboardingStatus || 'none';
       const wx = wirexClientForUser(user0);
 
       let eoa: `0x${string}`;
@@ -265,8 +266,7 @@ async function execute(userId: string, opts?: { issueCard?: boolean; mint?: bool
       }
 
       if (opts?.mint !== false) {
-        const startStatus = user0.onboardingStatus || 'none';
-        const skipMint = ['registered', 'kyc', 'ready'].includes(startStatus);
+        const skipMint = ['registered', 'kyc', 'ready'].includes(startedStatus);
         if (skipMint) {
           steps.push({ step: 'mintWusd', ok: true, detail: 'skipped — already past wallet setup' });
         } else {
