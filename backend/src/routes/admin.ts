@@ -34,6 +34,7 @@ import { resolveOperatorMenus } from '../lib/resolveAccess.js';
 import { canManageHqAccess, defaultGroupId, hqActor, partnerHasSuper, writeAudit } from '../lib/accessActor.js';
 import { manualsFor } from '../lib/manualCatalog.js';
 import { requireTurnstile } from '../lib/turnstile.js';
+import { platformStore } from '../data/platformStore.js';
 
 const router = Router();
 
@@ -565,29 +566,119 @@ router.get('/cards', async (_, res) => {
   }
 });
 
+function toYmd(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function lastDays(n: number): string[] {
+  const out: string[] = [];
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    out.push(toYmd(d));
+  }
+  return out;
+}
+
+function countByDay(isos: string[], days: string[]) {
+  const map: Record<string, number> = Object.fromEntries(days.map((d) => [d, 0]));
+  for (const iso of isos) {
+    if (!iso) continue;
+    const k = toYmd(new Date(iso));
+    if (k in map) map[k] += 1;
+  }
+  return days.map((date) => ({ date, value: map[date] }));
+}
+
 router.get('/stats', async (_, res) => {
   try {
+    const users = [...store.users.values()];
+    const partners = partnerStore.list();
+    const operators = operatorStore.list();
+    const orgs = orgStore.list();
+    const days = lastDays(14);
+    const weekAgo = days[days.length - 7] || days[0];
     let totalCards = 0;
     let activeCards = 0;
     let totalBalance = 0;
-    for (const user of store.users.values()) {
+    const statusMap: Record<string, number> = {};
+    for (const user of users) {
       if (!user.wirexUserId) continue;
-      const { items } = await wirexService.getCards(user.wirexUserId, 1, 100);
-      totalCards += items.length;
-      activeCards += items.filter((c) => c.status === 'active').length;
-      for (const c of items) {
-        totalBalance += c.balance ?? 0;
+      try {
+        const { items } = await wirexService.getCards(user.wirexUserId, 1, 100);
+        totalCards += items.length;
+        activeCards += items.filter((c) => c.status === 'active').length;
+        for (const c of items) {
+          totalBalance += c.balance ?? 0;
+          statusMap[c.status] = (statusMap[c.status] || 0) + 1;
+        }
+      } catch {
+        /* keep dashboard up even if a tenant card fetch fails */
       }
     }
+    const fees = feeSettings.get();
+    const estimatedRevenue =
+      totalCards * (fees.cardIssuanceFee || 0) + activeCards * (fees.cardMonthlyFee || 0);
     res.json({
-      totalUsers: store.users.size,
+      totalUsers: users.length,
+      pendingUsers: users.filter((u) => u.status === 'pending').length,
+      activeUsers: users.filter((u) => (u.status || 'active') === 'active').length,
+      newUsers7d: users.filter((u) => u.createdAt && toYmd(new Date(u.createdAt)) >= weekAgo).length,
+      totalPartners: partners.length,
+      totalOperators: operators.length,
+      totalOrgs: orgs.length,
       totalCards,
       activeCards,
+      pendingKyc: users.filter((u) => u.kycStatus === 'pending').length,
       totalBalance,
+      estimatedRevenue,
+      membersByDay: countByDay(users.map((u) => u.createdAt), days),
+      partnersByDay: countByDay(partners.map((p) => p.createdAt), days),
+      cardsByStatus: Object.entries(statusMap).map(([key, value]) => ({ key, value })),
     });
   } catch (e) {
     res.status(500).json({ error: (e as Error).message });
   }
+});
+
+router.get('/platform', (_req, res) => {
+  res.json(platformStore.payload());
+});
+
+router.put('/platform', (req, res) => {
+  const body = (req.body ?? {}) as Record<string, unknown>;
+  const security = body.security as
+    | { otpRequiredAdmin?: boolean; otpRequiredMember?: boolean; otpRequiredOrg?: boolean }
+    | undefined;
+  if (security && typeof security === 'object') {
+    settingsStore.update({
+      security: {
+        otpRequiredAdmin: Boolean(security.otpRequiredAdmin),
+        otpRequiredMember: Boolean(security.otpRequiredMember),
+        otpRequiredOrg: security.otpRequiredOrg !== false,
+      },
+    });
+  }
+  platformStore.update({
+    primaryDomain: typeof body.primaryDomain === 'string' ? body.primaryDomain : undefined,
+    apiPublicUrl: typeof body.apiPublicUrl === 'string' ? body.apiPublicUrl : undefined,
+    corsOrigins: Array.isArray(body.corsOrigins) ? (body.corsOrigins as string[]) : undefined,
+    sslCertPath: typeof body.sslCertPath === 'string' ? body.sslCertPath : undefined,
+    smtpHost: typeof body.smtpHost === 'string' ? body.smtpHost : undefined,
+    smtpPort: typeof body.smtpPort === 'number' ? body.smtpPort : Number(body.smtpPort) || undefined,
+    smtpSecure: typeof body.smtpSecure === 'boolean' ? body.smtpSecure : undefined,
+    smtpUser: typeof body.smtpUser === 'string' ? body.smtpUser : undefined,
+    smtpPassword: typeof body.smtpPassword === 'string' ? body.smtpPassword : undefined,
+    smtpFrom: typeof body.smtpFrom === 'string' ? body.smtpFrom : undefined,
+    otpExpireMinutes:
+      typeof body.otpExpireMinutes === 'number' ? body.otpExpireMinutes : Number(body.otpExpireMinutes) || undefined,
+  });
+  res.json(platformStore.payload());
 });
 
 router.get('/brand', (_, res) => {

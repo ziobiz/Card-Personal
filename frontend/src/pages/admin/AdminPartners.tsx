@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api, type CredentialKit } from '../../api';
 import CredentialKitCard from '../../components/CredentialKitCard';
+import { EntityFilterBar } from '../../components/EntityFilterBar';
+import { EMPTY_ENTITY_FILTER, filterByEntity, type EntityFilterState } from '../../lib/dateRange';
 
 type PartnerFees = {
   cardIssuanceFee?: number;
@@ -48,6 +50,8 @@ export default function AdminPartners() {
   const [message, setMessage] = useState('');
   const [messageOk, setMessageOk] = useState(false);
   const [feePartner, setFeePartner] = useState<Partner | null>(null);
+  const [applied, setApplied] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
+  const [draft, setDraft] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
   const [feeForm, setFeeForm] = useState({
     cardIssuanceFee: 5,
     cardTopUpFeePercent: 0.5,
@@ -148,6 +152,22 @@ export default function AdminPartners() {
   const apiBase =
     import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://127.0.0.1:3001' : '');
 
+  const filtered = useMemo(
+    () =>
+      filterByEntity(partners, applied, {
+        date: (p) => p.createdAt,
+        status: (p) => p.status,
+        text: (p, field) => {
+          if (field === 'name') return p.name;
+          if (field === 'company') return p.companyName || '';
+          if (field === 'code') return p.id;
+          if (field === 'mid') return p.mid || '';
+          return `${p.name} ${p.companyName || ''} ${p.id} ${p.mid || ''} ${p.apiKeyPrefix}`;
+        },
+      }),
+    [partners, applied]
+  );
+
   return (
     <div className="app-container">
       <div className="hq-toolbar">
@@ -173,6 +193,25 @@ export default function AdminPartners() {
       </div>
 
       <p className="hq-card-hint">{t('admin.partnersDesc')}</p>
+      <EntityFilterBar
+        value={draft}
+        onChange={setDraft}
+        onSearch={() => setApplied(draft)}
+        onReset={() => setApplied(EMPTY_ENTITY_FILTER)}
+        dateFieldOptions={[{ value: 'createdAt', label: t('admin.colJoined') }]}
+        searchFieldOptions={[
+          { value: 'all', label: t('admin.filterAll') },
+          { value: 'name', label: t('admin.colPartner') },
+          { value: 'company', label: t('admin.colCompany') },
+          { value: 'code', label: t('admin.filterCode') },
+          { value: 'mid', label: 'MID' },
+        ]}
+        statusOptions={[
+          { value: 'active', label: t('admin.statusActive') },
+          { value: 'suspended', label: t('admin.statusSuspended') },
+        ]}
+      />
+      <p className="entity-filter-count">{t('admin.filterCount', { n: filtered.length })}</p>
 
       {feePartner && (
         <form onSubmit={handleSaveFees} className="card-surface admin-partners-create">
@@ -320,7 +359,7 @@ export default function AdminPartners() {
               </tr>
             </thead>
             <tbody>
-              {partners.map((p) => (
+              {filtered.map((p) => (
                 <tr key={p.id}>
                   <td>{p.name}</td>
                   <td>{p.companyName || '-'}</td>
@@ -491,7 +530,7 @@ export default function AdminPartners() {
               ))}
             </tbody>
           </table>
-          {partners.length === 0 && <p className="muted-text empty-text">{t('admin.noPartners')}</p>}
+          {filtered.length === 0 && <p className="muted-text empty-text">{t('admin.noPartners')}</p>}
         </div>
       )}
     </div>

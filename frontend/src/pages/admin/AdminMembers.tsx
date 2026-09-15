@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
+import { EntityFilterBar } from '../../components/EntityFilterBar';
+import { EMPTY_ENTITY_FILTER, filterByEntity, type EntityFilterState } from '../../lib/dateRange';
 
 type Member = {
   id: string;
@@ -19,16 +21,18 @@ type Member = {
 
 export default function AdminMembers({ source }: { source?: 'direct' | 'partner' }) {
   const { t } = useTranslation();
-  const [filter, setFilter] = useState<'all' | 'direct' | 'partner'>(source || 'all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'active' | 'suspended' | 'rejected'>('all');
+  const [channel, setChannel] = useState<'all' | 'direct' | 'partner'>(source || 'all');
+  const [kyc, setKyc] = useState('all');
   const [items, setItems] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [applied, setApplied] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
+  const [draft, setDraft] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
 
   const load = () => {
     setLoading(true);
     api.admin
-      .getMembers(filter === 'all' ? undefined : filter)
+      .getMembers(channel === 'all' ? undefined : channel)
       .then((r) => setItems(r.items))
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
@@ -36,34 +40,76 @@ export default function AdminMembers({ source }: { source?: 'direct' | 'partner'
 
   useEffect(() => {
     load();
-  }, [filter]);
+  }, [channel]);
+
+  const filtered = useMemo(
+    () =>
+      filterByEntity(items, applied, {
+        date: (m) => m.createdAt,
+        status: (m) => m.status,
+        text: (m, field) => {
+          if (field === 'email') return m.email;
+          if (field === 'name') return m.displayName || '';
+          if (field === 'wirex') return m.wirexUserId || '';
+          if (field === 'partner') return `${m.partnerName || ''} ${m.partnerId || ''}`;
+          return `${m.email} ${m.displayName || ''} ${m.wirexUserId || ''} ${m.partnerName || ''} ${m.partnerId || ''}`;
+        },
+      }).filter((m) => (kyc === 'all' ? true : (m.kycStatus || '') === kyc)),
+    [items, applied, kyc]
+  );
 
   return (
     <div>
       <p className="hq-card-hint">{t('admin.customersDesc')}</p>
-      <div className="hq-filter">
-        <label>
-          {t('admin.colChannel')}
-          <select className="input" value={filter} onChange={(e) => setFilter(e.target.value as typeof filter)}>
-            <option value="all">{t('admin.filterAll')}</option>
-            <option value="direct">{t('admin.channelDirect')}</option>
-            <option value="partner">{t('admin.channelPartner')}</option>
-          </select>
-        </label>
-        <label>
-          {t('admin.colStatus')}
-          <select className="input" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}>
-            <option value="all">{t('admin.filterAll')}</option>
-            <option value="pending">{t('admin.statusPending')}</option>
-            <option value="active">{t('admin.statusActive')}</option>
-            <option value="suspended">{t('admin.statusSuspended')}</option>
-            <option value="rejected">{t('admin.statusRejected')}</option>
-          </select>
-        </label>
-        <button type="button" className="btn-primary" onClick={load}>
-          {t('admin.search')}
-        </button>
-      </div>
+      <EntityFilterBar
+        value={draft}
+        onChange={setDraft}
+        onSearch={() => {
+          setApplied(draft);
+          load();
+        }}
+        onReset={() => {
+          setApplied(EMPTY_ENTITY_FILTER);
+          setKyc('all');
+          setChannel(source || 'all');
+        }}
+        dateFieldOptions={[{ value: 'createdAt', label: t('admin.colJoined') }]}
+        searchFieldOptions={[
+          { value: 'all', label: t('admin.filterAll') },
+          { value: 'email', label: t('admin.colEmail') },
+          { value: 'name', label: t('admin.operatorName') },
+          { value: 'wirex', label: t('admin.colWirexId') },
+          { value: 'partner', label: t('admin.colPartner') },
+        ]}
+        statusOptions={[
+          { value: 'pending', label: t('admin.statusPending') },
+          { value: 'active', label: t('admin.statusActive') },
+          { value: 'suspended', label: t('admin.statusSuspended') },
+          { value: 'rejected', label: t('admin.statusRejected') },
+        ]}
+        extraFields={
+          <>
+            <label>
+              <span>{t('admin.colChannel')}</span>
+              <select className="input" value={channel} onChange={(e) => setChannel(e.target.value as typeof channel)}>
+                <option value="all">{t('admin.filterAll')}</option>
+                <option value="direct">{t('admin.channelDirect')}</option>
+                <option value="partner">{t('admin.channelPartner')}</option>
+              </select>
+            </label>
+            <label>
+              <span>KYC</span>
+              <select className="input" value={kyc} onChange={(e) => setKyc(e.target.value)}>
+                <option value="all">{t('admin.filterAll')}</option>
+                <option value="pending">{t('admin.statusPending')}</option>
+                <option value="verified">{t('admin.kycVerified')}</option>
+                <option value="rejected">{t('admin.statusRejected')}</option>
+              </select>
+            </label>
+          </>
+        }
+      />
+      <p className="entity-filter-count">{t('admin.filterCount', { n: filtered.length })}</p>
       {message ? <p className="muted-text">{message}</p> : null}
       {loading ? (
         <p className="muted-text">{t('common.loading')}</p>
@@ -84,9 +130,7 @@ export default function AdminMembers({ source }: { source?: 'direct' | 'partner'
               </tr>
             </thead>
             <tbody>
-              {items
-                .filter((m) => statusFilter === 'all' || m.status === statusFilter)
-                .map((m) => (
+              {filtered.map((m) => (
                 <tr key={m.id}>
                   <td>
                     {m.email}
@@ -169,9 +213,7 @@ export default function AdminMembers({ source }: { source?: 'direct' | 'partner'
               ))}
             </tbody>
           </table>
-          {items.filter((m) => statusFilter === 'all' || m.status === statusFilter).length === 0 && (
-            <p className="muted-text empty-text">{t('admin.noMembers')}</p>
-          )}
+          {filtered.length === 0 && <p className="muted-text empty-text">{t('admin.noMembers')}</p>}
         </div>
       )}
     </div>

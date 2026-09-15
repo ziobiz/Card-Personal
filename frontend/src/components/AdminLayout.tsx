@@ -32,6 +32,7 @@ const CRUMB_PATH: Record<string, string> = {
   'admin.navFeeList': '/admin/fee-list',
   'admin.navFeePolicy': '/admin/fee-policy',
   'admin.navSettings': '/admin/settings',
+  'admin.navPlatform': '/admin/platform',
   'admin.navBrand': '/admin/brand',
   'admin.navSandbox': '/admin/sandbox',
   'admin.navHqOperators': '/admin/operators',
@@ -147,6 +148,7 @@ export default function AdminLayout() {
         { to: '/admin/brand', labelKey: 'admin.navBrand', menu: 'brand' },
         { to: '/admin/sandbox', labelKey: 'admin.navSandbox', menu: 'sandbox' },
         { to: '/admin/settings', labelKey: 'admin.navSettings', menu: 'settings' },
+        { to: '/admin/platform', labelKey: 'admin.navPlatform', menu: 'platform' },
       ],
     },
     {
@@ -200,6 +202,7 @@ export default function AdminLayout() {
       '/admin/fee-list': ['admin.menuMerchant', 'admin.navFeeList'],
       '/admin/fee-policy': ['admin.menuMerchant', 'admin.navFeePolicy'],
       '/admin/settings': ['admin.menuHq', 'admin.navSettings'],
+      '/admin/platform': ['admin.menuHq', 'admin.navPlatform'],
       '/admin/brand': ['admin.menuHq', 'admin.navBrand'],
       '/admin/sandbox': ['admin.menuHq', 'admin.navSandbox'],
       '/admin/operators': ['admin.menuUsers', 'admin.navHqOperators'],

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
+import { EntityFilterBar } from '../../components/EntityFilterBar';
+import { EMPTY_ENTITY_FILTER, filterByEntity, type EntityFilterState } from '../../lib/dateRange';
 import {
   emptyOrgProfile,
   OrgAccountFields,
@@ -14,7 +15,7 @@ import ConfirmRegisterModal from './ConfirmRegisterModal';
 
 const LEVELS = ['HEADQUARTERS', 'REGIONAL', 'MASTER_DIST', 'BRANCH', 'AGENCY', 'SALES_OFFICE', 'MERCHANT'] as const;
 
-type Unit = { id: string; orgLevel: string; parentId?: string; parentName?: string; code: string; name: string; status: string; loginId?: string };
+type Unit = { id: string; orgLevel: string; parentId?: string; parentName?: string; code: string; name: string; status: string; loginId?: string; createdAt?: string };
 
 export default function AdminOrg() {
   const { t } = useTranslation();
@@ -25,6 +26,8 @@ export default function AdminOrg() {
   const [message, setMessage] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [applied, setApplied] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
+  const [draft, setDraft] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
 
   const load = () => {
     api.admin.getOrg(level).then((r) => setItems(r.items)).catch((e) => setMessage((e as Error).message));
@@ -70,12 +73,23 @@ export default function AdminOrg() {
     }
   };
 
+  const filtered = useMemo(
+    () =>
+      filterByEntity(items, applied, {
+        date: (u) => u.createdAt,
+        status: (u) => u.status,
+        text: (u, field) => {
+          if (field === 'name') return u.name;
+          if (field === 'code') return u.code;
+          if (field === 'loginId') return u.loginId || '';
+          return `${u.name} ${u.code} ${u.loginId || ''} ${u.parentName || ''}`;
+        },
+      }),
+    [items, applied]
+  );
+
   return (
-    <div className="app-container">
-      <div className="page-header">
-        <h1 className="page-title">{t('admin.navOrg')}</h1>
-        <Link to="/admin/partners" className="btn-outline">{t('admin.navPartners')}</Link>
-      </div>
+    <div>
       <p className="muted-text hq-card-hint">{t('admin.orgHqOnly')}</p>
       <p className="muted-text hq-card-hint">{t('admin.orgDesc')}</p>
       <div className="admin-org-levels">
@@ -84,10 +98,7 @@ export default function AdminOrg() {
             key={code}
             type="button"
             className={level === code ? 'btn-primary' : 'btn-outline'}
-            onClick={() => {
-              setLevel(code);
-              if (code !== 'HEADQUARTERS') setParentOpen(true);
-            }}
+            onClick={() => setLevel(code)}
           >
             {t(`admin.orgLevel.${code}`)}
           </button>
@@ -116,6 +127,24 @@ export default function AdminOrg() {
         </form>
       )}
       <div className="card-surface admin-table-wrap">
+        <EntityFilterBar
+          value={draft}
+          onChange={setDraft}
+          onSearch={() => setApplied(draft)}
+          onReset={() => setApplied(EMPTY_ENTITY_FILTER)}
+          dateFieldOptions={[{ value: 'createdAt', label: t('admin.colJoined') }]}
+          searchFieldOptions={[
+            { value: 'all', label: t('admin.filterAll') },
+            { value: 'name', label: t('admin.orgName') },
+            { value: 'code', label: t('admin.orgCode') },
+            { value: 'loginId', label: t('admin.loginId') },
+          ]}
+          statusOptions={[
+            { value: 'ACTIVE', label: t('admin.statusActive') },
+            { value: 'INACTIVE', label: t('admin.statusSuspended') },
+          ]}
+        />
+        <p className="entity-filter-count">{t('admin.filterCount', { n: filtered.length })}</p>
         <table className="admin-table">
           <thead>
             <tr>
@@ -127,7 +156,7 @@ export default function AdminOrg() {
             </tr>
           </thead>
           <tbody>
-            {items.map((u) => (
+            {filtered.map((u) => (
               <tr key={u.id}>
                 <td>{u.name} <span className="mono">{u.code}</span></td>
                 <td>{t(`admin.orgLevel.${u.orgLevel}`)}</td>

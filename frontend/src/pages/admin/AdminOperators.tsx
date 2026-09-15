@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
+import { EntityFilterBar } from '../../components/EntityFilterBar';
+import { EMPTY_ENTITY_FILTER, filterByEntity, type EntityFilterState } from '../../lib/dateRange';
 
 type Operator = {
   id: string;
@@ -30,6 +32,8 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
   const [groupId, setGroupId] = useState('');
   const [role, setRole] = useState('ADMIN');
   const [message, setMessage] = useState('');
+  const [applied, setApplied] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
+  const [draft, setDraft] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
 
   const load = () => {
     api.admin.getOperators(scope).then((r) => setItems(r.items)).catch(() => setItems([]));
@@ -70,6 +74,21 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
       setMessage((err as Error).message);
     }
   };
+
+  const filtered = useMemo(
+    () =>
+      filterByEntity(items, applied, {
+        date: (o) => o.createdAt,
+        status: (o) => o.status,
+        text: (o, field) => {
+          if (field === 'email') return o.email;
+          if (field === 'name') return o.name;
+          if (field === 'partner') return `${o.partnerName || ''} ${o.partnerId || ''}`;
+          return `${o.email} ${o.name} ${o.partnerName || ''} ${o.partnerId || ''}`;
+        },
+      }),
+    [items, applied]
+  );
 
   return (
     <div>
@@ -121,6 +140,24 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
           <button type="submit" className="btn-primary">{t('admin.register')}</button>
         </div>
       </form>
+      <EntityFilterBar
+        value={draft}
+        onChange={setDraft}
+        onSearch={() => setApplied(draft)}
+        onReset={() => setApplied(EMPTY_ENTITY_FILTER)}
+        dateFieldOptions={[{ value: 'createdAt', label: t('admin.colJoined') }]}
+        searchFieldOptions={[
+          { value: 'all', label: t('admin.filterAll') },
+          { value: 'email', label: t('admin.colEmail') },
+          { value: 'name', label: t('admin.operatorName') },
+          ...(scope === 'PARTNER' ? [{ value: 'partner', label: t('admin.colPartner') }] : []),
+        ]}
+        statusOptions={[
+          { value: 'active', label: t('admin.statusActive') },
+          { value: 'suspended', label: t('admin.statusSuspended') },
+        ]}
+      />
+      <p className="entity-filter-count">{t('admin.filterCount', { n: filtered.length })}</p>
       <div className="card-surface" style={{ padding: 0 }}>
         <table className="admin-table">
           <thead>
@@ -136,7 +173,7 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
             </tr>
           </thead>
           <tbody>
-            {items.map((o) => (
+            {filtered.map((o) => (
               <tr key={o.id}>
                 <td>{o.email}</td>
                 <td>{o.name}</td>
@@ -178,7 +215,7 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
             ))}
           </tbody>
         </table>
-        {items.length === 0 && <p className="muted-text empty-text">{t('admin.noOperators')}</p>}
+        {filtered.length === 0 && <p className="muted-text empty-text">{t('admin.noOperators')}</p>}
       </div>
     </div>
   );

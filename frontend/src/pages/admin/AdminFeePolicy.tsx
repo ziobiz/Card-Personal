@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
+import { EntityFilterBar } from '../../components/EntityFilterBar';
+import { EMPTY_ENTITY_FILTER, filterByEntity, type EntityFilterState } from '../../lib/dateRange';
 
 type Dist = {
   hqRate: number;
@@ -24,6 +26,7 @@ type Row = {
   status: string;
   distribution: Dist;
   distributionApplyStart?: string;
+  createdAt?: string;
 };
 
 const emptyDist = (): Dist => ({
@@ -53,9 +56,8 @@ const LEVELS: Array<{ rate: keyof Dist; fee: keyof Dist; label: string }> = [
 export default function AdminFeePolicy({ view = 'all' }: { view?: 'list' | 'manage' | 'all' }) {
   const { t } = useTranslation();
   const [rows, setRows] = useState<Row[]>([]);
-  const [qName, setQName] = useState('');
-  const [qCode, setQCode] = useState('');
-  const [qStatus, setQStatus] = useState('all');
+  const [applied, setApplied] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
+  const [draft, setDraft] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
   const [message, setMessage] = useState('');
   const [showDefault, setShowDefault] = useState(false);
   const [defaults, setDefaults] = useState(emptyDist());
@@ -99,6 +101,7 @@ export default function AdminFeePolicy({ view = 'all' }: { view?: 'list' | 'mana
             status: it.status,
             distribution: { ...base, ...((it as { distribution?: Dist }).distribution ?? {}) },
             distributionApplyStart: (it as { distributionApplyStart?: string }).distributionApplyStart,
+            createdAt: it.createdAt,
           }))
         );
       })
@@ -111,13 +114,16 @@ export default function AdminFeePolicy({ view = 'all' }: { view?: 'list' | 'mana
 
   const filtered = useMemo(
     () =>
-      rows.filter((r) => {
-        if (qStatus !== 'all' && r.status !== qStatus) return false;
-        if (qName && !`${r.name} ${r.companyName ?? ''}`.toLowerCase().includes(qName.toLowerCase())) return false;
-        if (qCode && !r.id.toLowerCase().includes(qCode.toLowerCase())) return false;
-        return true;
+      filterByEntity(rows, applied, {
+        date: (r) => r.createdAt,
+        status: (r) => r.status,
+        text: (r, field) => {
+          if (field === 'code') return r.id;
+          if (field === 'name') return `${r.name} ${r.companyName ?? ''}`;
+          return `${r.name} ${r.companyName ?? ''} ${r.id}`;
+        },
       }),
-    [rows, qName, qCode, qStatus]
+    [rows, applied]
   );
 
   const patch = (id: string, key: keyof Dist, value: number) => {
@@ -162,27 +168,24 @@ export default function AdminFeePolicy({ view = 'all' }: { view?: 'list' | 'mana
 
   return (
     <div>
-      {view !== 'manage' && <div className="hq-filter">
-        <label>
-          {t('admin.filterUse')}
-          <select className="input" value={qStatus} onChange={(e) => setQStatus(e.target.value)}>
-            <option value="all">{t('admin.filterAll')}</option>
-            <option value="active">{t('admin.statusActive')}</option>
-            <option value="suspended">{t('admin.statusSuspended')}</option>
-          </select>
-        </label>
-        <label>
-          {t('admin.colPartner')}
-          <input className="input" value={qName} onChange={(e) => setQName(e.target.value)} />
-        </label>
-        <label>
-          {t('admin.filterCode')}
-          <input className="input" value={qCode} onChange={(e) => setQCode(e.target.value)} />
-        </label>
-        <button type="button" className="btn-primary" onClick={load}>
-          {t('admin.search')}
-        </button>
-      </div>}
+      {view !== 'manage' && (
+        <EntityFilterBar
+          value={draft}
+          onChange={setDraft}
+          onSearch={() => setApplied(draft)}
+          onReset={() => setApplied(EMPTY_ENTITY_FILTER)}
+          dateFieldOptions={[{ value: 'createdAt', label: t('admin.colJoined') }]}
+          searchFieldOptions={[
+            { value: 'all', label: t('admin.filterAll') },
+            { value: 'name', label: t('admin.colPartner') },
+            { value: 'code', label: t('admin.filterCode') },
+          ]}
+          statusOptions={[
+            { value: 'active', label: t('admin.statusActive') },
+            { value: 'suspended', label: t('admin.statusSuspended') },
+          ]}
+        />
+      )}
 
       {view !== 'manage' && <div className="hq-toolbar">
         <button type="button" className="btn-secondary" onClick={() => setShowDefault(true)}>

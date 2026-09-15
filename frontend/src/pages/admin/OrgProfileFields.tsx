@@ -104,11 +104,11 @@ function Field({
 const COUNTRY_CODES = ['KR', 'JP', 'US', 'CN', 'TH', 'GB'] as const;
 
 const DIAL_CODES = [
-  { id: 'KR', label: 'South Korea (+82)' },
-  { id: 'JP', label: 'Japan (+81)' },
-  { id: 'US', label: 'United States (+1)' },
-  { id: 'CN', label: 'China (+86)' },
-  { id: 'TH', label: 'Thailand (+66)' },
+  { id: 'KR', label: '+82' },
+  { id: 'JP', label: '+81' },
+  { id: 'US', label: '+1' },
+  { id: 'CN', label: '+86' },
+  { id: 'TH', label: '+66' },
 ];
 
 function ComboPhone({
@@ -186,10 +186,8 @@ export function OrgAccountFields({
         {idMsg ? <span className="muted-text">{idMsg}</span> : null}
       </Field>
       <Field label={t('admin.password')} required>
-        <div className="org-id-row">
-          <input className="input" type="password" value={value.password} onChange={(e) => set({ password: e.target.value })} required />
-          <span className="muted-text org-pw-hint">{t('admin.passwordHint')}</span>
-        </div>
+        <input className="input" type="password" value={value.password} onChange={(e) => set({ password: e.target.value })} required />
+        <span className="muted-text org-pw-hint">{t('admin.passwordHint')}</span>
       </Field>
       <Field label={t('admin.passwordConfirm')} required>
         <input className="input" type="password" value={value.passwordConfirm} onChange={(e) => set({ passwordConfirm: e.target.value })} required />

@@ -39,6 +39,7 @@ import Wallet from './pages/Wallet';
 import Help from './pages/Help';
 import AdminManuals from './pages/admin/AdminManuals';
 import AdminAccess from './pages/admin/AdminAccess';
+import AdminPlatform from './pages/admin/AdminPlatform';
 import { useAuth } from './hooks/useAuth';
 import { withTenant, solutionSlugFromPath } from './tenant';
 
@@ -148,6 +149,7 @@ export default function App() {
           <Route path="sandbox" element={<AdminSandbox />} />
           <Route path="me" element={<AdminMyInfo />} />
           <Route path="settings" element={<AdminSettings />} />
+          <Route path="platform" element={<AdminPlatform />} />
           <Route path="manuals" element={<AdminManuals />} />
           <Route path="access" element={<AdminAccess />} />
         </Route>

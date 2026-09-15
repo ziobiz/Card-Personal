@@ -609,7 +609,63 @@ export const api = {
         total: number;
       }>('/admin/cards'),
     getStats: () =>
-      request<{ totalUsers: number; totalCards: number; activeCards: number; totalBalance: number }>('/admin/stats'),
+      request<{
+        totalUsers: number;
+        pendingUsers: number;
+        activeUsers: number;
+        newUsers7d: number;
+        totalPartners: number;
+        totalOperators: number;
+        totalOrgs: number;
+        totalCards: number;
+        activeCards: number;
+        pendingKyc: number;
+        totalBalance: number;
+        estimatedRevenue: number;
+        membersByDay: Array<{ date: string; value: number }>;
+        partnersByDay: Array<{ date: string; value: number }>;
+        cardsByStatus: Array<{ key: string; value: number }>;
+      }>('/admin/stats'),
+    getPlatform: () =>
+      request<{
+        config: {
+          primaryDomain: string;
+          apiPublicUrl: string;
+          corsOrigins: string[];
+          sslCertPath: string;
+          smtpHost: string;
+          smtpPort: number;
+          smtpSecure: boolean;
+          smtpUser: string;
+          smtpPassword: string;
+          smtpFrom: string;
+          otpExpireMinutes: number;
+        };
+        security: { otpRequiredAdmin: boolean; otpRequiredMember: boolean; otpRequiredOrg: boolean };
+        ssl: { status: string; detail: string; daysRemaining: number | null; notAfter: string | null };
+        server: { hostname: string; uptimeSec: number; memTotalMb: number; memFreeMb: number; loadAvg: number[] };
+        pm2: Array<{ name?: string; pm2_env?: { status?: string }; monit?: { memory?: number; cpu?: number } }>;
+      }>('/admin/platform'),
+    savePlatform: (data: Record<string, unknown>) =>
+      request<{
+        config: {
+          primaryDomain: string;
+          apiPublicUrl: string;
+          corsOrigins: string[];
+          sslCertPath: string;
+          smtpHost: string;
+          smtpPort: number;
+          smtpSecure: boolean;
+          smtpUser: string;
+          smtpPassword: string;
+          smtpFrom: string;
+          otpExpireMinutes: number;
+        };
+        security: { otpRequiredAdmin: boolean; otpRequiredMember: boolean; otpRequiredOrg: boolean };
+        ssl: { status: string; detail: string; daysRemaining: number | null; notAfter: string | null };
+        server: { hostname: string; uptimeSec: number; memTotalMb: number; memFreeMb: number; loadAvg: number[] };
+        pm2: Array<{ name?: string; pm2_env?: { status?: string }; monit?: { memory?: number; cpu?: number } }>;
+      }>('/admin/platform', { method: 'PUT', body: JSON.stringify(data) }),
     getSettings: () =>
       request<{
         wirex: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string };
