@@ -14,9 +14,10 @@
   --pg-line: #e8eaed;
   --pg-title: #f3f4f6;
   --pg-page: #fff;
-  --hq-top-h: 48px;
+  --hq-top-h: 56px;
   --hq-tab-h: 36px;
   --hq-menu-fs: 13px;
+  --pg-top: #e9eaee;
   min-height: 100vh;
   background: #f4f5f7;
   color: var(--pg-text);
@@ -74,9 +75,9 @@
   justify-content: flex-end;
   height: var(--hq-top-h);
   min-height: var(--hq-top-h);
-  background: #fff;
-  border-bottom: 1px solid #d5dae2;
-  padding: 0 16px 0 12px;
+  background: var(--pg-top);
+  border-bottom: 1px solid #d5d8de;
+  padding: 0 18px 0 14px;
   flex-shrink: 0;
   z-index: 40;
   overflow-x: auto;
@@ -89,7 +90,7 @@
 .is-admin .hq-right {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 0;
   height: var(--hq-top-h);
   white-space: nowrap;
   margin-left: auto;
@@ -103,11 +104,34 @@
   border-left: 0;
 }
 
+.is-admin .hq-right > .hq-tablet,
+.is-admin .hq-right > .hq-langs,
+.is-admin .hq-right > .hq-meta-item,
+.is-admin .hq-right > .hq-user {
+  margin-right: 0;
+}
+
+.is-admin .hq-right > .hq-tablet::after,
+.is-admin .hq-right > .hq-langs::after,
+.is-admin .hq-right > .hq-meta-item::after {
+  content: '|';
+  display: inline-block;
+  margin: 0 18px;
+  color: #b7bbc3;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.is-admin .hq-right > .hq-user {
+  margin-right: 20px;
+}
+
 .is-admin .hq-tablet {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #555;
+  color: #444;
   font-size: 12px;
 }
 
@@ -119,25 +143,30 @@
 .is-admin .hq-langs {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  padding: 5px 12px;
+  background: #f7f8fa;
+  border: 1px solid #d8dce3;
+  border-radius: 16px;
 }
 
 .is-admin .hq-lang-label {
   color: #666;
   font-size: 12px;
-  margin-right: 4px;
+  margin-right: 2px;
 }
 
 .is-admin .hq-langs button {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1px solid #d5dae2;
-  background: #fff;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
   color: #555;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 0;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0 2px;
   cursor: pointer;
   line-height: 1;
 }
@@ -145,7 +174,7 @@
 .is-admin .hq-meta-item,
 .is-admin .hq-user-btn,
 .is-admin .hq-user-name {
-  color: #555;
+  color: #444;
   font-size: 12px;
   background: transparent;
   border: 0;
@@ -155,9 +184,9 @@
 }
 
 .is-admin .hq-langs button.on {
-  background: var(--pg-accent);
-  border-color: var(--pg-accent);
-  color: #fff;
+  background: transparent;
+  border: 0;
+  color: #2f6fed;
   font-weight: 700;
   text-decoration: none;
 }
@@ -225,12 +254,12 @@
 }
 
 .is-admin .hq-close {
-  background: #6b7280 !important;
+  background: #e53935 !important;
   color: #fff !important;
-  border: 1px solid #5b6472 !important;
+  border: 1px solid #c62828 !important;
   border-radius: 2px !important;
-  padding: 0 12px !important;
-  height: 28px !important;
+  padding: 0 14px !important;
+  height: 30px !important;
   font-size: 12px !important;
   font-weight: 600;
   cursor: pointer;
