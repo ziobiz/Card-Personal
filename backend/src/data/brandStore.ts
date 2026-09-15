@@ -112,24 +112,15 @@ function load(): BrandConfig {
       enabledLocales,
       defaultLocale,
     };
-    const legacy = new Set([
-      '#604010',
-      '#c4a484',
-      '#6658dd',
-      '#6b5ce7',
-      '#6aa3e8',
-      '#2b2f36',
-      '#3d434c',
-      '#1c1f24',
-      '#2c3138',
-      '#3a4049',
-      '#252a30',
-      '#4a5160',
-    ]);
-    if (legacy.has((next.headerBg || '').toLowerCase())) next.headerBg = DEFAULT_BRAND.headerBg;
-    if (legacy.has((next.sidebarBg || '').toLowerCase())) next.sidebarBg = DEFAULT_BRAND.sidebarBg;
-    if (legacy.has((next.accentColor || '').toLowerCase())) next.accentColor = DEFAULT_BRAND.accentColor;
-    if (legacy.has((next.logoBg || '').toLowerCase())) next.logoBg = DEFAULT_BRAND.logoBg;
+    // Migrate pre-PG tones to PG sidebar (#2c3138) / logo (#1f232b) / purple accent
+    const headerLegacy = new Set(['#604010', '#c4a484', '#2c3138', '#4a5160', '#3a4049']);
+    const sidebarLegacy = new Set(['#4a5160', '#3a4049', '#3d434c', '#2b2f36', '#252a30', '#1c1f24']);
+    const accentLegacy = new Set(['#6b5ce7', '#6aa3e8', '#604010', '#c4a484']);
+    const logoLegacy = new Set(['#4a5160', '#3a4049', '#2c3138', '#252a30', '#3d434c', '#2b2f36']);
+    if (headerLegacy.has((next.headerBg || '').toLowerCase())) next.headerBg = DEFAULT_BRAND.headerBg;
+    if (sidebarLegacy.has((next.sidebarBg || '').toLowerCase())) next.sidebarBg = DEFAULT_BRAND.sidebarBg;
+    if (accentLegacy.has((next.accentColor || '').toLowerCase())) next.accentColor = DEFAULT_BRAND.accentColor;
+    if (logoLegacy.has((next.logoBg || '').toLowerCase())) next.logoBg = DEFAULT_BRAND.logoBg;
     return next;
   } catch {
     return { ...DEFAULT_BRAND, enabledLocales: [...DEFAULT_BRAND.enabledLocales] };

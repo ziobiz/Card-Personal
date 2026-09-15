@@ -319,6 +319,7 @@ export default function AdminLayout() {
       style={
         {
           ['--pg-side']: normalizeHex(brand.sidebarBg) || brand.sidebarBg || undefined,
+          ['--pg-side-logo']: normalizeHex(brand.logoBg) || brand.logoBg || undefined,
           ['--pg-accent']: normalizeHex(brand.accentColor) || brand.accentColor || undefined,
           ['--pg-top']: normalizeHex(brand.headerBg) || brand.headerBg || undefined,
         } as CSSProperties
