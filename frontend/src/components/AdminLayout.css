@@ -2291,26 +2291,28 @@
   max-width: 100% !important;
 }
 
-/* Open Graph description — ~1.5× title field width, slightly taller */
-.is-admin .hq-og-desc-field {
-  flex: 1 1 630px;
-  min-width: 0;
-  max-width: 630px;
+/* Open Graph — vertical stack, single-line title/description (same width, ~30% longer than default 200px) */
+.is-admin .hq-og-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
 }
 
-.is-admin textarea.hq-og-desc-input,
-.is-admin .hq-page textarea.hq-og-desc-input,
-.is-admin .hq-og-desc-input {
-  display: block;
-  width: 100% !important;
-  max-width: 630px !important;
-  min-height: 108px !important;
-  height: auto !important;
-  padding: 8px 10px !important;
-  line-height: 1.5 !important;
-  font-size: 12px !important;
-  resize: vertical;
-  white-space: pre-wrap;
+.is-admin .hq-og-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.is-admin .hq-og-stack .hq-og-line-input,
+.is-admin .hq-page .hq-og-stack .hq-og-line-input,
+.is-admin .hq-og-line-input {
+  width: 260px !important;
+  max-width: 100% !important;
+  min-height: 36px !important;
+  height: 36px !important;
 }
 
 .is-admin .hq-hero-preview {

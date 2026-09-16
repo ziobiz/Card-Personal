@@ -437,30 +437,27 @@ export default function AdminBrand() {
       <section className="card-surface hq-brand-card">
         <h3>{t('admin.brandOgMember')}</h3>
         <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandOgMemberHint')}</p>
-        <div className="hq-brand-grid">
-          <label className="hq-brand-span">
+        <div className="hq-og-stack">
+          <label className="hq-og-field">
             {t('admin.brandOgTitle')}
             <input
-              className="input"
+              className="input hq-og-line-input"
               value={form.ogMemberTitle || ''}
               onChange={(e) => set('ogMemberTitle', e.target.value)}
               placeholder={form.browserTitle || form.productName || 'ICOCARD'}
               maxLength={80}
             />
           </label>
-          <label className="hq-brand-span hq-og-desc-field">
+          <label className="hq-og-field">
             {t('admin.brandOgDescription')}
-            <textarea
-              className="input hq-og-desc-input"
-              rows={4}
+            <input
+              className="input hq-og-line-input"
               value={form.ogMemberDescription || ''}
               onChange={(e) => set('ogMemberDescription', e.target.value)}
               placeholder={t('admin.brandOgMemberDescPh')}
               maxLength={300}
             />
           </label>
-        </div>
-        <div className="hq-brand-logos" style={{ marginTop: 12 }}>
           <LogoSlot
             field="ogMemberImage"
             label={t('admin.brandOgImage')}
@@ -472,30 +469,27 @@ export default function AdminBrand() {
       <section className="card-surface hq-brand-card">
         <h3>{t('admin.brandOgAdmin')}</h3>
         <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandOgAdminHint')}</p>
-        <div className="hq-brand-grid">
-          <label className="hq-brand-span">
+        <div className="hq-og-stack">
+          <label className="hq-og-field">
             {t('admin.brandOgTitle')}
             <input
-              className="input"
+              className="input hq-og-line-input"
               value={form.ogAdminTitle || ''}
               onChange={(e) => set('ogAdminTitle', e.target.value)}
               placeholder={`${form.productName || 'ICOCARD'} Admin`}
               maxLength={80}
             />
           </label>
-          <label className="hq-brand-span hq-og-desc-field">
+          <label className="hq-og-field">
             {t('admin.brandOgDescription')}
-            <textarea
-              className="input hq-og-desc-input"
-              rows={4}
+            <input
+              className="input hq-og-line-input"
               value={form.ogAdminDescription || ''}
               onChange={(e) => set('ogAdminDescription', e.target.value)}
               placeholder={t('admin.brandOgAdminDescPh')}
               maxLength={300}
             />
           </label>
-        </div>
-        <div className="hq-brand-logos" style={{ marginTop: 12 }}>
           <LogoSlot
             field="ogAdminImage"
             label={t('admin.brandOgImage')}
