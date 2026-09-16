@@ -448,11 +448,11 @@ export default function AdminBrand() {
               maxLength={80}
             />
           </label>
-          <label className="hq-brand-span">
+          <label className="hq-brand-span hq-og-desc-field">
             {t('admin.brandOgDescription')}
             <textarea
-              className="input"
-              rows={3}
+              className="input hq-og-desc-input"
+              rows={6}
               value={form.ogMemberDescription || ''}
               onChange={(e) => set('ogMemberDescription', e.target.value)}
               placeholder={t('admin.brandOgMemberDescPh')}
@@ -483,11 +483,11 @@ export default function AdminBrand() {
               maxLength={80}
             />
           </label>
-          <label className="hq-brand-span">
+          <label className="hq-brand-span hq-og-desc-field">
             {t('admin.brandOgDescription')}
             <textarea
-              className="input"
-              rows={3}
+              className="input hq-og-desc-input"
+              rows={6}
               value={form.ogAdminDescription || ''}
               onChange={(e) => set('ogAdminDescription', e.target.value)}
               placeholder={t('admin.brandOgAdminDescPh')}

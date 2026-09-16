@@ -2291,6 +2291,28 @@
   max-width: 100% !important;
 }
 
+/* Open Graph description — full-width, taller than title field */
+.is-admin .hq-og-desc-field {
+  flex: 1 1 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.is-admin textarea.hq-og-desc-input,
+.is-admin .hq-page textarea.hq-og-desc-input,
+.is-admin .hq-og-desc-input {
+  display: block;
+  width: 100% !important;
+  max-width: 840px !important;
+  min-height: 140px !important;
+  height: auto !important;
+  padding: 10px 12px !important;
+  line-height: 1.55 !important;
+  font-size: 13px !important;
+  resize: vertical;
+  white-space: pre-wrap;
+}
+
 .is-admin .hq-hero-preview {
   width: 100%;
   min-height: 120px;
