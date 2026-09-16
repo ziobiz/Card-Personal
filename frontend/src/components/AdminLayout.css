@@ -2888,11 +2888,12 @@
 .is-admin .hq-color-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   margin: 0;
-  padding: 12px 12px 14px;
-  border-radius: 8px;
-  border: 1px solid transparent;
+  padding: 0;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0;
   box-sizing: border-box;
 }
 
@@ -2904,7 +2905,7 @@
 
 .is-admin .hq-color-hint {
   font-size: 11px;
-  color: #666;
+  color: #888;
   line-height: 1.4;
   min-height: 2.8em;
 }
@@ -2917,74 +2918,48 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  box-sizing: border-box;
+  padding: 0;
+  background: transparent !important;
 }
 
-/* Grouped pastel — outer card + input row (replaces shared yellow #fff7ea) */
-.is-admin .hq-color-group-sidebar {
+/*
+ * Only the hex text input (#2c3138 …) gets a pastel group background.
+ * Outer card / title / hint stay on white (default page).
+ */
+.is-admin .hq-page .hq-color-group-sidebar .hq-hex-input,
+.is-admin .hq-color-group-sidebar .hq-hex-input {
   background: #ebe8f4 !important;
   border-color: #c9c2e0 !important;
 }
-.is-admin .hq-color-group-sidebar .hq-color-row {
-  background: #ddd7f0;
-}
 
-.is-admin .hq-color-group-logo {
+.is-admin .hq-page .hq-color-group-logo .hq-hex-input,
+.is-admin .hq-color-group-logo .hq-hex-input {
   background: #e0f2e8 !important;
   border-color: #b5d9c6 !important;
 }
-.is-admin .hq-color-group-logo .hq-color-row {
-  background: #cfe8d9;
-}
 
-.is-admin .hq-color-group-fold {
+.is-admin .hq-page .hq-color-group-fold .hq-hex-input,
+.is-admin .hq-color-group-fold .hq-hex-input {
   background: #d4eef8 !important;
   border-color: #7ebedc !important;
 }
-.is-admin .hq-color-group-fold .hq-color-row {
-  background: #bfe6f4;
-}
 
-.is-admin .hq-color-group-header {
+.is-admin .hq-page .hq-color-group-header .hq-hex-input,
+.is-admin .hq-color-group-header .hq-hex-input {
   background: #f7e6ec !important;
   border-color: #e2c4d0 !important;
 }
-.is-admin .hq-color-group-header .hq-color-row {
-  background: #f0d6df;
-}
 
-.is-admin .hq-color-group-tabbar {
+.is-admin .hq-page .hq-color-group-tabbar .hq-hex-input,
+.is-admin .hq-color-group-tabbar .hq-hex-input {
   background: #e6e3f6 !important;
   border-color: #c4bee6 !important;
 }
-.is-admin .hq-color-group-tabbar .hq-color-row {
-  background: #d8d3ef;
-}
 
-.is-admin .hq-color-group-login {
+.is-admin .hq-page .hq-color-group-login .hq-hex-input,
+.is-admin .hq-color-group-login .hq-hex-input {
   background: #dff3f1 !important;
   border-color: #b5ddd8 !important;
-}
-.is-admin .hq-color-group-login .hq-color-row {
-  background: #cceae6;
-}
-
-.is-admin .hq-page .hq-color-group-sidebar .hq-hex-input,
-.is-admin .hq-page .hq-color-group-logo .hq-hex-input,
-.is-admin .hq-page .hq-color-group-fold .hq-hex-input,
-.is-admin .hq-page .hq-color-group-header .hq-hex-input,
-.is-admin .hq-page .hq-color-group-tabbar .hq-hex-input,
-.is-admin .hq-page .hq-color-group-login .hq-hex-input,
-.is-admin .hq-color-group-sidebar .hq-hex-input,
-.is-admin .hq-color-group-logo .hq-hex-input,
-.is-admin .hq-color-group-fold .hq-hex-input,
-.is-admin .hq-color-group-header .hq-hex-input,
-.is-admin .hq-color-group-tabbar .hq-hex-input,
-.is-admin .hq-color-group-login .hq-hex-input {
-  background: #ffffff !important;
-  border: 1px solid rgba(0, 0, 0, 0.14) !important;
 }
 
 .is-admin .wx-field {
