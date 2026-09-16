@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
 import { EntityFilterBar } from '../../components/EntityFilterBar';
+import { useHqConfirm } from '../../components/ConfirmActionContext';
 import { EMPTY_ENTITY_FILTER, filterByEntity, type EntityFilterState } from '../../lib/dateRange';
 
 type Member = {
@@ -21,6 +22,7 @@ type Member = {
 
 export default function AdminMembers({ source }: { source?: 'direct' | 'partner' }) {
   const { t } = useTranslation();
+  const { confirmApply } = useHqConfirm();
   const [channel, setChannel] = useState<'all' | 'direct' | 'partner'>(source || 'all');
   const [kyc, setKyc] = useState('all');
   const [items, setItems] = useState<Member[]>([]);
@@ -188,7 +190,7 @@ export default function AdminMembers({ source }: { source?: 'direct' | 'partner'
                       type="button"
                       className="btn-outline btn-compact"
                       onClick={async () => {
-                        if (!window.confirm(t('admin.resetOtpConfirm', { email: m.email }))) return;
+                        if (!(await confirmApply(t('admin.resetOtpConfirm', { email: m.email })))) return;
                         await api.admin.resetMemberOtp(m.id);
                         setMessage(t('admin.otpResetDone', { email: m.email }));
                         load();
@@ -200,7 +202,7 @@ export default function AdminMembers({ source }: { source?: 'direct' | 'partner'
                       type="button"
                       className="btn-outline btn-compact"
                       onClick={async () => {
-                        if (!window.confirm(t('admin.resetPwConfirm', { email: m.email }))) return;
+                        if (!(await confirmApply(t('admin.resetPwConfirm', { email: m.email })))) return;
                         const r = await api.admin.resetMemberPassword(m.id);
                         setMessage(t('admin.resetPwOnce', { email: r.email, password: r.password }));
                         load();

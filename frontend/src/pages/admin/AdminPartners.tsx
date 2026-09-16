@@ -5,6 +5,7 @@ import { api, type CredentialKit } from '../../api';
 import { kickToAdminLogin } from '../../lib/adminSession';
 import CredentialKitCard from '../../components/CredentialKitCard';
 import { EntityFilterBar } from '../../components/EntityFilterBar';
+import { useHqConfirm } from '../../components/ConfirmActionContext';
 import { EMPTY_ENTITY_FILTER, filterByEntity, type EntityFilterState } from '../../lib/dateRange';
 
 type PartnerFees = {
@@ -43,6 +44,7 @@ type Partner = {
 
 export default function AdminPartners() {
   const { t } = useTranslation();
+  const { confirmSave, confirmApply } = useHqConfirm();
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [templates, setTemplates] = useState<Array<{ id: string; name: string; isHqDefault: boolean }>>([]);
@@ -80,7 +82,7 @@ export default function AdminPartners() {
   }, []);
 
   const handleRegenerate = async (id: string) => {
-    if (!confirm(t('admin.confirmRegen'))) return;
+    if (!(await confirmApply(t('admin.confirmRegen')))) return;
     setMessage('');
     setMessageOk(false);
     try {
@@ -111,6 +113,7 @@ export default function AdminPartners() {
   const handleSaveFees = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!feePartner) return;
+    if (!(await confirmSave())) return;
     setMessage('');
     setMessageOk(false);
     try {
@@ -127,6 +130,7 @@ export default function AdminPartners() {
 
   const handleResetFees = async () => {
     if (!feePartner) return;
+    if (!(await confirmApply())) return;
     try {
       await api.admin.updatePartner(feePartner.id, { resetFees: true });
       setMessage(t('admin.feesReset'));
@@ -140,6 +144,7 @@ export default function AdminPartners() {
   };
 
   const handleStatusChange = async (id: string, status: string) => {
+    if (!(await confirmApply())) return;
     try {
       await api.admin.updatePartner(id, { status: status as 'active' | 'suspended' });
       fetchPartners();

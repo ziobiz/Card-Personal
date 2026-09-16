@@ -1781,6 +1781,42 @@
   cursor: pointer;
 }
 
+.is-admin .pg-confirm {
+  width: min(420px, 100%);
+}
+
+.is-admin .pg-confirm-body {
+  padding: 18px 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #333;
+}
+
+.is-admin .pg-confirm-body p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.is-admin .pg-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid #e5e8ee;
+  background: #fafbfc;
+}
+
+.is-admin .pg-confirm-danger {
+  background: #c62828 !important;
+  border-color: #c62828 !important;
+  color: #fff !important;
+}
+
+.is-admin .pg-confirm-danger:hover {
+  background: #b71c1c !important;
+  border-color: #b71c1c !important;
+}
+
 .is-admin .auth-error {
   background: #fdecec;
   border: 1px solid #f3b4b4;

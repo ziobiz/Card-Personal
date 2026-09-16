@@ -789,8 +789,8 @@
     "brandToneSaved": "Tone saved.",
     "brandColorsResetBtn": "Reset colors",
     "brandColorsReset": "Colors restored to factory default.",
-    "brandSave": "Save brand",
-    "brandSaved": "Brand saved.",
+    "brandSave": "Save",
+    "brandSaved": "Saved.",
     "brandFileTooBig": "Image must be under 350KB.",
     "sandboxTitle": "Sandbox / ASP",
     "sandboxIntro": "Wirex Sandbox status and smoke test. The same console is used per-tenant when delivering ASP packages.",
@@ -877,7 +877,12 @@
     "brandLoginNoticeToggleHint": "When active, title and body can be edited and shown on the login panel. When inactive, the notice is hidden and the logo sits above the email/password fields.",
     "brandLoginPreview": "Login preview",
     "brandLoginNoticeEmptyHint": "Leave title/body empty to use the default localized notice.",
-    "brandLoginNoticeOff": "Inactive — spoofing notice is not shown."
+    "brandLoginNoticeOff": "Inactive — spoofing notice is not shown.",
+    "confirmActionTitle": "Confirm",
+    "confirmSave": "Save the entered or changed settings?",
+    "confirmApply": "Apply these changes?",
+    "confirmDelete": "Delete this item?\nThis cannot be undone.",
+    "confirmCancelChanges": "Discard the changes?"
   },
   "earn": {
     "title": "Earn",

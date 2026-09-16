@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
+import { useHqConfirm } from '../../components/ConfirmActionContext';
 import '../access-work.css';
 
 type Group = { id: string; code: string; name: string; menus: string[]; builtIn?: boolean };
@@ -79,6 +80,7 @@ function MenuGrid({
 
 export default function AccessWorkspace({ variant }: { variant: 'hq' | 'partner' }) {
   const { t } = useTranslation();
+  const { confirmSave, confirmDelete } = useHqConfirm();
   const isHq = variant === 'hq';
   const sections = isHq ? HQ_SECTIONS : PARTNER_SECTIONS;
 
@@ -201,6 +203,7 @@ export default function AccessWorkspace({ variant }: { variant: 'hq' | 'partner'
 
   const saveOperatorAccess = async () => {
     if (!operator) return;
+    if (!(await confirmSave())) return;
     try {
       const payload =
         editMode === 'custom'
@@ -217,6 +220,7 @@ export default function AccessWorkspace({ variant }: { variant: 'hq' | 'partner'
 
   const saveGroup = async () => {
     if (!group) return;
+    if (!(await confirmSave())) return;
     try {
       if (isHq) await api.admin.updateAccessGroup(group.id, { name: group.name, menus: group.menus });
       else await api.partnerPortal.updateAccessGroup(group.id, { name: group.name, menus: group.menus });
@@ -229,6 +233,7 @@ export default function AccessWorkspace({ variant }: { variant: 'hq' | 'partner'
 
   const addGroup = async () => {
     if (!newGroupName.trim()) return;
+    if (!(await confirmSave())) return;
     try {
       if (isHq) await api.admin.createAccessGroup({ owner, name: newGroupName.trim(), menus: catalog });
       else await api.partnerPortal.createAccessGroup({ name: newGroupName.trim(), menus: catalog });
@@ -242,7 +247,7 @@ export default function AccessWorkspace({ variant }: { variant: 'hq' | 'partner'
 
   const removeGroup = async () => {
     if (!group || group.builtIn) return;
-    if (!window.confirm(t('access.deleteGroupConfirm', { name: group.name }))) return;
+    if (!(await confirmDelete(t('access.deleteGroupConfirm', { name: group.name })))) return;
     try {
       if (isHq) await api.admin.deleteAccessGroup(group.id);
       else await api.partnerPortal.deleteAccessGroup(group.id);

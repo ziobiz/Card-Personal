@@ -504,7 +504,7 @@
     "brandToneSaved": "บันทึกโทนสีแล้ว",
     "brandColorsResetBtn": "รีเซ็ตสี",
     "brandColorsReset": "คืนค่าเป็นสีเริ่มต้นแล้ว",
-    "brandSave": "บันทึกแบรนด์",
+    "brandSave": "บันทึก",
     "brandSaved": "บันทึกแล้ว",
     "brandFileTooBig": "รูปต้องไม่เกิน 350KB",
     "brandLoginHero": "หน้าจอเข้าสู่ระบบแอดมิน",
@@ -686,7 +686,12 @@
         "sslWarn": "ใบรับรอง SSL จะหมดอายุภายใน {{n}} วัน",
         "sslRead": "อ่านใบรับรอง SSL ไม่ได้ ตรวจสอบพาธและสิทธิ์"
       }
-    }
+    },
+    "confirmActionTitle": "ยืนยัน",
+    "confirmSave": "บันทึกการตั้งค่าที่กรอกหรือแก้ไขหรือไม่?",
+    "confirmApply": "ใช้การเปลี่ยนแปลงเหล่านี้หรือไม่?",
+    "confirmDelete": "ลบรายการนี้หรือไม่?\nไม่สามารถย้อนกลับได้",
+    "confirmCancelChanges": "ยกเลิกการเปลี่ยนแปลงหรือไม่?"
   },
   "earn": {
     "title": "รับรางวัล",

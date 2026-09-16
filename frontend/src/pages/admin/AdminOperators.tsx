@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
 import { EntityFilterBar } from '../../components/EntityFilterBar';
+import { useHqConfirm } from '../../components/ConfirmActionContext';
 import { EMPTY_ENTITY_FILTER, filterByEntity, type EntityFilterState } from '../../lib/dateRange';
 
 type Operator = {
@@ -22,6 +23,7 @@ type Group = { id: string; code: string; name: string };
 
 export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
   const { t } = useTranslation();
+  const { confirmApply } = useHqConfirm();
   const [items, setItems] = useState<Operator[]>([]);
   const [partners, setPartners] = useState<Array<{ id: string; name: string; companyName?: string }>>([]);
   const [groups, setGroups] = useState<Group[]>([]);
@@ -199,7 +201,7 @@ export default function AdminOperators({ scope }: { scope: 'HQ' | 'PARTNER' }) {
                     type="button"
                     className="btn-outline btn-compact"
                     onClick={async () => {
-                      if (!window.confirm(t('admin.resetOtpConfirm', { email: o.email }))) return;
+                      if (!(await confirmApply(t('admin.resetOtpConfirm', { email: o.email })))) return;
                       try {
                         await api.admin.resetOperatorOtp(o.id);
                         setMessage(t('admin.otpResetDone', { email: o.email }));

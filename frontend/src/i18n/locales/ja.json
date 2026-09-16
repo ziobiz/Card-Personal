@@ -687,7 +687,12 @@
         "sslWarn": "SSL証明書の有効期限まで {{n}} 日です。",
         "sslRead": "SSL証明書を読み取れません。パスと権限を確認してください。"
       }
-    }
+    },
+    "confirmActionTitle": "確認",
+    "confirmSave": "入力・変更した内容を保存しますか？",
+    "confirmApply": "変更内容を適用しますか？",
+    "confirmDelete": "削除しますか？\nこの操作は元に戻せません。",
+    "confirmCancelChanges": "変更を取り消しますか？"
   },
   "earn": {
     "title": "リワード",

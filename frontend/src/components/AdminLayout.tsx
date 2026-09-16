@@ -8,6 +8,7 @@ import { api, resolveAdminShellLogo } from '../api';
 import { contrastText, normalizeHex } from '../lib/colorHex';
 import { adminTokenEmail, clearAdminSession, kickToAdminLogin } from '../lib/adminSession';
 import { maskAdminBrowserUrl } from '../lib/adminNav';
+import { ConfirmActionProvider } from './ConfirmActionContext';
 import './AdminLayout.css';
 
 type MenuItem = { to: string; labelKey: string; menu: string };
@@ -332,6 +333,7 @@ export default function AdminLayout() {
   const adminShellLogo = resolveAdminShellLogo(brand);
 
   return (
+    <ConfirmActionProvider>
     <div
       className={`hq-shell${collapsed ? ' is-collapsed' : ''}${tablet ? ' is-tablet' : ''}${helpOn ? ' is-help-on' : ''}`}
       style={
@@ -554,6 +556,7 @@ export default function AdminLayout() {
         </div>
       </div>
     </div>
+    </ConfirmActionProvider>
   );
 }
 

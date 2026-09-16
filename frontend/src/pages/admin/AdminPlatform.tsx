@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api, type HealthLevel, type PlatformPayload } from '../../api';
 import type { AdminOutletContext } from '../../components/AdminLayout';
+import { useHqConfirm } from '../../components/ConfirmActionContext';
 
 type Cfg = PlatformPayload['config'];
 type Sec = PlatformPayload['security'];
@@ -74,6 +75,7 @@ function MiniBars({
 export default function AdminPlatform() {
   const { t } = useTranslation();
   const { setPageActions } = useOutletContext<AdminOutletContext>();
+  const { confirmSave } = useHqConfirm();
   const [data, setData] = useState<PlatformPayload | null>(null);
   const [config, setConfig] = useState<Cfg | null>(null);
   const [security, setSecurity] = useState<Sec | null>(null);
@@ -122,6 +124,7 @@ export default function AdminPlatform() {
 
   const save = useCallback(async () => {
     if (!config || !security) return;
+    if (!(await confirmSave())) return;
     setSaving(true);
     setMsg('');
     try {
@@ -139,7 +142,7 @@ export default function AdminPlatform() {
     } finally {
       setSaving(false);
     }
-  }, [config, security, refreshMin, t]);
+  }, [config, security, refreshMin, t, confirmSave]);
 
   useEffect(() => {
     setPageActions(

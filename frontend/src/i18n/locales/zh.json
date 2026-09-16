@@ -504,7 +504,7 @@
     "brandToneSaved": "已保存色调。",
     "brandColorsResetBtn": "颜色初始化",
     "brandColorsReset": "已恢复为默认色。",
-    "brandSave": "保存品牌",
+    "brandSave": "保存",
     "brandSaved": "已保存。",
     "brandFileTooBig": "图片需小于 350KB。",
     "sandboxTitle": "Sandbox / ASP 联调",
@@ -686,7 +686,12 @@
         "sslWarn": "SSL 证书将在 {{n}} 天内到期。",
         "sslRead": "无法读取 SSL 证书。请检查路径与权限。"
       }
-    }
+    },
+    "confirmActionTitle": "确认",
+    "confirmSave": "要保存已输入或修改的内容吗？",
+    "confirmApply": "要应用这些更改吗？",
+    "confirmDelete": "确定删除吗？\n此操作无法撤销。",
+    "confirmCancelChanges": "要取消更改吗？"
   },
   "earn": {
     "title": "收益",

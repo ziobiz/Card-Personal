@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
 import { kickToAdminLogin } from '../../lib/adminSession';
 import type { AdminOutletContext } from '../../components/AdminLayout';
+import { useHqConfirm } from '../../components/ConfirmActionContext';
 
 type FeePolicy = {
   treasuryWalletAddress?: string;
@@ -31,6 +32,7 @@ type Settings = {
 export default function AdminSettings() {
   const { t } = useTranslation();
   const { setPageActions } = useOutletContext<AdminOutletContext>();
+  const { confirmSave } = useHqConfirm();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -106,6 +108,7 @@ export default function AdminSettings() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!(await confirmSave())) return;
     setMessage('');
     setSaveOk(false);
     setSaving(true);

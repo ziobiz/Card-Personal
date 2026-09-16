@@ -789,7 +789,7 @@
     "brandToneSaved": "색톤이 저장되었습니다.",
     "brandColorsResetBtn": "색상 초기화",
     "brandColorsReset": "기본색으로 초기화되었습니다.",
-    "brandSave": "브랜드 저장",
+    "brandSave": "저장",
     "brandSaved": "저장되었습니다.",
     "brandFileTooBig": "이미지는 350KB 이하여야 합니다.",
     "brandLoginHero": "관리자 로그인 화면",
@@ -877,7 +877,12 @@
     "navManuals": "매뉴얼",
     "navAccess": "접근권한",
     "hello": "헬로",
-    "helloHint": "안내 문구 표시/숨김"
+    "helloHint": "안내 문구 표시/숨김",
+    "confirmActionTitle": "확인",
+    "confirmSave": "입력·변경한 내용을 저장하시겠습니까?",
+    "confirmApply": "변경 내용을 적용하시겠습니까?",
+    "confirmDelete": "삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.",
+    "confirmCancelChanges": "변경을 취소하시겠습니까?"
   },
   "earn": {
     "title": "리워드",

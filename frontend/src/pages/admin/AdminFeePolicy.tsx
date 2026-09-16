@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
 import { EntityFilterBar } from '../../components/EntityFilterBar';
+import { useHqConfirm } from '../../components/ConfirmActionContext';
 import { EMPTY_ENTITY_FILTER, filterByEntity, type EntityFilterState } from '../../lib/dateRange';
 
 type Dist = {
@@ -55,6 +56,7 @@ const LEVELS: Array<{ rate: keyof Dist; fee: keyof Dist; label: string }> = [
 
 export default function AdminFeePolicy({ view = 'all' }: { view?: 'list' | 'manage' | 'all' }) {
   const { t } = useTranslation();
+  const { confirmSave, confirmApply } = useHqConfirm();
   const [rows, setRows] = useState<Row[]>([]);
   const [applied, setApplied] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
   const [draft, setDraft] = useState<EntityFilterState>(EMPTY_ENTITY_FILTER);
@@ -131,6 +133,7 @@ export default function AdminFeePolicy({ view = 'all' }: { view?: 'list' | 'mana
   };
 
   const saveRow = async (r: Row) => {
+    if (!(await confirmSave())) return;
     setMessage('');
     try {
       await api.admin.updatePartner(r.id, {
@@ -144,6 +147,7 @@ export default function AdminFeePolicy({ view = 'all' }: { view?: 'list' | 'mana
   };
 
   const saveAll = async () => {
+    if (!(await confirmSave())) return;
     setMessage('');
     try {
       await Promise.all(filtered.map((r) => api.admin.updatePartner(r.id, { distribution: r.distribution, distributionApplyStart: r.distributionApplyStart })));
@@ -154,6 +158,7 @@ export default function AdminFeePolicy({ view = 'all' }: { view?: 'list' | 'mana
   };
 
   const saveDefaults = async () => {
+    if (!(await confirmSave())) return;
     try {
       await api.admin.updateSalesFeePolicy({ distribution: defaults });
       setShowDefault(false);
@@ -272,13 +277,17 @@ export default function AdminFeePolicy({ view = 'all' }: { view?: 'list' | 'mana
               </label>
             ))}
             <button type="button" className="btn-primary" onClick={async () => {
+              if (!(await confirmSave())) return;
               if (editTpl === 'new') await api.admin.createFeeTemplate({ name: tplName, description: tplDesc, fees: tplFees });
               else if (editTpl) await api.admin.updateFeeTemplate(editTpl, { name: tplName, description: tplDesc, fees: tplFees });
               setEditTpl(null);
               load();
               setMessage(t('admin.saved'));
             }}>{t('admin.save')}</button>
-            <button type="button" className="btn-secondary" onClick={() => setEditTpl(null)}>{t('common.cancel')}</button>
+            <button type="button" className="btn-secondary" onClick={async () => {
+              if (!(await confirmApply(t('admin.confirmCancelChanges')))) return;
+              setEditTpl(null);
+            }}>{t('common.cancel')}</button>
           </div>
         )}
       </div>}

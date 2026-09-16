@@ -128,8 +128,8 @@
     "brandSidebar": "Sidebar",
     "brandAccent": "Active accent",
     "brandLogoBg": "Logo background",
-    "brandSave": "Save brand",
-    "brandSaved": "Brand saved.",
+    "brandSave": "Save",
+    "brandSaved": "Saved.",
     "brandFileTooBig": "Image must be under 350KB.",
     "feeTemplates": "Fee policies",
     "feeTemplatesDesc": "Create HQ default and extra policies. Partners without a selection follow HQ. Partner-level edits take priority.",
@@ -252,7 +252,12 @@
         "sslWarn": "SSL certificate expires within {{n}} days.",
         "sslRead": "Could not read the SSL certificate. Check the path and permissions."
       }
-    }
+    },
+    "confirmActionTitle": "Confirm",
+    "confirmSave": "Save the entered or changed settings?",
+    "confirmApply": "Apply these changes?",
+    "confirmDelete": "Delete this item?\nThis cannot be undone.",
+    "confirmCancelChanges": "Discard the changes?"
   },
   "partner": {
     "ourKeysNotWirex": "Authenticate with HQ-issued MID / API Key / Secret. Do not use Wirex keys.",

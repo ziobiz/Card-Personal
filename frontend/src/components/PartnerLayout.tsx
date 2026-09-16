@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { type LanguageCode } from '../i18n';
 import { useBrand } from '../brand/BrandContext';
 import { api, resolveAdminShellLogo } from '../api';
+import { ConfirmActionProvider } from './ConfirmActionContext';
 import './AdminLayout.css';
 import './PartnerPortal.css';
 
@@ -138,6 +139,7 @@ export default function PartnerLayout() {
   const partnerShellLogo = resolveAdminShellLogo(brand);
 
   return (
+    <ConfirmActionProvider>
     <div className={`hq-shell${collapsed ? ' is-collapsed' : ''}`}>
       <aside className="hq-side">
         <Link to="/partner" className="hq-side-logo">
@@ -269,5 +271,6 @@ export default function PartnerLayout() {
         </div>
       </div>
     </div>
+    </ConfirmActionProvider>
   );
 }

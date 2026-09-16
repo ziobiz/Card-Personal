@@ -5,6 +5,7 @@ import { api, DEFAULT_BRAND, DEFAULT_COLORS, type BrandConfig } from '../../api'
 import { useBrand } from '../../brand/BrandContext';
 import { normalizeHex } from '../../lib/colorHex';
 import type { AdminOutletContext } from '../../components/AdminLayout';
+import { useHqConfirm } from '../../components/ConfirmActionContext';
 
 const LOCALE_OPTIONS = [
   { code: 'ko', label: '한국어' },
@@ -125,6 +126,7 @@ export default function AdminBrand() {
   const { t } = useTranslation();
   const { reload } = useBrand();
   const { setPageActions } = useOutletContext<AdminOutletContext>();
+  const { confirmSave, confirmApply } = useHqConfirm();
   const [form, setForm] = useState<BrandConfig | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
@@ -227,6 +229,7 @@ export default function AdminBrand() {
   const save = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!form) return;
+    if (!(await confirmSave())) return;
     setSaving(true);
     setMsg('');
     try {
@@ -243,6 +246,7 @@ export default function AdminBrand() {
   };
 
   const applyDefaultTone = async () => {
+    if (!(await confirmApply())) return;
     setSaving(true);
     setMsg('');
     try {
@@ -259,6 +263,7 @@ export default function AdminBrand() {
   };
 
   const applyPreset = async (slot: number) => {
+    if (!(await confirmApply())) return;
     setSaving(true);
     setMsg('');
     try {
@@ -275,6 +280,7 @@ export default function AdminBrand() {
   };
 
   const resetColors = async () => {
+    if (!(await confirmApply(t('admin.confirmCancelChanges')))) return;
     setSaving(true);
     setMsg('');
     try {
@@ -292,6 +298,7 @@ export default function AdminBrand() {
 
   const savePresetSlot = async (slot: number) => {
     if (!form) return;
+    if (!(await confirmSave())) return;
     setSaving(true);
     setMsg('');
     try {
@@ -325,7 +332,7 @@ export default function AdminBrand() {
   useEffect(() => {
     setPageActions(
       <button type="submit" form="hq-brand-form" className="btn-primary" disabled={saving || !form}>
-        {saving ? t('common.loading') : t('admin.brandSave')}
+        {saving ? t('common.loading') : t('admin.save')}
       </button>
     );
     return () => setPageActions(null);
