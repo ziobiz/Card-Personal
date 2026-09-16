@@ -135,7 +135,10 @@ export default function AdminLayout() {
   useEffect(() => {
     api.admin
       .me()
-      .then((r) => setAllowed(r.allowedMenus || []))
+      .then((r) => {
+        const menus = Array.isArray(r.allowedMenus) ? r.allowedMenus : null;
+        setAllowed(menus && menus.length ? menus : null);
+      })
       .catch(() => setAllowed(null));
   }, []);
 
@@ -145,10 +148,10 @@ export default function AdminLayout() {
       labelKey: 'admin.menuHq',
       icon: 'gear',
       items: [
+        { to: '/admin/platform', labelKey: 'admin.navPlatform', menu: 'platform' },
         { to: '/admin/brand', labelKey: 'admin.navBrand', menu: 'brand' },
         { to: '/admin/sandbox', labelKey: 'admin.navSandbox', menu: 'sandbox' },
         { to: '/admin/settings', labelKey: 'admin.navSettings', menu: 'settings' },
-        { to: '/admin/platform', labelKey: 'admin.navPlatform', menu: 'platform' },
       ],
     },
     {
@@ -180,6 +183,7 @@ export default function AdminLayout() {
       icon: 'ops',
       items: [
         { to: '/admin/dashboard', labelKey: 'admin.navDashboard', menu: 'dashboard' },
+        { to: '/admin/platform', labelKey: 'admin.navPlatform', menu: 'platform' },
         { to: '/admin/cards', labelKey: 'admin.navCards', menu: 'cards' },
         { to: '/admin/manuals', labelKey: 'admin.navManuals', menu: 'manuals' },
       ],
@@ -189,7 +193,9 @@ export default function AdminLayout() {
   const groups = allGroups
     .map((g) => ({
       ...g,
-      items: allowed ? g.items.filter((it) => allowed.includes(it.menu)) : g.items,
+      items: allowed
+        ? g.items.filter((it) => it.menu === 'platform' || allowed.includes(it.menu))
+        : g.items,
     }))
     .filter((g) => g.items.length);
 
@@ -310,7 +316,7 @@ export default function AdminLayout() {
   const pathAllowed =
     loc.pathname === '/admin/me' ||
     allowed == null ||
-    allGroups.some((g) => g.items.some((it) => it.to === loc.pathname && allowed.includes(it.menu)));
+    groups.some((g) => g.items.some((it) => it.to === loc.pathname));
 
   if (allowed && !pathAllowed) {
     return <Navigate to={firstAllowed} replace />;

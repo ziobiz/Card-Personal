@@ -66,6 +66,124 @@ async function request<T>(
   }
 }
 
+export type HealthLevel = 'ok' | 'warn' | 'danger';
+
+export type PlatformPayload = {
+  generatedAt: string;
+  uiAutoRefreshSeconds: number;
+  config: {
+    primaryDomain: string;
+    apiPublicUrl: string;
+    corsOrigins: string[];
+    sslCertPath: string;
+    sslLeDomain: string;
+    smtpHost: string;
+    smtpPort: number;
+    smtpSecure: boolean;
+    smtpUser: string;
+    smtpPassword: string;
+    smtpFrom: string;
+    smtpFromName: string;
+    otpExpireMinutes: number;
+    uiRefreshSec: number;
+    nginxStubStatusUrl: string;
+    contractDiskGb: number | null;
+    contractTrafficGb: number | null;
+    trafficUsedGb: number | null;
+    contractStart: string;
+    contractEnd: string;
+  };
+  security: { otpRequiredAdmin: boolean; otpRequiredMember: boolean; otpRequiredOrg: boolean };
+  ssl: {
+    status: string;
+    detail: string;
+    daysRemaining: number | null;
+    notAfter: string | null;
+    notBefore: string | null;
+    subjectDn: string;
+    issuerDn: string;
+    fingerprintSha256: string;
+    sanDnsNames: string[];
+    leLiveCertName: string;
+    resolvedPath: string;
+  };
+  host: {
+    hostname: string;
+    osFamily: string;
+    osVersion: string;
+    arch: string;
+    memoryTotalMb: number;
+    memoryAvailableMb: number;
+    cpuCount: number;
+    uptimeSec: number;
+    loadAvg: number[];
+  };
+  process: {
+    nodeVersion: string;
+    heapUsedMb: number;
+    heapMaxMb: number;
+    heapUsedPct: number;
+    rssMb: number;
+    cpuCount: number;
+    load1: number | null;
+    uptimeMs: number;
+  };
+  disk: {
+    ok: boolean;
+    pathRoot: string;
+    totalBytes: number;
+    usableBytes: number;
+    usedBytes: number;
+    usedPct: number;
+    error?: string;
+  };
+  health: {
+    worstStatus: HealthLevel;
+    alerts: Array<{ key: string; args: unknown[]; level: HealthLevel }>;
+    rows: Array<{
+      id: string;
+      status: HealthLevel;
+      labelKey: string;
+      value: string;
+      criteria: string;
+      pct: number | null;
+    }>;
+  };
+  certbot: { renewalConfFiles: string[]; timerActive: string; timerNext: string };
+  nginxStub: {
+    configured: boolean;
+    ok: boolean;
+    active?: number;
+    reading?: number;
+    writing?: number;
+    waiting?: number;
+    error?: string;
+  };
+  linkage: {
+    sanDnsNames: string[];
+    rows: Array<{ hostname: string; source: string; inCertificate: boolean }>;
+    missing: string[];
+    sanOnly: string[];
+  };
+  contract: {
+    diskGb: number | null;
+    trafficGb: number | null;
+    trafficUsedGb: number | null;
+    periodStart: string;
+    periodEnd: string;
+  };
+  pm2: Array<{ name: string; status: string; cpu: number; memoryMb: number; uptimeMs: number; restarts: number }>;
+  metrics: Array<{
+    date: string;
+    memUsedPct: number;
+    diskUsedPct: number;
+    heapUsedPct: number;
+    load1: number;
+    trafficUsedGb: number | null;
+  }>;
+  server: { hostname: string; uptimeSec: number; memTotalMb: number; memFreeMb: number; loadAvg: number[] };
+};
+
 export interface User {
   id: string;
   email: string;
@@ -651,46 +769,14 @@ export const api = {
         partnersByDay: Array<{ date: string; value: number }>;
         cardsByStatus: Array<{ key: string; value: number }>;
       }>('/admin/stats'),
-    getPlatform: () =>
-      request<{
-        config: {
-          primaryDomain: string;
-          apiPublicUrl: string;
-          corsOrigins: string[];
-          sslCertPath: string;
-          smtpHost: string;
-          smtpPort: number;
-          smtpSecure: boolean;
-          smtpUser: string;
-          smtpPassword: string;
-          smtpFrom: string;
-          otpExpireMinutes: number;
-        };
-        security: { otpRequiredAdmin: boolean; otpRequiredMember: boolean; otpRequiredOrg: boolean };
-        ssl: { status: string; detail: string; daysRemaining: number | null; notAfter: string | null };
-        server: { hostname: string; uptimeSec: number; memTotalMb: number; memFreeMb: number; loadAvg: number[] };
-        pm2: Array<{ name?: string; pm2_env?: { status?: string }; monit?: { memory?: number; cpu?: number } }>;
-      }>('/admin/platform'),
+    getPlatform: () => request<PlatformPayload>('/admin/platform'),
     savePlatform: (data: Record<string, unknown>) =>
-      request<{
-        config: {
-          primaryDomain: string;
-          apiPublicUrl: string;
-          corsOrigins: string[];
-          sslCertPath: string;
-          smtpHost: string;
-          smtpPort: number;
-          smtpSecure: boolean;
-          smtpUser: string;
-          smtpPassword: string;
-          smtpFrom: string;
-          otpExpireMinutes: number;
-        };
-        security: { otpRequiredAdmin: boolean; otpRequiredMember: boolean; otpRequiredOrg: boolean };
-        ssl: { status: string; detail: string; daysRemaining: number | null; notAfter: string | null };
-        server: { hostname: string; uptimeSec: number; memTotalMb: number; memFreeMb: number; loadAvg: number[] };
-        pm2: Array<{ name?: string; pm2_env?: { status?: string }; monit?: { memory?: number; cpu?: number } }>;
-      }>('/admin/platform', { method: 'PUT', body: JSON.stringify(data) }),
+      request<PlatformPayload>('/admin/platform', { method: 'PUT', body: JSON.stringify(data) }),
+    testPlatformMail: (to: string) =>
+      request<{ ok: boolean; error?: string }>('/admin/platform/mail-test', {
+        method: 'POST',
+        body: JSON.stringify({ to }),
+      }),
     getSettings: () =>
       request<{
         wirex: { apiBase?: string; chainId?: number; clientId?: string; clientSecret?: string };

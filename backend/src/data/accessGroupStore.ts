@@ -51,10 +51,28 @@ function load(): AccessGroup[] {
     return s;
   }
   try {
-    return JSON.parse(readFileSync(FILE, 'utf-8')).groups ?? seedOwner('HQ');
+    return syncBuiltInMenus(JSON.parse(readFileSync(FILE, 'utf-8')).groups ?? seedOwner('HQ'));
   } catch {
     return seedOwner('HQ');
   }
+}
+
+/** Built-in groups pick up newly added catalog keys (e.g. platform / 서버운영관리). */
+function syncBuiltInMenus(list: AccessGroup[]): AccessGroup[] {
+  let changed = false;
+  const next = list.map((g) => {
+    if (!g.builtIn) return g;
+    const defaults =
+      g.owner === 'HQ' ? DEFAULT_GROUP_MENUS[g.code] : DEFAULT_PARTNER_GROUP_MENUS[g.code];
+    if (!defaults?.length) return g;
+    const have = new Set(g.menus);
+    const missing = defaults.filter((k) => !have.has(k));
+    if (!missing.length) return g;
+    changed = true;
+    return { ...g, menus: [...g.menus, ...missing], updatedAt: new Date().toISOString() };
+  });
+  if (changed) save(next);
+  return next;
 }
 
 function save(list: AccessGroup[]) {

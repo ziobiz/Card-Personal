@@ -262,6 +262,12 @@ export default function AdminSettings() {
       </section>
 
       <section className="card-surface hq-sandbox-card">
+        <h3 className="section-title">{t('admin.navPlatform')}</h3>
+        <p className="hq-card-hint">{t('admin.srv.settingsLinkHint')}</p>
+        <Link to="/admin/platform" className="btn-outline">{t('admin.srv.openConsole')}</Link>
+      </section>
+
+      <section className="card-surface hq-sandbox-card">
         <h3 className="section-title">{t('admin.sectionOtp')}</h3>
         <p className="hq-card-hint">{t('admin.otpPolicyDesc')}</p>
         <div className="hq-form-grid hq-policy-grid">

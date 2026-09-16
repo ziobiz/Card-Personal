@@ -13,7 +13,9 @@ export async function sendMemberMail(
     (cfg.smtpPassword && cfg.smtpPassword !== '********' ? cfg.smtpPassword : '') ||
     process.env.SMTP_PASSWORD ||
     '';
-  const from = cfg.smtpFrom || process.env.SMTP_FROM || user || 'noreply@icocard.net';
+  const fromAddr = cfg.smtpFrom || process.env.SMTP_FROM || user || 'noreply@icocard.net';
+  const fromName = (cfg.smtpFromName || '').replace(/"/g, '').trim();
+  const from = fromName ? `"${fromName}" <${fromAddr}>` : fromAddr;
   if (!host) return { sent: false, reason: 'smtp_not_configured' };
 
   try {

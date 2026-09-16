@@ -35,6 +35,7 @@ import { canManageHqAccess, defaultGroupId, hqActor, partnerHasSuper, writeAudit
 import { manualsFor } from '../lib/manualCatalog.js';
 import { requireTurnstile } from '../lib/turnstile.js';
 import { platformStore } from '../data/platformStore.js';
+import { sendMemberMail } from '../lib/mailer.js';
 
 const router = Router();
 
@@ -646,11 +647,32 @@ router.get('/stats', async (_, res) => {
   }
 });
 
-router.get('/platform', (_req, res) => {
-  res.json(platformStore.payload());
+router.get('/platform', async (_req, res) => {
+  res.json(await platformStore.payload());
 });
 
-router.put('/platform', (req, res) => {
+function strOrUndef(v: unknown): string | undefined {
+  return typeof v === 'string' ? v : undefined;
+}
+
+function boolOrUndef(v: unknown): boolean | undefined {
+  return typeof v === 'boolean' ? v : undefined;
+}
+
+function numField(v: unknown): number | undefined {
+  if (v === undefined) return undefined;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+function numOrNullField(v: unknown): number | null | undefined {
+  if (v === undefined) return undefined;
+  if (v === null || v === '') return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+router.put('/platform', async (req, res) => {
   const body = (req.body ?? {}) as Record<string, unknown>;
   const security = body.security as
     | { otpRequiredAdmin?: boolean; otpRequiredMember?: boolean; otpRequiredOrg?: boolean }
@@ -665,20 +687,40 @@ router.put('/platform', (req, res) => {
     });
   }
   platformStore.update({
-    primaryDomain: typeof body.primaryDomain === 'string' ? body.primaryDomain : undefined,
-    apiPublicUrl: typeof body.apiPublicUrl === 'string' ? body.apiPublicUrl : undefined,
+    primaryDomain: strOrUndef(body.primaryDomain),
+    apiPublicUrl: strOrUndef(body.apiPublicUrl),
     corsOrigins: Array.isArray(body.corsOrigins) ? (body.corsOrigins as string[]) : undefined,
-    sslCertPath: typeof body.sslCertPath === 'string' ? body.sslCertPath : undefined,
-    smtpHost: typeof body.smtpHost === 'string' ? body.smtpHost : undefined,
-    smtpPort: typeof body.smtpPort === 'number' ? body.smtpPort : Number(body.smtpPort) || undefined,
-    smtpSecure: typeof body.smtpSecure === 'boolean' ? body.smtpSecure : undefined,
-    smtpUser: typeof body.smtpUser === 'string' ? body.smtpUser : undefined,
-    smtpPassword: typeof body.smtpPassword === 'string' ? body.smtpPassword : undefined,
-    smtpFrom: typeof body.smtpFrom === 'string' ? body.smtpFrom : undefined,
-    otpExpireMinutes:
-      typeof body.otpExpireMinutes === 'number' ? body.otpExpireMinutes : Number(body.otpExpireMinutes) || undefined,
+    sslCertPath: strOrUndef(body.sslCertPath),
+    sslLeDomain: strOrUndef(body.sslLeDomain),
+    smtpHost: strOrUndef(body.smtpHost),
+    smtpPort: numField(body.smtpPort),
+    smtpSecure: boolOrUndef(body.smtpSecure),
+    smtpUser: strOrUndef(body.smtpUser),
+    smtpPassword: strOrUndef(body.smtpPassword),
+    smtpFrom: strOrUndef(body.smtpFrom),
+    smtpFromName: strOrUndef(body.smtpFromName),
+    otpExpireMinutes: numField(body.otpExpireMinutes),
+    uiRefreshSec: numField(body.uiRefreshSec),
+    nginxStubStatusUrl: strOrUndef(body.nginxStubStatusUrl),
+    contractDiskGb: numOrNullField(body.contractDiskGb),
+    contractTrafficGb: numOrNullField(body.contractTrafficGb),
+    trafficUsedGb: numOrNullField(body.trafficUsedGb),
+    contractStart: strOrUndef(body.contractStart),
+    contractEnd: strOrUndef(body.contractEnd),
   });
-  res.json(platformStore.payload());
+  res.json(await platformStore.payload());
+});
+
+router.post('/platform/mail-test', async (req, res) => {
+  const to = String((req.body as { to?: string } | undefined)?.to || '').trim();
+  if (!to) return res.status(400).json({ error: 'Recipient required' });
+  const result = await sendMemberMail(
+    to,
+    '[ICOCARD] SMTP test',
+    'This is a test message from HQ 서버운영관리 (Email · OTP).'
+  );
+  if (!result.sent) return res.status(400).json({ ok: false, error: result.reason || 'smtp_failed' });
+  res.json({ ok: true });
 });
 
 router.get('/brand', (_, res) => {

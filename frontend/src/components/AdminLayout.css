@@ -2828,3 +2828,141 @@
   background: var(--pg-input);
   border: 1px solid var(--pg-input-border);
 }
+
+.is-admin .hq-srv {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.is-admin .hq-srv-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 12px 14px;
+}
+
+.is-admin .hq-srv-toolbar-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+
+.is-admin .hq-srv-msg {
+  margin: 0;
+}
+
+.is-admin .hq-srv-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.is-admin .hq-srv-alert {
+  padding: 8px 12px;
+  font-size: 13px;
+  border: 1px solid #e5e8ee;
+  background: #fff;
+}
+
+.is-admin .hq-srv-alert.is-warn {
+  background: #fff8e8;
+  border-color: #f0d48a;
+  color: #7a5b00;
+}
+
+.is-admin .hq-srv-alert.is-danger {
+  background: #fdecec;
+  border-color: #f0b4b4;
+  color: #8a1f1f;
+}
+
+.is-admin .hq-srv-health {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.is-admin .hq-srv-health-card {
+  padding: 12px 14px;
+}
+
+.is-admin .hq-srv-health-card.is-warn {
+  border-color: #f0d48a;
+}
+
+.is-admin .hq-srv-health-card.is-danger {
+  border-color: #f0b4b4;
+}
+
+.is-admin .hq-srv-health-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.is-admin .hq-srv-health-val {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.is-admin .hq-srv-health-crit {
+  font-size: 11px;
+  color: #777;
+  margin-top: 4px;
+}
+
+.is-admin .hq-srv-meter {
+  height: 8px;
+  background: #eef0f4;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.is-admin .hq-srv-meter-bar {
+  height: 100%;
+  background: #2f9e5f;
+}
+
+.is-admin .hq-srv-meter-bar.is-warn {
+  background: #e0a100;
+}
+
+.is-admin .hq-srv-meter-bar.is-danger {
+  background: #d35b5b;
+}
+
+.is-admin .hq-srv-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  word-break: break-all;
+  font-weight: 500;
+}
+
+.is-admin .hq-srv-table {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.is-admin .hq-srv-ops {
+  margin: 0 0 10px;
+  padding-left: 18px;
+  font-size: 13px;
+  color: #444;
+  line-height: 1.55;
+}
+
+.is-admin .hq-srv-bars {
+  height: 128px;
+}
+
+@media (max-width: 980px) {
+  .is-admin .hq-srv-health {
+    grid-template-columns: 1fr;
+  }
+}

@@ -5,7 +5,7 @@ import { HQ_MENU_KEYS, PARTNER_MENU_KEYS } from './accessMenus.js';
 export function resolveOperatorMenus(op?: Operator | null): string[] {
   if (!op) return [];
   const catalog = op.scope === 'PARTNER' ? PARTNER_MENU_KEYS : HQ_MENU_KEYS;
-  if (op.isSuper || (op.role === 'ADMIN' && !op.groupId && op.scope === 'HQ')) return [...catalog];
+  if (op.isSuper || (op.role === 'ADMIN' && op.scope === 'HQ')) return [...catalog];
   if (op.menuOverride && op.menuOverride.length) {
     return op.menuOverride.filter((k) => (catalog as readonly string[]).includes(k));
   }

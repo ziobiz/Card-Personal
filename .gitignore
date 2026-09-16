@@ -15,6 +15,8 @@ backend/src/data/operators.json
 backend/src/data/org_units.json
 backend/src/data/access_groups.json
 backend/src/data/access_audit.json
+backend/src/data/platform.json
+backend/src/data/server_usage.json
 *.tsbuildinfo
 .DS_Store
 dist/
