@@ -211,9 +211,56 @@
 .ac-turnstile {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   margin: 4px 0 14px;
+  min-height: 0;
+  width: 100%;
+}
+
+.ac-turnstile-banner {
+  margin: 0;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+  background: #fff7ea;
+  border: 1px solid #eadfce;
+  color: #5a5146;
+}
+
+.wx-auth .ac-turnstile-banner {
+  background: rgba(255, 247, 234, 0.12);
+  border: 1px solid rgba(234, 223, 206, 0.35);
+  color: #f3efe6;
+}
+
+.ac-turnstile-banner.is-ok {
+  background: rgba(47, 158, 95, 0.16);
+  border-color: rgba(47, 158, 95, 0.35);
+  color: #d5f0df;
+}
+
+.ac-turnstile-banner.is-err {
+  background: rgba(185, 28, 28, 0.16);
+  border-color: rgba(248, 113, 113, 0.35);
+  color: #fecaca;
+}
+
+.ac-turnstile-host {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ac-turnstile.is-challenge .ac-turnstile-host {
+  height: auto;
   min-height: 65px;
+  margin-top: 8px;
+  overflow: visible;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .ac-turnstile-hint,

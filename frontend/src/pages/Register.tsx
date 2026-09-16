@@ -74,6 +74,11 @@ export default function Register() {
         displayName: displayName.trim() || undefined,
         country,
       });
+      if (r.needsEmailVerify) {
+        sessionStorage.setItem('memberEmailVerify', email.trim().toLowerCase());
+        navigate(go('/verify-email'));
+        return;
+      }
       if (r.needsApproval) {
         setDonePending(true);
         return;

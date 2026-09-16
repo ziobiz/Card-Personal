@@ -373,9 +373,32 @@ export const api = {
         mustSetupOtp?: boolean;
         enrollToken?: string;
         needsApproval?: boolean;
+        needsEmailVerify?: boolean;
+        maskedEmail?: string;
       }>('/auth/register', {
         method: 'POST',
         body: JSON.stringify({ email, password, ...extra }),
+      }),
+    verifyEmail: (email: string, code: string) =>
+      request<{
+        ok?: boolean;
+        token?: string;
+        needsApproval?: boolean;
+        mustSetupOtp?: boolean;
+        enrollToken?: string;
+        user?: User;
+      }>('/auth/verify-email', { method: 'POST', body: JSON.stringify({ email, code }) }),
+    resendEmailCode: (email: string, purpose?: 'register' | 'reset' | 'change_password') =>
+      request<{ ok: boolean; maskedEmail?: string }>('/auth/resend-email-code', {
+        method: 'POST',
+        body: JSON.stringify({ email, purpose }),
+      }),
+    forgotPassword: (email: string) =>
+      request<{ ok: boolean }>('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
+    resetPassword: (email: string, code: string, password: string) =>
+      request<{ ok: boolean }>('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ email, code, password }),
       }),
     registrationPolicy: () =>
       request<{ mode: 'open' | 'approval'; needsApproval: boolean }>('/auth/registration-policy'),
@@ -423,11 +446,13 @@ export const api = {
         method: 'PUT',
         body: JSON.stringify(data),
       }),
-    changePassword: (currentPassword: string, newPassword: string) =>
+    changePassword: (currentPassword: string, newPassword: string, emailCode: string) =>
       request<{ ok: boolean }>('/user/password', {
         method: 'PUT',
-        body: JSON.stringify({ currentPassword, newPassword }),
+        body: JSON.stringify({ currentPassword, newPassword, emailCode }),
       }),
+    requestPasswordEmailCode: () =>
+      request<{ ok: boolean }>('/user/password/email-code', { method: 'POST', body: '{}' }),
     clearBiometric: () => request<{ ok: boolean }>('/user/biometric', { method: 'DELETE' }),
     onboarding: () =>
       request<{

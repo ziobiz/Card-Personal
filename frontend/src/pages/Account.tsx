@@ -19,6 +19,8 @@ export default function Account() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [emailCode, setEmailCode] = useState('');
+  const [codeSent, setCodeSent] = useState(false);
   const [pwMsg, setPwMsg] = useState('');
   const [pwErr, setPwErr] = useState('');
   const [pwSaving, setPwSaving] = useState(false);
@@ -62,6 +64,19 @@ export default function Account() {
     }
   };
 
+  const sendPasswordCode = async () => {
+    setPwMsg('');
+    setPwErr('');
+    try {
+      await api.user.requestPasswordEmailCode();
+      setCodeSent(true);
+      setPwMsg(t('auth.emailCodeSent'));
+    } catch (err) {
+      const key = (err as { code?: string }).code;
+      setPwErr(key ? t(`auth.${key === 'email_code_wait' ? 'emailCodeWait' : 'emailCodeInvalid'}`) : (err as Error).message);
+    }
+  };
+
   const changePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setPwMsg('');
@@ -74,12 +89,18 @@ export default function Account() {
       setPwErr(t('account.passwordMismatch'));
       return;
     }
+    if (emailCode.replace(/\D/g, '').length !== 6) {
+      setPwErr(t('auth.emailCodeInvalid'));
+      return;
+    }
     setPwSaving(true);
     try {
-      await api.user.changePassword(currentPassword, newPassword);
+      await api.user.changePassword(currentPassword, newPassword, emailCode);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
+      setEmailCode('');
+      setCodeSent(false);
       setPwMsg(t('account.passwordChanged'));
     } catch (err) {
       setPwErr((err as Error).message);
@@ -240,9 +261,26 @@ export default function Account() {
               required
             />
           </label>
-          <button type="submit" className="btn-primary" disabled={pwSaving}>
-            {pwSaving ? t('common.loading') : t('account.changePassword')}
-          </button>
+          <p className="muted-text">{t('account.passwordEmailHint')}</p>
+          <label className="wx-account-field">
+            <span>{t('auth.emailCodePh')}</span>
+            <input
+              className="input"
+              inputMode="numeric"
+              value={emailCode}
+              onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              placeholder="000000"
+              required
+            />
+          </label>
+          <div className="wx-account-actions">
+            <button type="button" className="btn-outline" onClick={sendPasswordCode} disabled={pwSaving}>
+              {codeSent ? t('auth.resendEmailCode') : t('auth.sendEmailCode')}
+            </button>
+            <button type="submit" className="btn-primary" disabled={pwSaving}>
+              {pwSaving ? t('common.loading') : t('account.changePassword')}
+            </button>
+          </div>
         </form>
       </section>
 

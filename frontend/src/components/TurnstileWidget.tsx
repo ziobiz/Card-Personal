@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useBrand } from '../brand/BrandContext';
+import './AdminAuthChrome.css';
 
 declare global {
   interface Window {
@@ -12,6 +14,8 @@ declare global {
           'expired-callback'?: () => void;
           'error-callback'?: () => void;
           theme?: 'light' | 'dark' | 'auto';
+          appearance?: 'always' | 'execute' | 'interaction-only';
+          size?: 'normal' | 'compact' | 'flexible';
         }
       ) => string;
       reset: (widgetId?: string) => void;
@@ -24,6 +28,7 @@ type Props = {
   onToken: (token: string) => void;
   onExpire?: () => void;
   resetKey?: number;
+  theme?: 'light' | 'dark' | 'auto';
 };
 
 let scriptPromise: Promise<void> | null = null;
@@ -50,7 +55,8 @@ function loadTurnstileScript(): Promise<void> {
   return scriptPromise;
 }
 
-export default function TurnstileWidget({ onToken, onExpire, resetKey = 0 }: Props) {
+export default function TurnstileWidget({ onToken, onExpire, resetKey = 0, theme = 'auto' }: Props) {
+  const { t } = useTranslation();
   const { brand } = useBrand();
   const enabled = Boolean(brand.turnstileEnabled && brand.turnstileSiteKey);
   const siteKey = brand.turnstileSiteKey || '';
@@ -58,6 +64,7 @@ export default function TurnstileWidget({ onToken, onExpire, resetKey = 0 }: Pro
   const widgetIdRef = useRef<string | null>(null);
   const [ready, setReady] = useState(false);
   const [err, setErr] = useState('');
+  const [challenge, setChallenge] = useState(false);
 
   useEffect(() => {
     if (!enabled || !siteKey || !hostRef.current) return;
@@ -75,16 +82,22 @@ export default function TurnstileWidget({ onToken, onExpire, resetKey = 0 }: Pro
           widgetIdRef.current = null;
           hostRef.current.innerHTML = '';
         }
+        setReady(false);
+        setChallenge(false);
         widgetIdRef.current = window.turnstile.render(hostRef.current, {
           sitekey: siteKey,
-          theme: 'light',
+          theme,
+          appearance: 'interaction-only',
+          size: 'flexible',
           callback: (token) => {
             setReady(true);
+            setChallenge(false);
             setErr('');
             onToken(token);
           },
           'expired-callback': () => {
             setReady(false);
+            setChallenge(false);
             onToken('');
             onExpire?.();
           },
@@ -110,7 +123,17 @@ export default function TurnstileWidget({ onToken, onExpire, resetKey = 0 }: Pro
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, siteKey, resetKey]);
+  }, [enabled, siteKey, resetKey, theme]);
+
+  useEffect(() => {
+    const el = hostRef.current;
+    if (!el || ready) return;
+    const ro = new ResizeObserver(() => {
+      if ((el.getBoundingClientRect().height || 0) > 24) setChallenge(true);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ready, resetKey]);
 
   useEffect(() => {
     if (!resetKey || !widgetIdRef.current || !window.turnstile) return;
@@ -118,6 +141,7 @@ export default function TurnstileWidget({ onToken, onExpire, resetKey = 0 }: Pro
       window.turnstile.reset(widgetIdRef.current);
       onToken('');
       setReady(false);
+      setChallenge(false);
     } catch {
       /* ignore */
     }
@@ -126,11 +150,13 @@ export default function TurnstileWidget({ onToken, onExpire, resetKey = 0 }: Pro
 
   if (!enabled) return null;
 
+  const state = err ? 'is-err' : ready ? 'is-ok' : challenge ? 'is-challenge' : 'is-wait';
+
   return (
-    <div className="ac-turnstile">
-      <div ref={hostRef} />
-      {err ? <p className="ac-turnstile-err">Cloudflare verification failed. Refresh and try again.</p> : null}
-      {!ready && !err ? <p className="ac-turnstile-hint">Verifying…</p> : null}
+    <div className={`ac-turnstile ${state}`}>
+      {!ready && !err ? <p className="ac-turnstile-banner">{t('auth.turnstileWait')}</p> : null}
+      {err ? <p className="ac-turnstile-banner is-err">{t('auth.turnstileFail')}</p> : null}
+      <div className="ac-turnstile-host" ref={hostRef} />
     </div>
   );
 }

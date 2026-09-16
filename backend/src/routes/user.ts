@@ -12,6 +12,7 @@ import { partnerStore } from '../data/partnerStore.js';
 import { isWalletModeAllowed, resolveWalletModes, walletModeDeniedError, type WalletModeKey } from '../lib/walletPolicy.js';
 import { manualsFor } from '../lib/manualCatalog.js';
 import { onboardingService } from '../services/onboardingService.js';
+import { consumeEmailCode, issueEmailCode } from '../lib/emailVerify.js';
 
 function partnerForUser(user: { partnerId?: string }) {
   return user.partnerId ? partnerStore.getById(user.partnerId) : undefined;
@@ -249,7 +250,25 @@ router.put('/profile', (req, res) => {
   }
 });
 
-/** 비밀번호 변경 — 현재 비밀번호 확인 후 새 비밀번호 저장 */
+/** 비밀번호 변경 — 가입 이메일로 인증번호 발송 */
+router.post('/password/email-code', async (req, res) => {
+  try {
+    const userId = req.auth!.userId;
+    store.loadUsers();
+    const user = store.getUserById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.passwordHash === '[partner]') {
+      return res.status(403).json({ error: 'Password change not available for this account' });
+    }
+    const sent = await issueEmailCode(user, 'change_password');
+    if (!sent.ok) return res.status(429).json({ error: 'Please wait before resending', code: 'email_code_wait' });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: (e as Error).message });
+  }
+});
+
+/** 비밀번호 변경 — 현재 비밀번호 + 이메일 인증번호 확인 후 저장 */
 router.put('/password', (req, res) => {
   try {
     const userId = req.auth!.userId;
@@ -268,7 +287,15 @@ router.put('/password', (req, res) => {
       return res.status(403).json({ error: 'Password change not available for this account' });
     }
     if (user.passwordHash !== hashPassword(currentPassword)) {
-      return res.status(401).json({ error: 'Current password is incorrect' });
+      return res.status(401).json({ error: 'Current password is incorrect', code: 'bad_password' });
+    }
+    const emailCode = typeof req.body?.emailCode === 'string' ? req.body.emailCode : '';
+    const result = consumeEmailCode(user, 'change_password', emailCode);
+    if (result !== 'ok') {
+      return res.status(400).json({
+        error: 'Email verification required',
+        code: result === 'expired' ? 'email_code_expired' : result === 'locked' ? 'email_code_locked' : 'email_code_invalid',
+      });
     }
     store.updatePassword(userId, hashPassword(newPassword));
     res.json({ ok: true });

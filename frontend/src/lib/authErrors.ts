@@ -9,6 +9,11 @@ const CODE_KEYS: Record<string, string> = {
   missing_fields: 'auth.missingFields',
   tenant_mismatch: 'auth.tenantMismatch',
   tenant_not_found: 'auth.tenantNotFound',
+  email_unverified: 'auth.emailUnverified',
+  email_code_invalid: 'auth.emailCodeInvalid',
+  email_code_expired: 'auth.emailCodeExpired',
+  email_code_locked: 'auth.emailCodeLocked',
+  email_code_wait: 'auth.emailCodeWait',
 };
 
 export function authErrorI18nKey(err: unknown): string | null {

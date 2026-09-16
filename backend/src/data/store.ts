@@ -41,6 +41,15 @@ export interface AppUser {
   status?: 'active' | 'suspended' | 'pending' | 'rejected';
   otpSecret?: string;
   otpEnabled?: boolean;
+  /** 가입 시 이메일 본인 확인. 기존 계정은 undefined = 이미 확인된 것으로 봄 */
+  emailVerified?: boolean;
+  emailVerify?: {
+    purpose: 'register' | 'reset' | 'change_password';
+    codeHash: string;
+    expiresAt: string;
+    sentAt: string;
+    attempts: number;
+  };
   /** WebAuthn platform authenticator credentials (mobile biometrics) */
   webauthnCredentials?: WebAuthnCredential[];
   createdAt: string;
@@ -271,6 +280,10 @@ export const store = {
     const c = user.webauthnCredentials.find((x) => x.id === credId);
     if (!c) return;
     c.counter = counter;
+    saveToFile(Array.from(users.values()));
+  },
+
+  save(): void {
     saveToFile(Array.from(users.values()));
   },
 };

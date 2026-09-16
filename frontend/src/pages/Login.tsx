@@ -85,6 +85,12 @@ export default function Login() {
       navigate(go('/'));
     } catch (err) {
       const key = authErrorI18nKey(err);
+      const code = (err as { code?: string }).code;
+      if (code === 'email_unverified') {
+        sessionStorage.setItem('memberEmailVerify', trimmedEmail);
+        navigate(go('/verify-email'));
+        return;
+      }
       setError(key ? t(key) : (err as Error).message);
       setTurnstileToken('');
       setTsReset((n) => n + 1);
@@ -146,8 +152,11 @@ export default function Login() {
                 {loading ? t('auth.loggingIn') : t('auth.submit')}
               </button>
             </div>
-            <TurnstileWidget onToken={setTurnstileToken} resetKey={tsReset} />
+            <TurnstileWidget onToken={setTurnstileToken} resetKey={tsReset} theme="dark" />
           </form>
+          <TLink to="/forgot-password" className="wx-auth-alt">
+            {t('auth.forgotPassword')}
+          </TLink>
           <TLink to="/register" className="wx-auth-alt">
             {t('auth.goRegister')}
           </TLink>

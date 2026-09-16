@@ -40,6 +40,8 @@ import Help from './pages/Help';
 import AdminManuals from './pages/admin/AdminManuals';
 import AdminAccess from './pages/admin/AdminAccess';
 import AdminPlatform from './pages/admin/AdminPlatform';
+import VerifyEmail from './pages/VerifyEmail';
+import ForgotPassword from './pages/ForgotPassword';
 import { useAuth } from './hooks/useAuth';
 import { withTenant, solutionSlugFromPath } from './tenant';
 
@@ -86,9 +88,13 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/otp" element={<MemberOtp />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/s/:slug/login" element={<Login />} />
         <Route path="/s/:slug/otp" element={<MemberOtp />} />
         <Route path="/s/:slug/register" element={<Register />} />
+        <Route path="/s/:slug/verify-email" element={<VerifyEmail />} />
+        <Route path="/s/:slug/forgot-password" element={<ForgotPassword />} />
         <Route path="/partner/login" element={<PartnerLogin />} />
         <Route path="/partner/password" element={<PartnerPassword />} />
         <Route path="/partner/otp" element={<PartnerOtp />} />

@@ -10,6 +10,7 @@ import { generateOtpSecret, otpAuthUrl, verifyTotp } from '../lib/totp.js';
 import { getSecuritySettings, maskEmail } from '../lib/otpPolicy.js';
 import { webauthnService } from '../lib/webauthn.js';
 import { requireTurnstile } from '../lib/turnstile.js';
+import { consumeEmailCode, isEmailVerified, issueEmailCode } from '../lib/emailVerify.js';
 
 const router = Router();
 
@@ -64,6 +65,33 @@ function readBearerUser(req: { headers: { authorization?: string } }): { userId:
   }
 }
 
+function finishSignupAccess(user: { id: string; email: string; status?: string }) {
+  if (user.status === 'pending') {
+    return {
+      ok: true,
+      needsApproval: true,
+      user: { id: user.id, email: user.email, status: user.status },
+    };
+  }
+  const sec = getSecuritySettings();
+  if (sec.otpRequiredMember) {
+    return {
+      ok: true,
+      needsApproval: false,
+      mustSetupOtp: true,
+      enrollToken: signEnroll(user.id),
+      maskedEmail: maskEmail(user.email),
+      user: { id: user.id, email: user.email, status: user.status },
+    };
+  }
+  return {
+    ok: true,
+    needsApproval: false,
+    token: signMember(user.id, user.email),
+    user: { id: user.id, email: user.email, status: user.status },
+  };
+}
+
 router.post('/register', async (req, res) => {
   try {
     const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
@@ -79,14 +107,30 @@ router.post('/register', async (req, res) => {
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters', code: 'weak_password' });
     }
-    store.loadUsers();
-    if (store.getUserByEmail(email)) {
-      return res.status(409).json({ error: 'Email already registered', code: 'email_taken' });
-    }
-
     const tenant = tenantFromRequest(req);
     if (tenant.slug && !tenant.partner) {
       return res.status(400).json({ error: 'tenant_not_found', code: 'tenant_not_found' });
+    }
+
+    const existing = store.getUserByEmail(email);
+    if (existing) {
+      if (isEmailVerified(existing) || existing.passwordHash === '[partner]') {
+        return res.status(409).json({ error: 'Email already registered', code: 'email_taken' });
+      }
+      existing.passwordHash = hashPassword(password);
+      if (displayName) existing.displayName = displayName;
+      existing.country = country || existing.country || 'KR';
+      store.save();
+      const sent = await issueEmailCode(existing, 'register');
+      if (!sent.ok) {
+        return res.status(429).json({ error: 'Please wait before resending', code: 'email_code_wait' });
+      }
+      return res.status(200).json({
+        ok: true,
+        needsEmailVerify: true,
+        maskedEmail: maskEmail(existing.email),
+        user: { id: existing.id, email: existing.email, status: existing.status },
+      });
     }
 
     const mode = getMemberRegistrationMode();
@@ -103,37 +147,96 @@ router.post('/register', async (req, res) => {
       partnerId: tenant.partner?.id,
       otpSecret: undefined,
       otpEnabled: false,
+      emailVerified: false,
       status,
       kycStatus: 'pending',
       onboardingStatus: 'none',
       createdAt: new Date().toISOString(),
     });
 
-    if (status === 'pending') {
-      return res.status(201).json({
-        ok: true,
-        needsApproval: true,
-        user: { id, email, status },
-      });
-    }
+    const created = store.getUserById(id);
+    if (created) await issueEmailCode(created, 'register', { force: true });
 
-    const sec = getSecuritySettings();
-    if (sec.otpRequiredMember) {
-      return res.status(201).json({
-        ok: true,
-        needsApproval: false,
-        mustSetupOtp: true,
-        enrollToken: signEnroll(id),
-        maskedEmail: maskEmail(email),
-        user: { id, email, status },
-      });
-    }
-
-    const token = signMember(id, email);
-    res.status(201).json({ ok: true, needsApproval: false, token, user: { id, email, status } });
+    return res.status(201).json({
+      ok: true,
+      needsEmailVerify: true,
+      maskedEmail: maskEmail(email),
+      user: { id, email, status },
+    });
   } catch (e) {
     res.status(500).json({ error: (e as Error).message, code: 'register_failed' });
   }
+});
+
+router.post('/verify-email', async (req, res) => {
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const code = typeof req.body?.code === 'string' ? req.body.code : '';
+  if (!email || !code) return res.status(400).json({ error: 'Email and code required', code: 'missing_fields' });
+  store.loadUsers();
+  const user = store.getUserByEmail(email);
+  if (!user) return res.status(400).json({ error: 'Invalid code', code: 'email_code_invalid' });
+  const result = consumeEmailCode(user, 'register', code);
+  if (result !== 'ok') {
+    const map: Record<string, string> = {
+      expired: 'email_code_expired',
+      mismatch: 'email_code_invalid',
+      locked: 'email_code_locked',
+      missing: 'email_code_invalid',
+    };
+    return res.status(400).json({ error: 'Invalid code', code: map[result] || 'email_code_invalid' });
+  }
+  res.json(finishSignupAccess(user));
+});
+
+router.post('/resend-email-code', async (req, res) => {
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const purpose = req.body?.purpose === 'reset' || req.body?.purpose === 'change_password' ? req.body.purpose : 'register';
+  if (!email) return res.status(400).json({ error: 'Email required', code: 'missing_fields' });
+  store.loadUsers();
+  const user = store.getUserByEmail(email);
+  if (!user || user.passwordHash === '[partner]') {
+    return res.json({ ok: true });
+  }
+  if (purpose === 'register' && isEmailVerified(user)) {
+    return res.status(400).json({ error: 'Already verified', code: 'email_taken' });
+  }
+  const sent = await issueEmailCode(user, purpose);
+  if (!sent.ok) return res.status(429).json({ error: 'Please wait before resending', code: 'email_code_wait' });
+  res.json({ ok: true, maskedEmail: maskEmail(user.email) });
+});
+
+router.post('/forgot-password', async (req, res) => {
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  if (!email) return res.status(400).json({ error: 'Email required', code: 'missing_fields' });
+  store.loadUsers();
+  const user = store.getUserByEmail(email);
+  if (user && user.passwordHash !== '[partner]') {
+    const sent = await issueEmailCode(user, 'reset');
+    if (!sent.ok) return res.status(429).json({ error: 'Please wait before resending', code: 'email_code_wait' });
+  }
+  res.json({ ok: true });
+});
+
+router.post('/reset-password', async (req, res) => {
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const code = typeof req.body?.code === 'string' ? req.body.code : '';
+  const password = typeof req.body?.password === 'string' ? req.body.password : '';
+  if (!email || !code || !password) {
+    return res.status(400).json({ error: 'Email, code and password required', code: 'missing_fields' });
+  }
+  if (password.length < 6) return res.status(400).json({ error: 'Password too short', code: 'weak_password' });
+  store.loadUsers();
+  const user = store.getUserByEmail(email);
+  if (!user || user.passwordHash === '[partner]') {
+    return res.status(400).json({ error: 'Invalid code', code: 'email_code_invalid' });
+  }
+  const result = consumeEmailCode(user, 'reset', code);
+  if (result !== 'ok') {
+    return res.status(400).json({ error: 'Invalid code', code: result === 'expired' ? 'email_code_expired' : result === 'locked' ? 'email_code_locked' : 'email_code_invalid' });
+  }
+  user.emailVerified = true;
+  store.updatePassword(user.id, hashPassword(password));
+  res.json({ ok: true });
 });
 
 router.post('/login', async (req, res) => {
@@ -153,6 +256,15 @@ router.post('/login', async (req, res) => {
   }
   if (user.passwordHash !== hashPassword(password)) {
     return res.status(401).json({ error: 'Invalid credentials', code: 'bad_password' });
+  }
+  if (!isEmailVerified(user)) {
+    const sent = await issueEmailCode(user, 'register');
+    return res.status(403).json({
+      error: 'Email not verified',
+      code: 'email_unverified',
+      maskedEmail: maskEmail(user.email),
+      canResend: sent.ok,
+    });
   }
   if (user.status === 'pending') {
     return res.status(403).json({ error: 'Account pending approval', code: 'pending_approval' });
