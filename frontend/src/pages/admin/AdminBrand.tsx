@@ -452,7 +452,7 @@ export default function AdminBrand() {
             {t('admin.brandOgDescription')}
             <textarea
               className="input hq-og-desc-input"
-              rows={6}
+              rows={4}
               value={form.ogMemberDescription || ''}
               onChange={(e) => set('ogMemberDescription', e.target.value)}
               placeholder={t('admin.brandOgMemberDescPh')}
@@ -487,7 +487,7 @@ export default function AdminBrand() {
             {t('admin.brandOgDescription')}
             <textarea
               className="input hq-og-desc-input"
-              rows={6}
+              rows={4}
               value={form.ogAdminDescription || ''}
               onChange={(e) => set('ogAdminDescription', e.target.value)}
               placeholder={t('admin.brandOgAdminDescPh')}
