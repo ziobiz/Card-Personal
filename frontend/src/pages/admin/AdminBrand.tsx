@@ -42,6 +42,24 @@ const COLOR_KEYS = [
 
 type ColorKey = (typeof COLOR_KEYS)[number];
 
+/** Related color fields share one pastel box background for intuitive grouping */
+const COLOR_FIELD_GROUP: Record<ColorKey, string> = {
+  sidebarBg: 'sidebar',
+  sidebarHover: 'sidebar',
+  sidebarActive: 'sidebar',
+  accentColor: 'sidebar',
+  sidebarSub: 'sidebar',
+  sidebarText: 'sidebar',
+  logoBg: 'logo',
+  foldBg: 'fold',
+  foldHover: 'fold',
+  headerBg: 'header',
+  tabbarBg: 'tabbar',
+  tabbarText: 'tabbar',
+  tabbarActive: 'tabbar',
+  loginPanelBg: 'login',
+};
+
 function ensureColorFields(b: BrandConfig): BrandConfig {
   const presets = b.colorPresets?.length
     ? b.colorPresets
@@ -653,7 +671,7 @@ export default function AdminBrand() {
             const value = normalizeHex(String(form[key] || '')) || String(form[key] || '#000000');
             const draft = hexDraft[key] ?? value;
             return (
-              <label key={key} className="hq-color-field">
+              <label key={key} className={`hq-color-field hq-color-group-${COLOR_FIELD_GROUP[key]}`}>
                 <span className="hq-color-title">{colorLabels[key].title}</span>
                 <span className="hq-color-hint">{colorLabels[key].hint}</span>
                 <span className="hq-color-row">

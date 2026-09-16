@@ -2890,6 +2890,10 @@
   flex-direction: column;
   gap: 4px;
   margin: 0;
+  padding: 12px 12px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  box-sizing: border-box;
 }
 
 .is-admin .hq-color-title {
@@ -2907,6 +2911,47 @@
 
 .is-admin .hq-brand-colors-labeled .hq-color-row .input {
   width: 110px !important;
+}
+
+/* Grouped pastel field boxes — same group = same tone */
+.is-admin .hq-color-group-sidebar {
+  background: #ebe8f4;
+  border-color: #d5d0e8;
+}
+
+.is-admin .hq-color-group-logo {
+  background: #e4f0ea;
+  border-color: #c5ddd0;
+}
+
+.is-admin .hq-color-group-fold {
+  background: #d4eef8;
+  border-color: #8ec8e6;
+}
+
+.is-admin .hq-color-group-header {
+  background: #f5e9ee;
+  border-color: #e4cdd6;
+}
+
+.is-admin .hq-color-group-tabbar {
+  background: #e8e6f5;
+  border-color: #cdc8e6;
+}
+
+.is-admin .hq-color-group-login {
+  background: #e6f3f2;
+  border-color: #c0ddd9;
+}
+
+.is-admin .hq-color-group-sidebar .hq-hex-input,
+.is-admin .hq-color-group-logo .hq-hex-input,
+.is-admin .hq-color-group-fold .hq-hex-input,
+.is-admin .hq-color-group-header .hq-hex-input,
+.is-admin .hq-color-group-tabbar .hq-hex-input,
+.is-admin .hq-color-group-login .hq-hex-input {
+  background: #fff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
 }
 
 .is-admin .wx-field {
