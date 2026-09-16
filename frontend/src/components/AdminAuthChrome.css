@@ -59,12 +59,14 @@
   max-width: 420px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .ac-lang {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 12px;
+  flex-shrink: 0;
+  margin: 0 0 36px;
 }
 
 .ac-logo {
@@ -72,15 +74,16 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin: 4px 0 28px;
+  margin: 0 0 36px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .ac-logo img {
   display: block;
   margin: 0 auto;
-  max-height: 52px;
-  max-width: 220px;
+  max-height: 48px;
+  max-width: 210px;
   object-fit: contain;
 }
 
@@ -90,17 +93,19 @@
   font-weight: 800;
   color: #1e293b;
   letter-spacing: 0.04em;
-  margin: 4px 0 28px;
+  margin: 0 0 36px;
   width: 100%;
+  flex-shrink: 0;
 }
 
 .ac-notice {
-  margin: 8px 0 22px;
-  padding: 12px 14px;
+  margin: 0 0 28px;
+  padding: 14px 16px;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+  background: #fff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
 }
 
 .ac-notice h3 {
@@ -317,12 +322,13 @@
 }
 
 .ac-copy {
-  margin: 24px 0 0;
-  padding-top: 14px;
-  border-top: 1px solid #f3f4f6;
+  margin: auto 0 0;
+  padding-top: 18px;
+  border-top: 1px solid #d9dde3;
   text-align: center;
   font-size: 11px;
   color: #9ca3af;
+  flex-shrink: 0;
 }
 
 .ac-error {
@@ -379,39 +385,35 @@
   }
 
   .ac-panel {
-    position: relative;
-    width: 400px;
+    width: 380px;
     flex: none;
     overflow-y: auto;
   }
 
   .ac-panel-inner {
-    position: relative;
     max-width: none;
     margin: 0;
-    justify-content: center;
-    align-items: stretch;
     min-height: 100%;
-    padding-top: 48px;
-    padding-bottom: 48px;
-    gap: 0;
+    justify-content: flex-start;
+    padding: 18px 22px 18px;
   }
 
+  /* Language stays at top; content stays top-aligned; copyright pinned to bottom */
   .ac-lang {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    margin-bottom: 0;
-    z-index: 2;
+    margin: 0 0 48px;
   }
 
   .ac-logo,
   .ac-brand-name {
-    margin-top: 0;
+    margin: 0 0 40px;
+  }
+
+  .ac-notice {
+    margin: 0 0 28px;
   }
 
   .ac-copy {
-    margin-top: 28px;
-    flex-shrink: 0;
+    margin-top: auto;
+    padding-top: 20px;
   }
 }
