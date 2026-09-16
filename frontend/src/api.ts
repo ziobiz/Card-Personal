@@ -463,10 +463,12 @@ export function resolveMemberShellLogo(brand: BrandConfig): string {
 
 /** System default member login background */
 export const DEFAULT_LOGIN_HERO = '/user-hero-bg.png';
-/** Admin login left hero (Crypto/PG gold wave) — used when HQ has not uploaded one */
+/** Admin login left hero — ICOCARD brand wave */
 export const DEFAULT_ADMIN_LOGIN_HERO = '/brand/admin-login-wave-default.jpg';
-/** Admin login / sidebar logo when HQ has not uploaded one */
+/** Admin login panel logo (navy mark on transparent) */
 export const DEFAULT_ADMIN_LOGIN_LOGO = '/brand/icocard-logo.png';
+/** Admin sidebar / dark surfaces (white mark) */
+export const DEFAULT_ADMIN_SHELL_LOGO = '/brand/icocard-logo-dark.png';
 
 /** Admin login panel logo */
 export function resolveAdminLoginLogo(brand: BrandConfig): string {
@@ -475,7 +477,7 @@ export function resolveAdminLoginLogo(brand: BrandConfig): string {
 
 /** Admin sidebar after login */
 export function resolveAdminShellLogo(brand: BrandConfig): string {
-  return (brand.logoAdminShell || brand.logoAdmin || '').trim() || DEFAULT_ADMIN_LOGIN_LOGO;
+  return (brand.logoAdminShell || brand.logoAdmin || '').trim() || DEFAULT_ADMIN_SHELL_LOGO;
 }
 
 /** Admin login left hero (does not fall back to member custom image) */
