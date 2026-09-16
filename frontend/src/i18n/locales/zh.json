@@ -43,7 +43,7 @@
     "goRegister": "注册",
     "goLogin": "登录",
     "adminLink": "管理员",
-    "loginHint": "请使用已注册的邮箱和密码登录。如无账户请先注册。",
+    "loginHint": "请使用已注册的邮箱和密码登录。 如无账户请先注册。",
     "registerHint": "使用邮箱和密码创建 ICOCARD 账户。注册后登录再进行钱包与 KYC。",
     "registerOpenHint": "用邮箱和密码创建账户后即可使用。钱包和 KYC 在登录后进行。",
     "registerApprovalHint": "提交申请后需总部批准才能登录。钱包和 KYC 在批准后进行。",
@@ -90,7 +90,9 @@
     "biometricEnrollBtn": "启用生物识别",
     "biometricEnrollFailed": "启用生物识别失败。",
     "biometricSkip": "稍后",
-    "turnstileRequired": "请完成 Cloudflare 安全验证。"
+    "turnstileRequired": "请完成 Cloudflare 安全验证。",
+    "loginHintLine1": "请使用已注册的邮箱和密码登录。",
+    "loginHintLine2": "如无账户请先注册。"
   },
   "account": {
     "title": "我的信息",

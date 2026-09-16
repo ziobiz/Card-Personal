@@ -86,7 +86,9 @@
     "biometricEnrollBtn": "ลงทะเบียนไบโอเมตริก",
     "biometricEnrollFailed": "ลงทะเบียนไบโอเมตริกล้มเหลว",
     "biometricSkip": "ไว้ทีหลัง",
-    "turnstileRequired": "กรุณาผ่านการตรวจสอบความปลอดภัย Cloudflare"
+    "turnstileRequired": "กรุณาผ่านการตรวจสอบความปลอดภัย Cloudflare",
+    "loginHintLine1": "เข้าสู่ระบบด้วยอีเมลและรหัสผ่านที่สมัครไว้",
+    "loginHintLine2": "หากยังไม่มีบัญชี ให้สมัครก่อน"
   },
   "account": {
     "title": "บัญชีของฉัน",

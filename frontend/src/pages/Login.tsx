@@ -114,7 +114,11 @@ export default function Login() {
             <MailIcon light />
           </div>
           <h1>{t('auth.login')}</h1>
-          <p className="auth-subtitle">{t('auth.loginHint')}</p>
+          <p className="auth-subtitle auth-subtitle-center">
+            {t('auth.loginHintLine1')}
+            <br />
+            {t('auth.loginHintLine2')}
+          </p>
           <form onSubmit={handleSubmit}>
             {backendOk === false && <div className="auth-error">{t('common.backendUnavailable')}</div>}
             {error && <div className="auth-error">{error}</div>}
@@ -160,9 +164,6 @@ export default function Login() {
             {t('auth.agreePrefix')}{' '}
             <a href="#terms">{t('auth.terms')}</a> &amp; <a href="#privacy">{t('auth.privacy')}</a>
           </p>
-          <a href="/admin/login" className="wx-admin-link">
-            {t('auth.adminLink')}
-          </a>
         </div>
       </div>
       <p className="wx-copy">{brand.copyright}</p>

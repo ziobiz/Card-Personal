@@ -31,14 +31,16 @@
     "hasAccount": "Đã có tài khoản?",
     "goRegister": "Đăng ký",
     "goLogin": "Đăng nhập",
-    "loginHint": "Enter your email and password to continue.",
+    "loginHint": "Đăng nhập bằng email và mật khẩu đã đăng ký. Nếu chưa có tài khoản, hãy đăng ký trước.",
     "registerHint": "Create an ICOCARD account with email and password.",
     "submit": "Submit",
     "agreePrefix": "By logging in I agree to the",
     "terms": "Terms",
     "privacy": "Privacy Policy",
     "tenantMismatch": "This account cannot be used on this solution tenant.",
-    "tenantNotFound": "Solution not found."
+    "tenantNotFound": "Solution not found.",
+    "loginHintLine1": "Đăng nhập bằng email và mật khẩu đã đăng ký.",
+    "loginHintLine2": "Nếu chưa có tài khoản, hãy đăng ký trước."
   },
   "dashboard": {
     "title": "Bảng điều khiển",

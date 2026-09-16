@@ -40,7 +40,7 @@
     "goRegister": "新規登録",
     "goLogin": "ログイン",
     "adminLink": "管理者",
-    "loginHint": "登録したメールとパスワードでログインしてください。アカウントがなければ先に登録してください。",
+    "loginHint": "登録したメールとパスワードでログインしてください。 アカウントがなければ先に登録してください。",
     "registerHint": "メールとパスワードでICOCARDアカウントを作成します。登録後にログインしてウォレットとKYCを進めます。",
     "registerOpenHint": "メールとパスワードでアカウントを作るとすぐ利用できます。ウォレットとKYCはログイン後です。",
     "registerApprovalHint": "申請後、本社の承認が完了するとログインできます。ウォレットとKYCは承認後に進めます。",
@@ -87,7 +87,9 @@
     "biometricEnrollBtn": "生体認証を登録",
     "biometricEnrollFailed": "生体認証の登録に失敗しました。",
     "biometricSkip": "後で",
-    "turnstileRequired": "Cloudflareのセキュリティ確認を完了してください。"
+    "turnstileRequired": "Cloudflareのセキュリティ確認を完了してください。",
+    "loginHintLine1": "登録したメールとパスワードでログインしてください。",
+    "loginHintLine2": "アカウントがなければ先に登録してください。"
   },
   "account": {
     "title": "マイ情報",

@@ -31,14 +31,16 @@
     "hasAccount": "Mayroon nang account?",
     "goRegister": "Mag-sign up",
     "goLogin": "Mag-log in",
-    "loginHint": "Enter your email and password to continue.",
+    "loginHint": "Mag-login gamit ang naka-register na email at password. Kung wala ka pang account, mag-sign up muna.",
     "registerHint": "Create an ICOCARD account with email and password.",
     "submit": "Submit",
     "agreePrefix": "By logging in I agree to the",
     "terms": "Terms",
     "privacy": "Privacy Policy",
     "tenantMismatch": "This account cannot be used on this solution tenant.",
-    "tenantNotFound": "Solution not found."
+    "tenantNotFound": "Solution not found.",
+    "loginHintLine1": "Mag-login gamit ang naka-register na email at password.",
+    "loginHintLine2": "Kung wala ka pang account, mag-sign up muna."
   },
   "dashboard": {
     "title": "Dashboard",

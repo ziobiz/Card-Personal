@@ -155,6 +155,11 @@
   font-size: 0.92rem;
 }
 
+.wx-auth-card .auth-subtitle-center {
+  text-align: center;
+  line-height: 1.55;
+}
+
 .wx-field {
   display: flex;
   align-items: center;

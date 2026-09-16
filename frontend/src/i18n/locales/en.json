@@ -45,7 +45,7 @@
     "goRegister": "Sign up",
     "goLogin": "Log in",
     "adminLink": "Admin",
-    "loginHint": "Log in with the email and password you registered. If you do not have an account yet, sign up first.",
+    "loginHint": "Log in with your registered email and password. If you do not have an account yet, sign up first.",
     "registerHint": "Create an ICOCARD account with email and password. After sign-up, log in to connect a wallet and complete KYC.",
     "registerOpenHint": "Create an account with email and password to start right away. Wallet and KYC happen after you log in.",
     "registerApprovalHint": "After you apply, HQ must approve your account before you can log in. Wallet and KYC start after approval.",
@@ -112,7 +112,9 @@
     "emailCodeInvalid": "The verification code is incorrect.",
     "emailCodeExpired": "The code expired. Request a new one.",
     "emailCodeLocked": "Too many attempts. Request a new code later.",
-    "emailCodeWait": "Please wait a moment before requesting another code."
+    "emailCodeWait": "Please wait a moment before requesting another code.",
+    "loginHintLine1": "Log in with your registered email and password.",
+    "loginHintLine2": "If you do not have an account yet, sign up first."
   },
   "account": {
     "title": "My account",

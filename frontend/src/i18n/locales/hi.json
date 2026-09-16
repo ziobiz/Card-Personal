@@ -31,14 +31,16 @@
     "hasAccount": "पहले से खाता है?",
     "goRegister": "साइन अप करें",
     "goLogin": "लॉग इन करें",
-    "loginHint": "Enter your email and password to continue.",
+    "loginHint": "पंजीकृत ईमेल और पासवर्ड से लॉग इन करें। यदि खाता नहीं है तो पहले साइन अप करें।",
     "registerHint": "Create an ICOCARD account with email and password.",
     "submit": "Submit",
     "agreePrefix": "By logging in I agree to the",
     "terms": "Terms",
     "privacy": "Privacy Policy",
     "tenantMismatch": "This account cannot be used on this solution tenant.",
-    "tenantNotFound": "Solution not found."
+    "tenantNotFound": "Solution not found.",
+    "loginHintLine1": "पंजीकृत ईमेल और पासवर्ड से लॉग इन करें।",
+    "loginHintLine2": "यदि खाता नहीं है तो पहले साइन अप करें।"
   },
   "dashboard": {
     "title": "डैशबोर्ड",

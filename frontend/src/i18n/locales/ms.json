@@ -31,14 +31,16 @@
     "hasAccount": "Sudah mempunyai akaun?",
     "goRegister": "Daftar",
     "goLogin": "Log masuk",
-    "loginHint": "Enter your email and password to continue.",
+    "loginHint": "Log masuk dengan e-mel dan kata laluan berdaftar. Jika tiada akaun, daftar dahulu.",
     "registerHint": "Create an ICOCARD account with email and password.",
     "submit": "Submit",
     "agreePrefix": "By logging in I agree to the",
     "terms": "Terms",
     "privacy": "Privacy Policy",
     "tenantMismatch": "This account cannot be used on this solution tenant.",
-    "tenantNotFound": "Solution not found."
+    "tenantNotFound": "Solution not found.",
+    "loginHintLine1": "Log masuk dengan e-mel dan kata laluan berdaftar.",
+    "loginHintLine2": "Jika tiada akaun, daftar dahulu."
   },
   "dashboard": {
     "title": "Papan pemuka",

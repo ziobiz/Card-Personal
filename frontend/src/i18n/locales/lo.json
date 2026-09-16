@@ -31,14 +31,16 @@
     "hasAccount": "ມີບັນຊີແລ້ວ?",
     "goRegister": "ລົງທະບຽນ",
     "goLogin": "ເຂົ້າສູ່ລະບົບ",
-    "loginHint": "Enter your email and password to continue.",
+    "loginHint": "ເຂົ້າສູ່ລະບົບດ້ວຍອີເມວ ແລະ ລະຫັດຜ່ານທີ່ລົງທະບຽນ. ຖ້າຍັງບໍ່ມີບັນຊີ ໃຫ້ລົງທະບຽນກ່ອນ.",
     "registerHint": "Create an ICOCARD account with email and password.",
     "submit": "Submit",
     "agreePrefix": "By logging in I agree to the",
     "terms": "Terms",
     "privacy": "Privacy Policy",
     "tenantMismatch": "This account cannot be used on this solution tenant.",
-    "tenantNotFound": "Solution not found."
+    "tenantNotFound": "Solution not found.",
+    "loginHintLine1": "ເຂົ້າສູ່ລະບົບດ້ວຍອີເມວ ແລະ ລະຫັດຜ່ານທີ່ລົງທະບຽນ.",
+    "loginHintLine2": "ຖ້າຍັງບໍ່ມີບັນຊີ ໃຫ້ລົງທະບຽນກ່ອນ."
   },
   "dashboard": {
     "title": "ແດັຊບອດ",
