@@ -6,6 +6,7 @@ import { type LanguageCode } from '../i18n';
 import { useBrand } from '../brand/BrandContext';
 import { api, resolveAdminShellLogo } from '../api';
 import { contrastText, normalizeHex } from '../lib/colorHex';
+import { adminTokenEmail, clearAdminSession, kickToAdminLogin } from '../lib/adminSession';
 import './AdminLayout.css';
 
 type MenuItem = { to: string; labelKey: string; menu: string };
@@ -97,13 +98,7 @@ function SideIcon({ name }: { name: IconName }) {
 }
 
 function tokenEmail() {
-  try {
-    const token = localStorage.getItem('token') || '';
-    const payload = JSON.parse(atob(token.split('.')[1] || ''));
-    return String(payload.email || '');
-  } catch {
-    return '';
-  }
+  return adminTokenEmail();
 }
 
 export default function AdminLayout() {
@@ -139,7 +134,14 @@ export default function AdminLayout() {
         const menus = Array.isArray(r.allowedMenus) ? r.allowedMenus : null;
         setAllowed(menus && menus.length ? menus : null);
       })
-      .catch(() => setAllowed(null));
+      .catch((e) => {
+        const status = (e as { status?: number }).status;
+        if (status === 401 || status === 403) {
+          kickToAdminLogin();
+          return;
+        }
+        setAllowed([]);
+      });
   }, []);
 
   const allGroups: MenuGroup[] = [
@@ -299,8 +301,8 @@ export default function AdminLayout() {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    navigate('/admin/login');
+    clearAdminSession();
+    window.location.replace('/admin/login');
   };
 
   const toggleHelp = () => {

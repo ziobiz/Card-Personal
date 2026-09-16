@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
+import { kickToAdminLogin } from '../../lib/adminSession';
 import type { AdminOutletContext } from '../../components/AdminLayout';
 
 type FeePolicy = {
@@ -87,9 +88,8 @@ export default function AdminSettings() {
       })
       .catch((e) => {
         const msg = (e as Error).message || '';
-        if (msg.includes('Admin') || msg.includes('403')) {
-          localStorage.removeItem('token');
-          window.location.href = '/admin/login';
+        if (msg.includes('Admin') || msg.includes('403') || msg.includes('Unauthorized')) {
+          kickToAdminLogin();
         }
       })
       .finally(() => setLoading(false));

@@ -3,6 +3,8 @@
  * Wirex API 스펙 기반
  */
 
+import { getAdminToken, kickToAdminLogin } from './lib/adminSession';
+
 // 직접 연결 (프록시 미사용) - dev: 127.0.0.1:3001, prod: VITE_API_URL
 const API =
   import.meta.env.VITE_API_URL ||
@@ -12,6 +14,26 @@ function getToken(): string | null {
   return localStorage.getItem('token');
 }
 
+function bearerFor(path: string): string | null {
+  if (path.startsWith('/admin')) return getAdminToken();
+  if (path.startsWith('/partner-portal')) {
+    try {
+      return localStorage.getItem('partnerToken');
+    } catch {
+      return null;
+    }
+  }
+  return getToken();
+}
+
+function shouldKickAdminSession(path: string, status: number, message: string): boolean {
+  if (!path.startsWith('/admin')) return false;
+  if (path === '/admin/login' || path.startsWith('/admin/otp/')) return false;
+  if (status === 401) return true;
+  if (status === 403 && /Admin access required|Invalid token|Unauthorized|OTP required/i.test(message)) return true;
+  return false;
+}
+
 const REQUEST_TIMEOUT = 15000;
 
 async function request<T>(
@@ -19,7 +41,7 @@ async function request<T>(
   options: RequestInit = {},
   timeoutMs = REQUEST_TIMEOUT
 ): Promise<T> {
-  const token = getToken();
+  const token = bearerFor(path);
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
@@ -41,7 +63,7 @@ async function request<T>(
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const res = await fetch(url, { ...options, headers, signal: controller.signal });
+    const res = await fetch(url, { ...options, headers, signal: controller.signal, cache: 'no-store' });
     clearTimeout(timeoutId);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -50,6 +72,7 @@ async function request<T>(
         (data.hint ? `${data.error} (${data.hint})` : data.error) ||
         `HTTP ${res.status}`;
       if (data._debug) msg += ` [받은이메일:${data._debug.receivedEmail}, 사용자수:${data._debug.usersCount}]`;
+      if (shouldKickAdminSession(path, res.status, String(msg))) kickToAdminLogin();
       const err = new Error(msg) as Error & { status?: number; body?: unknown; code?: string };
       err.status = res.status;
       err.body = data;

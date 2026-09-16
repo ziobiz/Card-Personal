@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api';
 import OtpChallenge from '../../components/OtpChallenge';
+import { setAdminToken } from '../../lib/adminSession';
 
 export default function AdminOtp() {
   const navigate = useNavigate();
@@ -22,9 +23,9 @@ export default function AdminOtp() {
       }}
       onVerify={(code) => api.admin.verifyOtp(code)}
       onSuccess={(token) => {
-        localStorage.setItem('token', token);
-        localStorage.removeItem('adminMustChangePassword');
-        navigate('/admin/dashboard');
+        setAdminToken(token);
+        sessionStorage.removeItem('adminMustChangePassword');
+        navigate('/admin/dashboard', { replace: true });
       }}
     />
   );

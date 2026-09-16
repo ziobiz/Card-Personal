@@ -22,6 +22,13 @@ import { partnerStore } from './data/partnerStore.js';
 
 const app = express();
 app.use(cors({ origin: true }));
+app.use((_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('CDN-Cache-Control', 'no-store');
+  next();
+});
 app.use(express.json({
   limit: '2mb',
   verify: (req, _res, buf) => {

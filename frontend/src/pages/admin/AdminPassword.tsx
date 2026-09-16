@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
 import AdminAuthChrome from '../../components/AdminAuthChrome';
+import { setAdminToken } from '../../lib/adminSession';
 
 export default function AdminPassword() {
   const { t } = useTranslation();
@@ -26,19 +27,19 @@ export default function AdminPassword() {
     setError('');
     try {
       const r = await api.admin.changePassword(password);
-      localStorage.removeItem('adminMustChangePassword');
+      sessionStorage.removeItem('adminMustChangePassword');
       if (r.mustSetupOtp && r.enrollToken) {
         sessionStorage.setItem('adminOtpEnroll', r.enrollToken);
-        navigate('/admin/otp');
+        navigate('/admin/otp', { replace: true });
         return;
       }
       if (r.otpRequired && r.token) {
-        localStorage.setItem('token', r.token);
+        setAdminToken(r.token);
         sessionStorage.removeItem('adminOtpEnroll');
-        navigate('/admin/otp');
+        navigate('/admin/otp', { replace: true });
         return;
       }
-      navigate('/admin/dashboard');
+      navigate('/admin/dashboard', { replace: true });
     } catch (err) {
       setError((err as Error).message);
     } finally {

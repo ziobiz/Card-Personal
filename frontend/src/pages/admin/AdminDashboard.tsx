@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
+import { kickToAdminLogin } from '../../lib/adminSession';
 
 type DayPoint = { date: string; value: number };
 type StatusPoint = { key: string; value: number };
@@ -25,10 +26,10 @@ type DashStats = {
 };
 
 function handleAdminError(err: unknown) {
+  const status = (err as { status?: number }).status;
   const msg = (err as Error).message || '';
-  if (msg.includes('Admin') || msg.includes('403')) {
-    localStorage.removeItem('token');
-    window.location.href = '/admin/login';
+  if (status === 401 || status === 403 || msg.includes('Admin') || msg.includes('Unauthorized') || msg.includes('Invalid token')) {
+    kickToAdminLogin();
   }
 }
 

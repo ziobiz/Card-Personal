@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api, type CredentialKit } from '../../api';
+import { kickToAdminLogin } from '../../lib/adminSession';
 import CredentialKitCard from '../../components/CredentialKitCard';
 import { EntityFilterBar } from '../../components/EntityFilterBar';
 import { EMPTY_ENTITY_FILTER, filterByEntity, type EntityFilterState } from '../../lib/dateRange';
@@ -66,9 +67,8 @@ export default function AdminPartners() {
       .then((r) => setPartners(r.items))
       .catch((e) => {
         const msg = (e as Error).message || '';
-        if (msg.includes('Admin') || msg.includes('403')) {
-          localStorage.removeItem('token');
-          window.location.href = '/admin/login';
+        if (msg.includes('Admin') || msg.includes('403') || msg.includes('Unauthorized')) {
+          kickToAdminLogin();
         }
       })
       .finally(() => setLoading(false));

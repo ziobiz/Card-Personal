@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import Layout from './components/Layout';
 import AdminLayout from './components/AdminLayout';
 import Login from './pages/Login';
@@ -44,6 +45,13 @@ import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import { useAuth } from './hooks/useAuth';
 import { withTenant, solutionSlugFromPath } from './tenant';
+import {
+  clearAdminSession,
+  isUsableAdminToken,
+  getAdminToken,
+  purgeLegacyAdminToken,
+} from './lib/adminSession';
+import { api } from './api';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth();
@@ -53,8 +61,35 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem('token');
-  if (!token) return <Navigate to="/admin/login" replace />;
+  const [state, setState] = useState<'checking' | 'ok' | 'deny'>('checking');
+
+  useEffect(() => {
+    let alive = true;
+    purgeLegacyAdminToken();
+    const token = getAdminToken();
+    if (!isUsableAdminToken(token)) {
+      clearAdminSession();
+      setState('deny');
+      return () => {
+        alive = false;
+      };
+    }
+    api.admin
+      .me()
+      .then(() => {
+        if (alive) setState('ok');
+      })
+      .catch(() => {
+        clearAdminSession();
+        if (alive) setState('deny');
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (state === 'checking') return null;
+  if (state === 'deny') return <Navigate to="/admin/login" replace />;
   return <>{children}</>;
 }
 

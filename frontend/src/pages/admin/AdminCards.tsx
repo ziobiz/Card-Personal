@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api, type Card } from '../../api';
+import { kickToAdminLogin } from '../../lib/adminSession';
 import { EntityFilterBar } from '../../components/EntityFilterBar';
 import { EMPTY_ENTITY_FILTER, filterByEntity, type EntityFilterState } from '../../lib/dateRange';
 
@@ -21,9 +22,8 @@ export default function AdminCards() {
       .then((r) => setCards(r.items))
       .catch((e) => {
         const msg = (e as Error).message || '';
-        if (msg.includes('Admin') || msg.includes('403')) {
-          localStorage.removeItem('token');
-          window.location.href = '/admin/login';
+        if (msg.includes('Admin') || msg.includes('403') || msg.includes('Unauthorized')) {
+          kickToAdminLogin();
         }
         setCards([]);
       })

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api';
+import { kickToAdminLogin } from '../../lib/adminSession';
 
 type User = { id: string; email: string; wirexUserId?: string; createdAt: string; source?: string; partnerId?: string };
 
@@ -16,9 +17,8 @@ export default function AdminUsers() {
       .then((r) => setUsers(r.items))
       .catch((e) => {
         const msg = (e as Error).message || '';
-        if (msg.includes('Admin') || msg.includes('403')) {
-          localStorage.removeItem('token');
-          window.location.href = '/admin/login';
+        if (msg.includes('Admin') || msg.includes('403') || msg.includes('Unauthorized')) {
+          kickToAdminLogin();
         }
         setUsers([]);
       })

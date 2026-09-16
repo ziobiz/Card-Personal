@@ -5,6 +5,7 @@ import { api } from '../../api';
 import AdminAuthChrome from '../../components/AdminAuthChrome';
 import TurnstileWidget from '../../components/TurnstileWidget';
 import { useBrand } from '../../brand/BrandContext';
+import { setAdminToken } from '../../lib/adminSession';
 
 type Step = 'credentials' | 'otp';
 
@@ -31,10 +32,10 @@ export default function AdminLogin() {
   }, [step]);
 
   const finishLogin = (token: string) => {
-    localStorage.setItem('token', token);
-    localStorage.removeItem('adminMustChangePassword');
+    setAdminToken(token);
+    sessionStorage.removeItem('adminMustChangePassword');
     sessionStorage.removeItem('adminOtpEnroll');
-    navigate('/admin/dashboard');
+    navigate('/admin/dashboard', { replace: true });
   };
 
   const verifyOtp = async (raw: string) => {
@@ -67,17 +68,17 @@ export default function AdminLogin() {
     try {
       const r = await api.admin.login(email.trim(), password, turnstileToken || undefined);
       if (r.mustChangePassword && r.token) {
-        localStorage.setItem('token', r.token);
-        localStorage.setItem('adminMustChangePassword', '1');
-        navigate('/admin/password');
+        setAdminToken(r.token);
+        sessionStorage.setItem('adminMustChangePassword', '1');
+        navigate('/admin/password', { replace: true });
         return;
       }
       if (r.mustSetupOtp && r.enrollToken) {
         sessionStorage.setItem('adminOtpEnroll', r.enrollToken);
-        navigate('/admin/otp');
+        navigate('/admin/otp', { replace: true });
         return;
       }
-      if (r.token) localStorage.setItem('token', r.token);
+      if (r.token) setAdminToken(r.token);
       if (r.otpRequired) {
         sessionStorage.removeItem('adminOtpEnroll');
         setOtp('');
@@ -85,7 +86,6 @@ export default function AdminLogin() {
         return;
       }
       if (r.token) finishLogin(r.token);
-      else navigate('/admin/dashboard');
     } catch (err) {
       setError((err as Error).message);
       setTurnstileToken('');

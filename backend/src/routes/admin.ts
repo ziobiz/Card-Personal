@@ -40,7 +40,7 @@ import { sendMemberMail } from '../lib/mailer.js';
 const router = Router();
 
 function signAdmin(userId: string, email: string, extra: Record<string, unknown> = {}) {
-  return jwt.sign({ userId, email, isAdmin: true, ...extra }, config.jwtSecret, { expiresIn: '24h' });
+  return jwt.sign({ userId, email, isAdmin: true, ...extra }, config.jwtSecret, { expiresIn: '8h' });
 }
 
 function signAdminEnroll(userId: string) {
