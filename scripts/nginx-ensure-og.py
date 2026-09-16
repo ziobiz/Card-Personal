@@ -25,7 +25,9 @@ SPA_NAMED = """
         add_header Cache-Control "no-store, no-cache, must-revalidate" always;
         add_header Pragma "no-cache" always;
         add_header CDN-Cache-Control "no-store" always;
-        proxy_pass http://127.0.0.1:3001/api/public/spa;
+        # Named locations cannot use URI in proxy_pass — rewrite then proxy.
+        rewrite ^ /api/public/spa break;
+        proxy_pass http://127.0.0.1:3001;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Original-URI $request_uri;
@@ -59,6 +61,16 @@ def patch_server(srv: str) -> str:
     if "api.icocard" in srv and "root " not in srv:
         return srv
 
+    # Fix invalid named-location proxy_pass with URI (nginx emerg)
+    if "location @spa_html" in srv and "rewrite ^ /api/public/spa break;" not in srv:
+        srv = re.sub(
+            r"location\s+@spa_html\s*\{.*?\}",
+            SPA_NAMED,
+            srv,
+            count=1,
+            flags=re.S,
+        )
+
     srv = re.sub(
         r"try_files\s+\$uri\s+\$uri/\s+/index\.html\s*;",
         "try_files $uri $uri/ @spa_html;",
@@ -79,7 +91,7 @@ def patch_server(srv: str) -> str:
 
     if "root " in srv:
         if "location = /index.html" in srv:
-            head, rest = srv.split("location = /index.html", 1)
+            _head, rest = srv.split("location = /index.html", 1)
             if "api/public/spa" not in rest[:900]:
                 srv = re.sub(
                     r"location\s+=\s+/index\.html\s*\{.*?\n\s*\}",
@@ -88,7 +100,7 @@ def patch_server(srv: str) -> str:
                     count=1,
                     flags=re.S,
                 )
-        elif "@spa_html" in srv and "location /api/" in srv:
+        elif "@spa_html" in srv and "location /api/" in srv and "location = /index.html" not in srv:
             srv = srv.replace("location /api/ {", INDEX_PROXY + "\n    location /api/ {", 1)
 
     return srv
