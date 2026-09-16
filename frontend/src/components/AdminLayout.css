@@ -1782,11 +1782,11 @@
 }
 
 .is-admin .pg-confirm {
-  width: min(420px, 100%);
+  width: min(400px, 100%);
 }
 
 .is-admin .pg-confirm-body {
-  padding: 18px 16px;
+  padding: 20px 18px;
   font-size: 14px;
   line-height: 1.55;
   color: #333;
@@ -1800,10 +1800,59 @@
 .is-admin .pg-confirm-actions {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 8px;
   padding: 12px 14px;
   border-top: 1px solid #e5e8ee;
   background: #fafbfc;
+}
+
+/* Equal compact buttons — override global .btn-primary { width:100% } */
+.is-admin .pg-confirm-actions .pg-confirm-btn,
+.is-admin .pg-confirm-actions .btn-primary,
+.is-admin .pg-confirm-actions .btn-secondary,
+.is-admin .pg-confirm-actions .btn-outline {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  width: 76px !important;
+  min-width: 76px !important;
+  max-width: 76px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 10px !important;
+  margin: 0 !important;
+  border-radius: 4px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.is-admin .pg-confirm-actions .btn-secondary,
+.is-admin .pg-confirm-actions .btn-outline {
+  background: #fff !important;
+  color: #333 !important;
+  border: 1px solid #c5cad3 !important;
+}
+
+.is-admin .pg-confirm-actions .btn-primary {
+  background: #2563eb !important;
+  color: #fff !important;
+  border: 1px solid #2563eb !important;
+}
+
+.is-admin .pg-confirm-actions .btn-primary:hover {
+  background: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+
+.is-admin .pg-confirm-actions .btn-secondary:hover {
+  background: #f7f8fa !important;
 }
 
 .is-admin .pg-confirm-danger {

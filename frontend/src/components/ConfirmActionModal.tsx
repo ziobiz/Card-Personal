@@ -68,12 +68,12 @@ export default function ConfirmActionModal({
           <p>{message}</p>
         </div>
         <div className="pg-confirm-actions">
-          <button type="button" className="btn-secondary" onClick={onClose} disabled={busy}>
+          <button type="button" className="btn-secondary pg-confirm-btn" onClick={onClose} disabled={busy}>
             {cancelLabel || t('common.cancel')}
           </button>
           <button
             type="button"
-            className={danger ? 'btn-primary pg-confirm-danger' : 'btn-primary'}
+            className={danger ? 'btn-primary pg-confirm-btn pg-confirm-danger' : 'btn-primary pg-confirm-btn'}
             onClick={onConfirm}
             disabled={busy}
           >
