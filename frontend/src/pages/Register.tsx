@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { api, resolveMemberLoginHero } from '../api';
+import { api, resolveMemberLoginHero, resolveMemberLoginLogo } from '../api';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useBrand } from '../brand/BrandContext';
 import { useAuth } from '../hooks/useAuth';
@@ -104,11 +104,7 @@ export default function Register() {
       style={{ backgroundImage: `url(${resolveMemberLoginHero(brand)})` }}
     >
       <header className="wx-auth-top">
-        {brand.logoLogin ? (
-          <img src={brand.logoLogin} alt={brand.productName} className="wx-mark-img" />
-        ) : (
-          <span className="wx-mark">{brand.productName}</span>
-        )}
+        <img src={resolveMemberLoginLogo(brand)} alt={brand.productName} className="wx-mark-img" />
         <LanguageSwitcher />
       </header>
       <div className="wx-auth-body">

@@ -453,31 +453,35 @@ export const DEFAULT_BRAND: BrandConfig = {
 
 /** Member login / register / OTP mark */
 export function resolveMemberLoginLogo(brand: BrandConfig): string {
-  return (brand.logoLogin || '').trim();
+  return (brand.logoLogin || '').trim() || DEFAULT_ADMIN_LOGIN_LOGO;
 }
 
 /** Member shell after login (top mark) */
 export function resolveMemberShellLogo(brand: BrandConfig): string {
-  return (brand.logoMemberShell || brand.logoLogin || '').trim();
+  return (brand.logoMemberShell || brand.logoLogin || '').trim() || DEFAULT_ADMIN_LOGIN_LOGO;
 }
+
+/** System default member login background */
+export const DEFAULT_LOGIN_HERO = '/user-hero-bg.png';
+/** Admin login left hero (Crypto/PG gold wave) — used when HQ has not uploaded one */
+export const DEFAULT_ADMIN_LOGIN_HERO = '/brand/admin-login-wave-default.jpg';
+/** Admin login / sidebar logo when HQ has not uploaded one */
+export const DEFAULT_ADMIN_LOGIN_LOGO = '/brand/icocard-logo.png';
 
 /** Admin login panel logo */
 export function resolveAdminLoginLogo(brand: BrandConfig): string {
-  return (brand.logoAdmin || '').trim();
+  return (brand.logoAdmin || '').trim() || DEFAULT_ADMIN_LOGIN_LOGO;
 }
 
 /** Admin sidebar after login */
 export function resolveAdminShellLogo(brand: BrandConfig): string {
-  return (brand.logoAdminShell || brand.logoAdmin || '').trim();
+  return (brand.logoAdminShell || brand.logoAdmin || '').trim() || DEFAULT_ADMIN_LOGIN_LOGO;
 }
-
-/** System default login background image */
-export const DEFAULT_LOGIN_HERO = '/user-hero-bg.png';
 
 /** Admin login left hero (does not fall back to member custom image) */
 export function resolveAdminLoginHero(brand: BrandConfig): string {
   const v = (brand.loginHeroImage || '').trim();
-  return v || DEFAULT_LOGIN_HERO;
+  return v || DEFAULT_ADMIN_LOGIN_HERO;
 }
 
 /** Member login / register background */

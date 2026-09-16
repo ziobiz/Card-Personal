@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { resolveMemberLoginHero } from '../api';
+import { resolveMemberLoginHero, resolveMemberLoginLogo } from '../api';
 import AdminAuthChrome from './AdminAuthChrome';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useBrand } from '../brand/BrandContext';
@@ -176,11 +176,7 @@ export default function OtpChallenge({
   return (
     <div className="wx-auth" style={{ backgroundImage: `url(${resolveMemberLoginHero(brand)})` }}>
       <header className="wx-auth-top">
-        {brand.logoLogin ? (
-          <img src={brand.logoLogin} alt={brand.productName} className="wx-mark-img" />
-        ) : (
-          <span className="wx-mark">{brand.productName}</span>
-        )}
+        <img src={resolveMemberLoginLogo(brand)} alt={brand.productName} className="wx-mark-img" />
         <LanguageSwitcher admin={admin} />
       </header>
       <div className="wx-auth-body">

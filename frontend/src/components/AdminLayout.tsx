@@ -7,6 +7,7 @@ import { useBrand } from '../brand/BrandContext';
 import { api, resolveAdminShellLogo } from '../api';
 import { contrastText, normalizeHex } from '../lib/colorHex';
 import { adminTokenEmail, clearAdminSession, kickToAdminLogin } from '../lib/adminSession';
+import { maskAdminBrowserUrl } from '../lib/adminNav';
 import './AdminLayout.css';
 
 type MenuItem = { to: string; labelKey: string; menu: string };
@@ -125,6 +126,10 @@ export default function AdminLayout() {
 
   useEffect(() => {
     setPageActions(null);
+  }, [loc.pathname]);
+
+  useEffect(() => {
+    maskAdminBrowserUrl(loc.pathname);
   }, [loc.pathname]);
 
   useEffect(() => {

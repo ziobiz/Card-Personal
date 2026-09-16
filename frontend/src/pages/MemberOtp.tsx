@@ -2,7 +2,7 @@ import { startAuthentication, startRegistration } from '@simplewebauthn/browser'
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { api, resolveMemberLoginHero } from '../api';
+import { api, resolveMemberLoginHero, resolveMemberLoginLogo } from '../api';
 import OtpChallenge from '../components/OtpChallenge';
 import { FingerprintIcon } from '../components/BrandIcons';
 import LanguageSwitcher from '../components/LanguageSwitcher';
@@ -104,11 +104,7 @@ export default function MemberOtp() {
   const memberChrome = (body: ReactNode) => (
     <div className="wx-auth" style={{ backgroundImage: `url(${resolveMemberLoginHero(brand)})` }}>
       <header className="wx-auth-top">
-        {brand.logoLogin ? (
-          <img src={brand.logoLogin} alt={brand.productName} className="wx-mark-img" />
-        ) : (
-          <span className="wx-mark">{brand.productName}</span>
-        )}
+        <img src={resolveMemberLoginLogo(brand)} alt={brand.productName} className="wx-mark-img" />
         <LanguageSwitcher />
       </header>
       <div className="wx-auth-body">{body}</div>

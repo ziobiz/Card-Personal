@@ -144,7 +144,7 @@ export default function AdminPlatform() {
   useEffect(() => {
     setPageActions(
       <>
-        <button type="button" className="btn-outline" onClick={() => load()}>
+        <button type="button" className="hq-btn-sky" onClick={() => load()}>
           {t('admin.srv.refresh')}
         </button>
         <button type="button" className="btn-primary" disabled={saving} onClick={save}>

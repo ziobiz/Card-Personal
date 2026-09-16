@@ -51,6 +51,7 @@ import {
   getAdminToken,
   purgeLegacyAdminToken,
 } from './lib/adminSession';
+import { takeInternalPath } from './lib/adminNav';
 import { api } from './api';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -172,7 +173,7 @@ export default function App() {
             </AdminProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          <Route index element={<Navigate to={takeInternalPath()} replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<Navigate to="/admin/operators" replace />} />
           <Route path="operators" element={<AdminOperators scope="HQ" />} />
