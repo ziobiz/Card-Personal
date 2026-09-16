@@ -260,7 +260,17 @@
     "confirmCancelChanges": "Discard the changes?",
     "menuUsers": "Business accounts",
     "navPlatform": "Server management",
-    "navSandbox": "API integration"
+    "navSandbox": "API integration",
+    "brandOgMember": "Link preview — Customer (member) pages",
+    "brandOgMemberHint": "Title, description and image shown when a member URL is pasted into LINE or WhatsApp. Do not share copy or images with the admin preview. Page body text is never used.",
+    "brandOgAdmin": "Link preview — Admin pages",
+    "brandOgAdminHint": "Preview for admin URLs (/admin or admin. host). Stored separately from customer previews. Internal text such as API key hints must not appear.",
+    "brandOgTitle": "Preview title (og:title)",
+    "brandOgDescription": "Preview description (og:description)",
+    "brandOgImage": "Preview image (og:image)",
+    "brandOgImageHint": "Must be reachable over HTTPS without login. On save it is published to a public path (/og/…).",
+    "brandOgMemberDescPh": "e.g. Secure digital card and payment platform",
+    "brandOgAdminDescPh": "e.g. Administrator console"
   },
   "partner": {
     "ourKeysNotWirex": "Authenticate with HQ-issued MID / API Key / Secret. Do not use Wirex keys.",

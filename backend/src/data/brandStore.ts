@@ -3,7 +3,7 @@
  * Wirex 연동과 분리 — 브랜드·활성 언어만 교체해 배포 가능
  */
 
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -90,6 +90,15 @@ export interface BrandConfig extends BrandColorSet {
   loginNoticeTitle: string;
   /** Editable notice body (empty → i18n partner.scamBody) */
   loginNoticeBody: string;
+  /** Open Graph — member (payment) surface. Separate from admin; no org-domain inheritance. */
+  ogMemberTitle: string;
+  ogMemberDescription: string;
+  /** Public HTTPS path (/og/member.jpg) preferred; data URL accepted then persisted to /og/ */
+  ogMemberImage: string;
+  /** Open Graph — admin surface */
+  ogAdminTitle: string;
+  ogAdminDescription: string;
+  ogAdminImage: string;
   /** Member/partner UI languages activated for this ASP tenant */
   enabledLocales: LocaleCode[];
   /** Fallback when browser lang is not enabled */
@@ -234,10 +243,75 @@ export const DEFAULT_BRAND: BrandConfig = {
   loginNoticeEnabled: true,
   loginNoticeTitle: '',
   loginNoticeBody: '',
+  ogMemberTitle: '',
+  ogMemberDescription: '',
+  ogMemberImage: '',
+  ogAdminTitle: '',
+  ogAdminDescription: '',
+  ogAdminImage: '',
   enabledLocales: ['ko', 'en', 'ja', 'zh', 'th'],
   defaultLocale: 'en',
   colorPresets: defaultColorPresets(),
 };
+
+const OG_DIR = join(__dirname, 'og-assets');
+
+/** Persist data-URL OG image to a public /og/{slot}.ext path (crawler-safe HTTPS). */
+function persistOgImage(slot: 'member' | 'admin', value: string): string {
+  if (value === '') {
+    clearOgFiles(slot);
+    return '';
+  }
+  const s = value.trim();
+  if (s.startsWith('/og/') && s.length <= 200 && !s.includes('..')) return s;
+  if (/^https?:\/\//i.test(s) && s.length <= 2000) return s;
+  if (s.startsWith('/') && s.length <= 500 && !s.includes('..') && !s.startsWith('/og/')) {
+    // site-relative (e.g. /brand/logo.png) — keep as-is
+    return s;
+  }
+  const m = s.match(/^data:image\/([\w+.-]+);base64,(.+)$/i);
+  if (!m) return '';
+  let ext = m[1].toLowerCase().replace('jpeg', 'jpg');
+  if (ext === 'svg+xml') ext = 'svg';
+  if (!['png', 'jpg', 'webp', 'gif', 'svg'].includes(ext)) ext = 'png';
+  mkdirSync(OG_DIR, { recursive: true });
+  clearOgFiles(slot);
+  const filename = `${slot}.${ext}`;
+  writeFileSync(join(OG_DIR, filename), Buffer.from(m[2], 'base64'));
+  return `/og/${filename}`;
+}
+
+function clearOgFiles(slot: 'member' | 'admin') {
+  if (!existsSync(OG_DIR)) return;
+  try {
+    for (const name of readdirSync(OG_DIR)) {
+      if (name.startsWith(`${slot}.`)) {
+        try {
+          unlinkSync(join(OG_DIR, name));
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+export function getOgAssetsDir(): string {
+  mkdirSync(OG_DIR, { recursive: true });
+  return OG_DIR;
+}
+
+function clipOgImageInput(v: unknown): string | undefined {
+  if (typeof v !== 'string') return undefined;
+  if (v === '') return '';
+  const s = v.trim();
+  if (s.startsWith('data:image/')) return clipDataUrl(s, 2_500_000);
+  if (/^https?:\/\//i.test(s) && s.length <= 2000) return s;
+  if (s.startsWith('/') && s.length <= 500 && !s.includes('..')) return s;
+  return undefined;
+}
 
 function normalizeLocales(raw: unknown, fallback: LocaleCode[]): LocaleCode[] {
   if (!Array.isArray(raw)) return [...fallback];
@@ -474,6 +548,22 @@ export const brandStore = {
     if (noticeTitle != null) next.loginNoticeTitle = noticeTitle;
     const noticeBody = clipText(partial.loginNoticeBody, 2000);
     if (noticeBody != null) next.loginNoticeBody = noticeBody;
+    const ogMemberTitle = clipText(partial.ogMemberTitle, 80);
+    if (ogMemberTitle != null) next.ogMemberTitle = ogMemberTitle;
+    const ogMemberDescription = clipText(partial.ogMemberDescription, 300);
+    if (ogMemberDescription != null) next.ogMemberDescription = ogMemberDescription;
+    if (partial.ogMemberImage !== undefined) {
+      const img = clipOgImageInput(partial.ogMemberImage);
+      if (img !== undefined) next.ogMemberImage = persistOgImage('member', img);
+    }
+    const ogAdminTitle = clipText(partial.ogAdminTitle, 80);
+    if (ogAdminTitle != null) next.ogAdminTitle = ogAdminTitle;
+    const ogAdminDescription = clipText(partial.ogAdminDescription, 300);
+    if (ogAdminDescription != null) next.ogAdminDescription = ogAdminDescription;
+    if (partial.ogAdminImage !== undefined) {
+      const img = clipOgImageInput(partial.ogAdminImage);
+      if (img !== undefined) next.ogAdminImage = persistOgImage('admin', img);
+    }
     if (partial.enabledLocales !== undefined) {
       next.enabledLocales = normalizeLocales(partial.enabledLocales, DEFAULT_BRAND.enabledLocales);
     }

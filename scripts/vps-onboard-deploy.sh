@@ -1,15 +1,21 @@
 #!/bin/bash
-# Incremental deploy: preserve .env / JSON data, build, nginx timeouts
+# Incremental deploy: preserve .env / JSON data / OG assets, build, nginx OG/SPA
 set -euo pipefail
 export NODE_OPTIONS=--max-old-space-size=1536
 APP_DIR=/var/www/icocard
 cd "$APP_DIR"
 
 BACKUP=/tmp/icocard-runtime-json
-mkdir -p "$BACKUP"
+OG_BACKUP=/tmp/icocard-og-assets
+mkdir -p "$BACKUP" "$OG_BACKUP"
 for dir in backend/src/data backend/dist/data; do
   if [ -d "$dir" ]; then
     find "$dir" -maxdepth 1 -name '*.json' -exec cp -f {} "$BACKUP/" \;
+  fi
+done
+for dir in backend/src/data/og-assets backend/dist/data/og-assets; do
+  if [ -d "$dir" ]; then
+    cp -a "$dir/." "$OG_BACKUP/" 2>/dev/null || true
   fi
 done
 
@@ -17,9 +23,14 @@ git fetch origin main
 git reset --hard origin/main
 
 mkdir -p "$APP_DIR/backend/src/data" "$APP_DIR/backend/dist/data"
+mkdir -p "$APP_DIR/backend/src/data/og-assets" "$APP_DIR/backend/dist/data/og-assets"
 if [ -d "$BACKUP" ]; then
   cp -f "$BACKUP"/*.json "$APP_DIR/backend/src/data/" 2>/dev/null || true
   cp -f "$BACKUP"/*.json "$APP_DIR/backend/dist/data/" 2>/dev/null || true
+fi
+if [ -d "$OG_BACKUP" ] && [ "$(ls -A "$OG_BACKUP" 2>/dev/null || true)" ]; then
+  cp -a "$OG_BACKUP/." "$APP_DIR/backend/src/data/og-assets/" 2>/dev/null || true
+  cp -a "$OG_BACKUP/." "$APP_DIR/backend/dist/data/og-assets/" 2>/dev/null || true
 fi
 
 ENV_FILE="$APP_DIR/backend/.env"
@@ -30,30 +41,31 @@ if [ -f "$ENV_FILE" ]; then
   else
     echo 'USE_MOCK_WIREX=false' >> "$ENV_FILE"
   fi
+  if grep -q '^FRONTEND_DIST=' "$ENV_FILE"; then
+    sed -i 's|^FRONTEND_DIST=.*|FRONTEND_DIST=/var/www/icocard/frontend/dist|' "$ENV_FILE"
+  else
+    echo 'FRONTEND_DIST=/var/www/icocard/frontend/dist' >> "$ENV_FILE"
+  fi
 fi
 
 NGINX_SITE=/etc/nginx/sites-available/icocard
-if [ -f "$NGINX_SITE" ] && ! grep -q 'proxy_read_timeout' "$NGINX_SITE"; then
-  python3 - <<'PY'
-from pathlib import Path
-p = Path("/etc/nginx/sites-available/icocard")
-t = p.read_text()
-t = t.replace(
-    "proxy_http_version 1.1;",
-    "proxy_http_version 1.1;\n        proxy_read_timeout 180s;\n        proxy_send_timeout 180s;",
-)
-p.write_text(t)
-PY
-  nginx -t && systemctl reload nginx
+if [ -f "$NGINX_SITE" ]; then
+  python3 "$APP_DIR/scripts/nginx-ensure-og.py" "$NGINX_SITE" || true
+  nginx -t && systemctl reload nginx || true
 fi
 
 cd "$APP_DIR/backend"
 npm ci
 npm run build
 if [ -d "$BACKUP" ]; then
-  mkdir -p dist/data
+  mkdir -p dist/data dist/data/og-assets
   cp -f "$BACKUP"/*.json dist/data/ 2>/dev/null || true
   cp -f "$BACKUP"/*.json src/data/ 2>/dev/null || true
+fi
+if [ -d "$OG_BACKUP" ] && [ "$(ls -A "$OG_BACKUP" 2>/dev/null || true)" ]; then
+  mkdir -p dist/data/og-assets src/data/og-assets
+  cp -a "$OG_BACKUP/." dist/data/og-assets/ 2>/dev/null || true
+  cp -a "$OG_BACKUP/." src/data/og-assets/ 2>/dev/null || true
 fi
 
 python3 - <<'PY'
@@ -80,6 +92,11 @@ pm2 restart icocard-api --update-env
 sleep 2
 curl -sS http://127.0.0.1:3001/api/health || true
 echo
+# Smoke: OG tags present for member vs admin paths
+curl -sS -H 'X-Original-URI: /login' -H 'Host: icocard.net' -H 'X-Forwarded-Proto: https' \
+  'http://127.0.0.1:3001/api/public/spa' | tr '\n' ' ' | grep -o 'og:title[^>]*>' | head -1 || true
+curl -sS -H 'X-Original-URI: /admin/login' -H 'Host: admin.icocard.net' -H 'X-Forwarded-Proto: https' \
+  'http://127.0.0.1:3001/api/public/spa' | tr '\n' ' ' | grep -o 'og:title[^>]*>' | head -1 || true
 
 cd "$APP_DIR/frontend"
 npm ci

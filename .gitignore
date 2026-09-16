@@ -1,3 +1,5 @@
+backend/src/data/og-assets/
+backend/dist/data/og-assets/
 node_modules/
 .env
 .env.local

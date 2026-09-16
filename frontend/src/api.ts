@@ -356,6 +356,14 @@ export interface BrandConfig extends BrandColorSet {
   loginNoticeEnabled?: boolean;
   loginNoticeTitle?: string;
   loginNoticeBody?: string;
+  /** Open Graph — member surface (LINE/WhatsApp preview) */
+  ogMemberTitle?: string;
+  ogMemberDescription?: string;
+  ogMemberImage?: string;
+  /** Open Graph — admin surface (separate from member) */
+  ogAdminTitle?: string;
+  ogAdminDescription?: string;
+  ogAdminImage?: string;
   turnstileSiteKey?: string;
   turnstileEnabled?: boolean;
   enabledLocales?: string[];
@@ -403,6 +411,12 @@ export const DEFAULT_BRAND: BrandConfig = {
   loginNoticeEnabled: true,
   loginNoticeTitle: '',
   loginNoticeBody: '',
+  ogMemberTitle: '',
+  ogMemberDescription: '',
+  ogMemberImage: '',
+  ogAdminTitle: '',
+  ogAdminDescription: '',
+  ogAdminImage: '',
   enabledLocales: ['ko', 'en', 'ja', 'zh', 'th'],
   defaultLocale: 'en',
   colorPresets: [

@@ -16,13 +16,19 @@ import reportingRoutes from './routes/reporting.js';
 import complianceRoutes from './routes/compliance.js';
 import { store } from './data/store.js';
 import { getWirexBaaSConfig } from './config.js';
-import { brandStore } from './data/brandStore.js';
+import { brandStore, getOgAssetsDir } from './data/brandStore.js';
 import { packageManifest } from './data/packageManifest.js';
 import { partnerStore } from './data/partnerStore.js';
+import { renderSpaHtml } from './services/ogHtml.js';
 
 const app = express();
 app.use(cors({ origin: true }));
-app.use((_req, res, next) => {
+app.use((req, res, next) => {
+  // OG images must be cacheable and publicly fetchable by crawlers
+  if (req.path.startsWith('/og/')) {
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return next();
+  }
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
@@ -30,11 +36,20 @@ app.use((_req, res, next) => {
   next();
 });
 app.use(express.json({
-  limit: '2mb',
+  limit: '4mb',
   verify: (req, _res, buf) => {
     (req as typeof req & { rawBody?: string }).rawBody = buf.toString('utf8');
   },
 }));
+
+/** Public OG thumbnails — no auth, HTTPS via nginx */
+app.use('/og', express.static(getOgAssetsDir(), { fallthrough: true, maxAge: '1h' }));
+
+/** SPA HTML with path-based Open Graph (LINE/WhatsApp crawlers skip JS) */
+app.get('/api/public/spa', (req, res) => {
+  const { html, status } = renderSpaHtml(req);
+  res.status(status).type('html').send(html);
+});
 
 app.get('/health', (_, res) => {
   const w = getWirexBaaSConfig();

@@ -186,12 +186,19 @@ export default function AdminBrand() {
   };
 
   const onFile = async (
-    k: 'logoAdmin' | 'logoLogin' | 'logoMemberShell' | 'logoAdminShell' | 'favicon',
+    k:
+      | 'logoAdmin'
+      | 'logoLogin'
+      | 'logoMemberShell'
+      | 'logoAdminShell'
+      | 'favicon'
+      | 'ogMemberImage'
+      | 'ogAdminImage',
     file?: File
   ) => {
     if (!file) return;
     try {
-      const url = await fileToDataUrl(file);
+      const url = await fileToDataUrl(file, k.startsWith('og') ? 800_000 : 350_000);
       set(k, url);
     } catch {
       setOk(false);
@@ -204,7 +211,14 @@ export default function AdminBrand() {
     label,
     hint,
   }: {
-    field: 'logoAdmin' | 'logoLogin' | 'logoMemberShell' | 'logoAdminShell' | 'favicon';
+    field:
+      | 'logoAdmin'
+      | 'logoLogin'
+      | 'logoMemberShell'
+      | 'logoAdminShell'
+      | 'favicon'
+      | 'ogMemberImage'
+      | 'ogAdminImage';
     label: string;
     hint?: string;
   }) => (
@@ -417,6 +431,76 @@ export default function AdminBrand() {
             {t('admin.brandCopyright')}
             <input className="input" value={form.copyright} onChange={(e) => set('copyright', e.target.value)} />
           </label>
+        </div>
+      </section>
+
+      <section className="card-surface hq-brand-card">
+        <h3>{t('admin.brandOgMember')}</h3>
+        <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandOgMemberHint')}</p>
+        <div className="hq-brand-grid">
+          <label className="hq-brand-span">
+            {t('admin.brandOgTitle')}
+            <input
+              className="input"
+              value={form.ogMemberTitle || ''}
+              onChange={(e) => set('ogMemberTitle', e.target.value)}
+              placeholder={form.browserTitle || form.productName || 'ICOCARD'}
+              maxLength={80}
+            />
+          </label>
+          <label className="hq-brand-span">
+            {t('admin.brandOgDescription')}
+            <textarea
+              className="input"
+              rows={3}
+              value={form.ogMemberDescription || ''}
+              onChange={(e) => set('ogMemberDescription', e.target.value)}
+              placeholder={t('admin.brandOgMemberDescPh')}
+              maxLength={300}
+            />
+          </label>
+        </div>
+        <div className="hq-brand-logos" style={{ marginTop: 12 }}>
+          <LogoSlot
+            field="ogMemberImage"
+            label={t('admin.brandOgImage')}
+            hint={t('admin.brandOgImageHint')}
+          />
+        </div>
+      </section>
+
+      <section className="card-surface hq-brand-card">
+        <h3>{t('admin.brandOgAdmin')}</h3>
+        <p className="hq-card-hint hq-brand-locale-hint">{t('admin.brandOgAdminHint')}</p>
+        <div className="hq-brand-grid">
+          <label className="hq-brand-span">
+            {t('admin.brandOgTitle')}
+            <input
+              className="input"
+              value={form.ogAdminTitle || ''}
+              onChange={(e) => set('ogAdminTitle', e.target.value)}
+              placeholder={`${form.productName || 'ICOCARD'} Admin`}
+              maxLength={80}
+            />
+          </label>
+          <label className="hq-brand-span">
+            {t('admin.brandOgDescription')}
+            <textarea
+              className="input"
+              rows={3}
+              value={form.ogAdminDescription || ''}
+              onChange={(e) => set('ogAdminDescription', e.target.value)}
+              placeholder={t('admin.brandOgAdminDescPh')}
+              maxLength={300}
+            />
+          </label>
+        </div>
+        <div className="hq-brand-logos" style={{ marginTop: 12 }}>
+          <LogoSlot
+            field="ogAdminImage"
+            label={t('admin.brandOgImage')}
+            hint={t('admin.brandOgImageHint')}
+          />
         </div>
       </section>
 
