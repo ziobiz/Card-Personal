@@ -2888,7 +2888,7 @@
 .is-admin .hq-color-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   margin: 0;
   padding: 12px 12px 14px;
   border-radius: 8px;
@@ -2904,7 +2904,7 @@
 
 .is-admin .hq-color-hint {
   font-size: 11px;
-  color: #888;
+  color: #666;
   line-height: 1.4;
   min-height: 2.8em;
 }
@@ -2913,45 +2913,78 @@
   width: 110px !important;
 }
 
-/* Grouped pastel field boxes — same group = same tone */
+.is-admin .hq-color-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* Grouped pastel — outer card + input row (replaces shared yellow #fff7ea) */
 .is-admin .hq-color-group-sidebar {
-  background: #ebe8f4;
-  border-color: #d5d0e8;
+  background: #ebe8f4 !important;
+  border-color: #c9c2e0 !important;
+}
+.is-admin .hq-color-group-sidebar .hq-color-row {
+  background: #ddd7f0;
 }
 
 .is-admin .hq-color-group-logo {
-  background: #e4f0ea;
-  border-color: #c5ddd0;
+  background: #e0f2e8 !important;
+  border-color: #b5d9c6 !important;
+}
+.is-admin .hq-color-group-logo .hq-color-row {
+  background: #cfe8d9;
 }
 
 .is-admin .hq-color-group-fold {
-  background: #d4eef8;
-  border-color: #8ec8e6;
+  background: #d4eef8 !important;
+  border-color: #7ebedc !important;
+}
+.is-admin .hq-color-group-fold .hq-color-row {
+  background: #bfe6f4;
 }
 
 .is-admin .hq-color-group-header {
-  background: #f5e9ee;
-  border-color: #e4cdd6;
+  background: #f7e6ec !important;
+  border-color: #e2c4d0 !important;
+}
+.is-admin .hq-color-group-header .hq-color-row {
+  background: #f0d6df;
 }
 
 .is-admin .hq-color-group-tabbar {
-  background: #e8e6f5;
-  border-color: #cdc8e6;
+  background: #e6e3f6 !important;
+  border-color: #c4bee6 !important;
+}
+.is-admin .hq-color-group-tabbar .hq-color-row {
+  background: #d8d3ef;
 }
 
 .is-admin .hq-color-group-login {
-  background: #e6f3f2;
-  border-color: #c0ddd9;
+  background: #dff3f1 !important;
+  border-color: #b5ddd8 !important;
+}
+.is-admin .hq-color-group-login .hq-color-row {
+  background: #cceae6;
 }
 
+.is-admin .hq-page .hq-color-group-sidebar .hq-hex-input,
+.is-admin .hq-page .hq-color-group-logo .hq-hex-input,
+.is-admin .hq-page .hq-color-group-fold .hq-hex-input,
+.is-admin .hq-page .hq-color-group-header .hq-hex-input,
+.is-admin .hq-page .hq-color-group-tabbar .hq-hex-input,
+.is-admin .hq-page .hq-color-group-login .hq-hex-input,
 .is-admin .hq-color-group-sidebar .hq-hex-input,
 .is-admin .hq-color-group-logo .hq-hex-input,
 .is-admin .hq-color-group-fold .hq-hex-input,
 .is-admin .hq-color-group-header .hq-hex-input,
 .is-admin .hq-color-group-tabbar .hq-hex-input,
 .is-admin .hq-color-group-login .hq-hex-input {
-  background: #fff !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.14) !important;
 }
 
 .is-admin .wx-field {
