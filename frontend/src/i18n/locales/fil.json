@@ -257,7 +257,10 @@
     "confirmSave": "Save the entered or changed settings?",
     "confirmApply": "Apply these changes?",
     "confirmDelete": "Delete this item?\nThis cannot be undone.",
-    "confirmCancelChanges": "Discard the changes?"
+    "confirmCancelChanges": "Discard the changes?",
+    "menuUsers": "Business accounts",
+    "navPlatform": "Server management",
+    "navSandbox": "API integration"
   },
   "partner": {
     "ourKeysNotWirex": "Authenticate with HQ-issued MID / API Key / Secret. Do not use Wirex keys.",

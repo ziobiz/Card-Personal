@@ -26,7 +26,7 @@ const CRUMB_PATH: Record<string, string> = {
   'admin.menuOps': '/admin/dashboard',
   'admin.menuMain': '/admin/dashboard',
   'admin.menuMerchant': '/admin/partners',
-  'admin.menuHq': '/admin/brand',
+  'admin.menuHq': '/admin/settings',
   'admin.menuUsers': '/admin/operators',
   'admin.navDashboard': '/admin/dashboard',
   'admin.navPartners': '/admin/partners',
@@ -152,17 +152,6 @@ export default function AdminLayout() {
 
   const allGroups: MenuGroup[] = [
     {
-      id: 'hq',
-      labelKey: 'admin.menuHq',
-      icon: 'gear',
-      items: [
-        { to: '/admin/platform', labelKey: 'admin.navPlatform', menu: 'platform' },
-        { to: '/admin/brand', labelKey: 'admin.navBrand', menu: 'brand' },
-        { to: '/admin/sandbox', labelKey: 'admin.navSandbox', menu: 'sandbox' },
-        { to: '/admin/settings', labelKey: 'admin.navSettings', menu: 'settings' },
-      ],
-    },
-    {
       id: 'merchant',
       labelKey: 'admin.menuMerchant',
       icon: 'phone',
@@ -191,9 +180,19 @@ export default function AdminLayout() {
       icon: 'ops',
       items: [
         { to: '/admin/dashboard', labelKey: 'admin.navDashboard', menu: 'dashboard' },
-        { to: '/admin/platform', labelKey: 'admin.navPlatform', menu: 'platform' },
         { to: '/admin/cards', labelKey: 'admin.navCards', menu: 'cards' },
         { to: '/admin/manuals', labelKey: 'admin.navManuals', menu: 'manuals' },
+      ],
+    },
+    {
+      id: 'hq',
+      labelKey: 'admin.menuHq',
+      icon: 'gear',
+      items: [
+        { to: '/admin/settings', labelKey: 'admin.navSettings', menu: 'settings' },
+        { to: '/admin/brand', labelKey: 'admin.navBrand', menu: 'brand' },
+        { to: '/admin/platform', labelKey: 'admin.navPlatform', menu: 'platform' },
+        { to: '/admin/sandbox', labelKey: 'admin.navSandbox', menu: 'sandbox' },
       ],
     },
   ];

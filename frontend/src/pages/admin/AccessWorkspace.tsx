@@ -21,7 +21,7 @@ type Operator = {
 type Audit = { id: string; at: string; actorEmail: string; action: string; detail: string };
 
 const HQ_SECTIONS: Array<{ id: string; keys: string[] }> = [
-  { id: 'sectionHq', keys: ['dashboard', 'brand', 'sandbox', 'settings', 'platform'] },
+  { id: 'sectionHq', keys: ['settings', 'brand', 'platform', 'sandbox'] },
   { id: 'sectionMerchant', keys: ['partners', 'partners_new', 'org', 'fee_list', 'fee_policy'] },
   { id: 'sectionUsers', keys: ['operators', 'operators_partner', 'customers', 'access'] },
   { id: 'sectionOps', keys: ['cards', 'manuals'] },
